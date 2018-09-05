@@ -21,7 +21,7 @@ public class ResourceConfigurator implements ApplicationConfigurator {
 
     @Override
     public ResourceConfig configure(ResourceConfig rc) {
-        final JsonArray jsonArray = vertx.getOrCreateContext().config().getJsonArray("jzenith.resources");
+        final JsonArray jsonArray = vertx.getOrCreateContext().config().getJsonArray(RestModule.RESOURCES_KEY);
         final Set<Class<?>> resources = jsonArray.stream().map(String.class::cast).map(this::loadClass).collect(ImmutableSet.toImmutableSet());
         rc.registerClasses(resources);
 

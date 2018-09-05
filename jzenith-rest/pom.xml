@@ -24,18 +24,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-core</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
 
+        <!-- Vert.x Jersey -->
         <dependency>
             <groupId>com.englishtown.vertx</groupId>
             <artifactId>vertx-jersey</artifactId>
@@ -68,6 +62,21 @@
             <version>1.1.1</version>
         </dependency>
 
+        <!-- Compile Time tools -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

@@ -1,21 +1,26 @@
 package org.jzenith.rest;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jzenith.core.AbstractModule;
 import org.jzenith.core.Configuration;
+import org.jzenith.core.util.CompletableHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public class RestModule extends AbstractModule {
+
+    static final String RESOURCES_KEY = "jzenith.resources";
 
     private final List<String> resources;
 
@@ -30,7 +35,10 @@ public class RestModule extends AbstractModule {
     }
 
     @Override
-    protected void register(Vertx vertx, Configuration configuration, DeploymentOptions deploymentOptions) {
+    protected CompletableFuture<String> start(Vertx vertx, Configuration configuration, DeploymentOptions deploymentOptions) {
+        if (log.isDebugEnabled()) {
+            log.debug("jZenith Rest is starting and registering the following resources:\n{}", Joiner.on('\n').join(resources));
+        }
         final DeploymentOptions localDeploymentOptions = new DeploymentOptions(deploymentOptions);
         final JsonObject config = localDeploymentOptions.getConfig();
 
@@ -42,9 +50,11 @@ public class RestModule extends AbstractModule {
 
         config.put("port", configuration.getPort());
         config.put("components", new JsonArray().add("org.glassfish.jersey.jackson.JacksonFeature"));
-        config.put("jzenith.resources", new JsonArray(resources));
+        config.put(RESOURCES_KEY, new JsonArray(resources));
 
-        vertx.deployVerticle("java-guice:com.englishtown.vertx.jersey.JerseyVerticle", new DeploymentOptions(localDeploymentOptions));
+        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
+        vertx.deployVerticle("java-guice:com.englishtown.vertx.jersey.JerseyVerticle", new DeploymentOptions(localDeploymentOptions), completableHandler.handler());
 
+        return completableHandler;
     }
 }
