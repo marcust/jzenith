@@ -5,7 +5,7 @@ import io.vertx.core.Vertx;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class AbstractModule {
+public abstract class AbstractPlugin {
 
     protected abstract CompletableFuture<String> start(Vertx vertx, Configuration configuration, DeploymentOptions config);
 

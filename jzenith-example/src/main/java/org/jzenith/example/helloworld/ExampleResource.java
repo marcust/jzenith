@@ -4,6 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import org.glassfish.jersey.server.ContainerRequest;
+import org.jzenith.example.helloworld.service.HelloWorldService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,6 +17,12 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 public class ExampleResource {
 
+    private final HelloWorldService service;
+
+    public ExampleResource(@Context HelloWorldService service) {
+        this.service = service;
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public void getQuery(
@@ -27,7 +34,7 @@ public class ExampleResource {
         vertx.runOnContext(new Handler<Void>() {
             @Override
             public void handle(Void aVoid) {
-                response.resume("Hello World!");
+                response.resume(service.getResponse());
             }
         });
     }

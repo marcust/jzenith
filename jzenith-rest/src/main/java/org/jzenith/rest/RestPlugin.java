@@ -8,7 +8,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jzenith.core.AbstractModule;
+import org.jzenith.core.AbstractPlugin;
 import org.jzenith.core.Configuration;
 import org.jzenith.core.util.CompletableHandler;
 
@@ -18,18 +18,18 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-public class RestModule extends AbstractModule {
+public class RestPlugin extends AbstractPlugin {
 
     static final String RESOURCES_KEY = "jzenith.resources";
 
     private final List<String> resources;
 
-    public RestModule(Collection<String> resources) {
+    public RestPlugin(Collection<String> resources) {
         this.resources = ImmutableList.copyOf(resources);
     }
 
-    public static RestModule withResources(Class<?>... resources) {
-        return new RestModule(Arrays.asList(resources).stream()
+    public static RestPlugin withResources(Class<?>... resources) {
+        return new RestPlugin(Arrays.asList(resources).stream()
                 .map(Class::getName)
                 .collect(ImmutableList.toImmutableList()));
     }
