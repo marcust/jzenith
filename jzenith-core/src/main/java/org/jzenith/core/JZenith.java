@@ -14,19 +14,14 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
-import io.vertx.core.spi.VerticleFactory;
 import lombok.NonNull;
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
-import net.bytebuddy.implementation.FixedValue;
-import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
 import org.apache.logging.log4j.core.util.Constants;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class JZenith {
 
@@ -48,6 +43,7 @@ public class JZenith {
     }
 
     public static JZenith application(@NonNull String... args) {
+        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.warn("Uncaught exception", throwable));
         return new JZenith(Configuration.builder().commandLineArguments(Arrays.asList(args)));
     }
 
@@ -65,6 +61,10 @@ public class JZenith {
         return this;
     }
 
+    public Configuration.ConfigurationBuilder configuration() {
+        return configurationBuilder;
+    }
+
     public void run() {
         run(new JsonObject());
     }
@@ -78,18 +78,11 @@ public class JZenith {
         final VertxOptions vertxOptions = new VertxOptions(vertxOptionsJson);
 
         final Vertx vertx = Vertx.vertx(vertxOptions);
+        registerParentInjector(vertx);
 
         final DeploymentOptions deploymentOptions = new DeploymentOptions();
         deploymentOptions.setConfig(new JsonObject());
-        final JsonArray binders = new JsonArray();
-        binders.add(CoreBinder.class.getName());
-        if (configuration.getModuleBindMode() == ModuleBindMode.LOCAL) {
-            binders.add(makeModuleBinder(vertx));
-        } else {
-            registerParentInjector(vertx);
-        }
-        deploymentOptions.getConfig().put("guice_binder", binders);
-
+        deploymentOptions.getConfig().put("guice_binder", new JsonArray());
 
         final CompletableFuture[] deploymentResults = plugins.stream()
                 .map(module -> module.start(vertx, configuration, new DeploymentOptions(deploymentOptions)))
@@ -113,20 +106,18 @@ public class JZenith {
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Can't find GuiceVerticleFactory, dependency problem?"));
 
-        guiceVerticleFactory.setInjector(Guice.createInjector(modules));
-    }
+        final List<AbstractModule> allModules = ImmutableList.<AbstractModule>builder()
+                .add(new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(Vertx.class).toInstance(vertx);
+                    }
+                })
+                .addAll(plugins.stream().flatMap(plugins -> plugins.getModules().stream()).collect(ImmutableList.toImmutableList()))
+                .addAll(modules)
+                .build();
 
-    private String makeModuleBinder(Vertx vertx) {
-        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        final Class<? extends AbstractModule> module = new ByteBuddy()
-                .subclass(AbstractModuleBinder.class)
-                .name(this.getClass().getPackageName() + ".ModuleBinder" + System.identityHashCode(vertx))
-                .method(ElementMatchers.named("getModules")).intercept(FixedValue.value(modules))
-                .make()
-                .load(contextClassLoader, new ClassLoadingStrategy.ForUnsafeInjection())
-                .getLoaded();
-
-        return module.getName();
+        guiceVerticleFactory.setInjector(Guice.createInjector(allModules));
     }
 
     @SafeVarargs

@@ -2,6 +2,7 @@ package org.jzenith.rest;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.inject.AbstractModule;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
@@ -22,6 +23,8 @@ public class RestPlugin extends AbstractPlugin {
 
     static final String RESOURCES_KEY = "jzenith.resources";
 
+    private static final ImmutableList<AbstractModule> MODULES = ImmutableList.of(new RestBinder());
+
     private final List<String> resources;
 
     public RestPlugin(Collection<String> resources) {
@@ -35,14 +38,17 @@ public class RestPlugin extends AbstractPlugin {
     }
 
     @Override
+    protected List<AbstractModule> getModules() {
+        return MODULES;
+    }
+
+    @Override
     protected CompletableFuture<String> start(Vertx vertx, Configuration configuration, DeploymentOptions deploymentOptions) {
         if (log.isDebugEnabled()) {
             log.debug("jZenith Rest is starting and registering the following resources:\n{}", Joiner.on('\n').join(resources));
         }
         final DeploymentOptions localDeploymentOptions = new DeploymentOptions(deploymentOptions);
         final JsonObject config = localDeploymentOptions.getConfig();
-
-        config.getJsonArray("guice_binder").add(RestBinder.class.getName());
 
         if (StringUtils.isNotBlank(configuration.getHost())) {
             config.put("host", configuration.getHost());

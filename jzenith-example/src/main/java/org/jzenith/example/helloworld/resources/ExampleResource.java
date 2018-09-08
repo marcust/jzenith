@@ -1,4 +1,4 @@
-package org.jzenith.example.helloworld;
+package org.jzenith.example.helloworld.resources;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;

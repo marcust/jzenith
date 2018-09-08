@@ -62,11 +62,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.8</version>
         </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.8.21</version>
-        </dependency>
 
         <!-- Logging -->
         <dependency>
@@ -138,8 +133,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>10</source>
-                    <target>10</target>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
         </plugins>

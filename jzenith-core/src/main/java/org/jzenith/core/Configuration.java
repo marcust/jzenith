@@ -17,8 +17,4 @@ public class Configuration {
 
     private final String host;
 
-    @NonNull
-    @Builder.Default
-    private final ModuleBindMode moduleBindMode = ModuleBindMode.PARENT;
-
 }
