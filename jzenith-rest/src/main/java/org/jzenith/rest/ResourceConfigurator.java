@@ -6,6 +6,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jzenith.core.util.ReflectionUtil;
+import org.jzenith.rest.metrics.PrometheusListener;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class ResourceConfigurator implements ApplicationConfigurator {
         final Set<Class<?>> resources = jsonArray.stream().map(String.class::cast).map(ReflectionUtil::loadClass).collect(ImmutableSet.toImmutableSet());
         rc.registerClasses(resources);
 
+        rc.register(PrometheusListener.class);
         return rc;
     }
 

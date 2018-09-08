@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import io.prometheus.client.hotspot.DefaultExports;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -17,6 +18,7 @@ import io.vertx.core.logging.SLF4JLogDelegateFactory;
 import lombok.NonNull;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
 import org.apache.logging.log4j.core.util.Constants;
+import org.jzenith.core.metrics.JZenithDefaultExports;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -28,6 +30,7 @@ public class JZenith {
     static {
         System.setProperty(Constants.LOG4J_CONTEXT_SELECTOR, AsyncLoggerContextSelector.class.getName());
         System.setProperty(LoggerFactory.LOGGER_DELEGATE_FACTORY_CLASS_NAME, SLF4JLogDelegateFactory.class.getName());
+        JZenithDefaultExports.initialize();
     }
 
     // Manually (not Lombok) after static block to ensure that the property for the context selector has been set.

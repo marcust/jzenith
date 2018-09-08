@@ -2,6 +2,7 @@ package org.jzenith.rest;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.inject.AbstractModule;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jzenith.core.AbstractPlugin;
 import org.jzenith.core.Configuration;
 import org.jzenith.core.util.CompletableHandler;
+import org.jzenith.rest.metrics.PrometheusResource;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +30,7 @@ public class RestPlugin extends AbstractPlugin {
     private final List<String> resources;
 
     public RestPlugin(Collection<String> resources) {
-        this.resources = ImmutableList.copyOf(resources);
+        this.resources = ImmutableList.copyOf(Iterables.concat(resources, ImmutableList.of(PrometheusResource.class.getName())));
     }
 
     public static RestPlugin withResources(Class<?>... resources) {

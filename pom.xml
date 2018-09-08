@@ -6,6 +6,10 @@
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>root-pom</name>
+  <properties>
+    <prometheus.version>0.5.0</prometheus.version>
+  </properties>
+
   <modules>
     <module>jzenith-core</module>
     <module>jzenith-rest</module>
