@@ -36,16 +36,18 @@
         </dependency>
         <dependency>
             <groupId>org.jzenith</groupId>
-            <artifactId>jzenith-sql</artifactId>
+            <artifactId>jzenith-postgresql</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
 
-        <!-- Database driver -->
+        <!-- Compile Time tools -->
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.5</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.2</version>
+            <scope>provided</scope>
         </dependency>
+
 
     </dependencies>
 
@@ -67,7 +69,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.20.1</version>
+                    <version>2.22.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -83,5 +85,15 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>9</source>
+                    <target>9</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

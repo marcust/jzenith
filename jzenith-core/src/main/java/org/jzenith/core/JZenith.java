@@ -7,7 +7,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
-import io.prometheus.client.hotspot.DefaultExports;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -16,6 +17,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
 import lombok.NonNull;
+import one.util.streamex.StreamEx;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
 import org.apache.logging.log4j.core.util.Constants;
 import org.jzenith.core.metrics.JZenithDefaultExports;
@@ -37,7 +39,7 @@ public class JZenith {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JZenith.class);
 
     private final LinkedList<AbstractPlugin> plugins = Lists.newLinkedList();
-    private final LinkedList<AbstractModule> modules = Lists.newLinkedList();
+    private final LinkedList<Module> modules = Lists.newLinkedList();
 
     private final Configuration.ConfigurationBuilder configurationBuilder;
 
@@ -46,7 +48,7 @@ public class JZenith {
     }
 
     public static JZenith application(@NonNull String... args) {
-        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.warn("Uncaught exception", throwable));
+        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.error("Uncaught exception", throwable));
         return new JZenith(Configuration.builder().commandLineArguments(Arrays.asList(args)));
     }
 
@@ -76,19 +78,21 @@ public class JZenith {
         if (log.isDebugEnabled()) {
             log.debug("jZenith starting up\nOptions: {}", vertxOptionsJson.encode());
         }
-        final Configuration configuration = configurationBuilder.build();
-
         final VertxOptions vertxOptions = new VertxOptions(vertxOptionsJson);
 
         final Vertx vertx = Vertx.vertx(vertxOptions);
-        registerParentInjector(vertx);
+        final Injector injector = createInjector(vertx);
+        StreamEx.of(vertx.verticleFactories())
+                .select(GuiceVerticleFactory.class)
+                .findFirst()
+                .ifPresent(guiceVerticleFactory -> guiceVerticleFactory.setInjector(injector));
 
         final DeploymentOptions deploymentOptions = new DeploymentOptions();
         deploymentOptions.setConfig(new JsonObject());
         deploymentOptions.getConfig().put("guice_binder", new JsonArray());
 
         final CompletableFuture[] deploymentResults = plugins.stream()
-                .map(module -> module.start(vertx, configuration, new DeploymentOptions(deploymentOptions)))
+                .map(plugin -> plugin.start(injector))
                 .toArray(CompletableFuture[]::new);
 
         try {
@@ -102,25 +106,20 @@ public class JZenith {
         log.debug("jZenith startup complete");
     }
 
-    private void registerParentInjector(Vertx vertx) {
-        final GuiceVerticleFactory guiceVerticleFactory = vertx.verticleFactories().stream()
-                .filter(verticleFactory -> verticleFactory instanceof GuiceVerticleFactory)
-                .map(GuiceVerticleFactory.class::cast)
-                .findAny()
-                .orElseThrow(() -> new RuntimeException("Can't find GuiceVerticleFactory, dependency problem?"));
-
-        final List<AbstractModule> allModules = ImmutableList.<AbstractModule>builder()
+    private Injector createInjector(Vertx vertx) {
+        final List<Module> allModules = ImmutableList.<Module>builder()
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
                         bind(Vertx.class).toInstance(vertx);
+                        bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
                     }
                 })
                 .addAll(plugins.stream().flatMap(plugins -> plugins.getModules().stream()).collect(ImmutableList.toImmutableList()))
                 .addAll(modules)
                 .build();
 
-        guiceVerticleFactory.setInjector(Guice.createInjector(allModules));
+        return Guice.createInjector(allModules);
     }
 
     @SafeVarargs

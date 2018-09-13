@@ -13,7 +13,7 @@
   <modules>
     <module>jzenith-core</module>
     <module>jzenith-rest</module>
-    <module>jzenith-sql</module>
+    <module>jzenith-postgresql</module>
     <module>jzenith-example</module>
   </modules>
 </project>

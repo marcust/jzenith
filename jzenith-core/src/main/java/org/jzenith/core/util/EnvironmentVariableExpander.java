@@ -1,0 +1,71 @@
+package org.jzenith.core.util;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.io.CharSource;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+@Slf4j
+public class EnvironmentVariableExpander {
+
+    private static final EnvironmentVariableExpander INSTANCE = new EnvironmentVariableExpander();
+
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\$\\{([\\w.-]+)(?:\\:([^\\}]+)?)?\\}");
+
+    private final Function<String, String> variableAccessor;
+
+    @VisibleForTesting
+    EnvironmentVariableExpander(final Function<String, String> variableResolver) {
+        this.variableAccessor = variableResolver;
+    }
+
+    private EnvironmentVariableExpander() {
+        this(System::getenv);
+    }
+
+    public static String expand(final String input) {
+        return INSTANCE.expandVariables(input);
+    }
+
+    public static CharSource expand(final CharSource input) throws IOException {
+        return CharSource.wrap(input.readLines().stream().map(EnvironmentVariableExpander::expand).collect(Collectors.joining("\n")));
+    }
+
+    @VisibleForTesting
+    String expandVariables(@Nullable final String input) {
+        if (input == null) {
+            return null;
+        }
+
+        final Matcher m = VARIABLE_PATTERN.matcher(input);
+        final StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            final String variableName = m.group(1);
+            final String defaultValue = m.group(2);
+            final String variableValue = Optional
+                .ofNullable(expandVariables(variableAccessor.apply(variableName)))
+                .orElse(defaultValue);
+
+            if (variableValue == null) {
+                throw new IllegalStateException("Can not get value for variable " + variableName + " from current environment");
+            } else {
+                log.info("Expanding placeholder \"{}\" with value \"{}\"", variableName, variableValue);
+            }
+
+            m.appendReplacement(sb, Matcher.quoteReplacement(variableValue));
+        }
+
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+}

@@ -3,16 +3,17 @@ package org.jzenith.rest;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.inject.AbstractModule;
-import io.vertx.core.DeploymentOptions;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.jboss.resteasy.plugins.guice.ModuleProcessor;
+import org.jboss.resteasy.plugins.server.vertx.VertxRegistry;
+import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
+import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
-import org.jzenith.core.Configuration;
-import org.jzenith.core.util.CompletableHandler;
 import org.jzenith.rest.metrics.PrometheusResource;
 
 import java.util.Arrays;
@@ -23,46 +24,55 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class RestPlugin extends AbstractPlugin {
 
-    static final String RESOURCES_KEY = "jzenith.resources";
+    private static final ImmutableList<Module> MODULES = ImmutableList.of(new RestBinder());
 
-    private static final ImmutableList<AbstractModule> MODULES = ImmutableList.of(new RestBinder());
+    private final List<Class<?>> resources;
 
-    private final List<String> resources;
-
-    public RestPlugin(Collection<String> resources) {
-        this.resources = ImmutableList.copyOf(Iterables.concat(resources, ImmutableList.of(PrometheusResource.class.getName())));
+    public RestPlugin(Collection<Class<?>> resources) {
+        this.resources = ImmutableList.copyOf(Iterables.concat(resources, ImmutableList.of(PrometheusResource.class)));
     }
 
     public static RestPlugin withResources(Class<?>... resources) {
         return new RestPlugin(Arrays.asList(resources).stream()
-                .map(Class::getName)
                 .collect(ImmutableList.toImmutableList()));
     }
 
     @Override
-    protected List<AbstractModule> getModules() {
+    protected List<Module> getModules() {
         return MODULES;
     }
 
     @Override
-    protected CompletableFuture<String> start(Vertx vertx, Configuration configuration, DeploymentOptions deploymentOptions) {
+    protected CompletableFuture<String> start(Injector injector) {
         if (log.isDebugEnabled()) {
             log.debug("jZenith Rest is starting and registering the following resources:\n{}", Joiner.on('\n').join(resources));
         }
-        final DeploymentOptions localDeploymentOptions = new DeploymentOptions(deploymentOptions);
-        final JsonObject config = localDeploymentOptions.getConfig();
+        final VertxResteasyDeployment deployment = new VertxResteasyDeployment();
+        final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
+        final VertxRegistry registry = deployment.getRegistry();
+        final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
 
-        if (StringUtils.isNotBlank(configuration.getHost())) {
-            config.put("host", configuration.getHost());
-        }
+        processor.processInjector(injector);
+        deployment.start();
 
-        config.put("port", configuration.getPort());
-        config.put("components", new JsonArray().add("org.glassfish.jersey.jackson.JacksonFeature"));
-        config.put(RESOURCES_KEY, new JsonArray(resources));
+        resources.forEach(registry::addPerInstanceResource);
 
-        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
-        vertx.deployVerticle("java-guice:com.englishtown.vertx.jersey.JerseyVerticle", new DeploymentOptions(localDeploymentOptions), completableHandler.handler());
+        final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
-        return completableHandler;
+        final Vertx vertx = injector.getInstance(Vertx.class);
+
+        vertx.createHttpServer()
+                .requestHandler(new VertxRequestHandler(vertx, deployment))
+                .listen(8080, ar -> {
+                    if (ar.succeeded()) {
+                        log.info("jZenith Server started on port " + ar.result().actualPort());
+                        completableFuture.complete("Done");
+                    } else {
+                        completableFuture.completeExceptionally(ar.cause());
+                    }
+                });
+
+
+        return completableFuture;
     }
 }

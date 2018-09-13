@@ -3,7 +3,6 @@ package org.jzenith.example.helloworld.resources;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
-import org.glassfish.jersey.server.ContainerRequest;
 import org.jzenith.example.helloworld.service.HelloWorldService;
 
 import javax.ws.rs.GET;
@@ -15,11 +14,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 @Path("/")
-public class ExampleResource {
+public class HelloWorldResource {
 
     private final HelloWorldService service;
 
-    public ExampleResource(@Context HelloWorldService service) {
+    public HelloWorldResource(@Context HelloWorldService service) {
         this.service = service;
     }
 
@@ -27,7 +26,6 @@ public class ExampleResource {
     @Produces(MediaType.APPLICATION_JSON)
     public void getQuery(
             @Suspended final AsyncResponse response,
-            @Context ContainerRequest jerseyRequest,
             @Context HttpServerRequest vertxRequest,
             @Context Vertx vertx) {
 
