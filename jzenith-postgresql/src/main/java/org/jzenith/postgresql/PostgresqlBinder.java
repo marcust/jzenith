@@ -30,6 +30,7 @@ public class PostgresqlBinder extends AbstractModule {
         final PgPool client = PgClient.pool(options);
 
         bind(PgPool.class).toInstance(client);
+        bind(PostgresqlConfiguration.class).toInstance(configuration);
     }
 
 

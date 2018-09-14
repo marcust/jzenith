@@ -48,7 +48,7 @@ public class JZenith {
     }
 
     public static JZenith application(@NonNull String... args) {
-        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.error("Uncaught exception", throwable));
+        //Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.error("Uncaught exception", throwable));
         return new JZenith(Configuration.builder().commandLineArguments(Arrays.asList(args)));
     }
 

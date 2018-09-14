@@ -48,12 +48,12 @@ public class RestPlugin extends AbstractPlugin {
             log.debug("jZenith Rest is starting and registering the following resources:\n{}", Joiner.on('\n').join(resources));
         }
         final VertxResteasyDeployment deployment = new VertxResteasyDeployment();
+        deployment.start();
         final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
         final VertxRegistry registry = deployment.getRegistry();
         final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
 
         processor.processInjector(injector);
-        deployment.start();
 
         resources.forEach(registry::addPerInstanceResource);
 

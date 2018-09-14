@@ -17,6 +17,7 @@ public class ExampleApp {
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class),
                         PostgresqlPlugin.create()
+                                .database("test")
                                 .username("test")
                                 .password("test")
                 )
