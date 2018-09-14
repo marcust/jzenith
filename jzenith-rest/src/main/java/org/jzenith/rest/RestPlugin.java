@@ -10,8 +10,10 @@ import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.resteasy.plugins.guice.GuiceResourceFactory;
 import org.jboss.resteasy.plugins.guice.ModuleProcessor;
+import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxRegistry;
 import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
+import org.jboss.resteasy.plugins.server.vertx.VertxResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
@@ -56,10 +58,11 @@ public class RestPlugin extends AbstractPlugin {
         providerFactory.getServerDynamicFeatures().add(new MetricsFeature());
 
         final VertxRegistry registry = deployment.getRegistry();
-        final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
 
+        resources.forEach(resourceClass ->
+            registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
 
-        processor.processInjector(injector);
+        //processor.processInjector(injector);
 
         final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
