@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import org.jzenith.example.helloworld.service.HelloWorldService;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,7 +19,8 @@ public class HelloWorldResource {
 
     private final HelloWorldService service;
 
-    public HelloWorldResource(@Context HelloWorldService service) {
+    @Inject
+    public HelloWorldResource(HelloWorldService service) {
         this.service = service;
     }
 
@@ -32,7 +34,11 @@ public class HelloWorldResource {
         vertx.runOnContext(new Handler<Void>() {
             @Override
             public void handle(Void aVoid) {
-                response.resume(service.getResponse());
+                try {
+                    response.resume(service.getResponse());
+                } catch (final Exception e) {
+                    response.resume(e);
+                }
             }
         });
     }

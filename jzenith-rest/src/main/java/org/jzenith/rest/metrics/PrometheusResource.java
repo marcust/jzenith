@@ -7,6 +7,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import org.apache.commons.io.output.StringBuilderWriter;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -25,8 +26,9 @@ public class PrometheusResource {
     private final HttpServerRequest httpServerRequest;
     private final Vertx vertx;
 
-    public PrometheusResource(@Context final HttpServerRequest httpServerRequest,
-                              @Context final Vertx vertx) {
+    @Inject
+    public PrometheusResource(final HttpServerRequest httpServerRequest,
+                              final Vertx vertx) {
         this.registry = CollectorRegistry.defaultRegistry;
 
         this.httpServerRequest = httpServerRequest;

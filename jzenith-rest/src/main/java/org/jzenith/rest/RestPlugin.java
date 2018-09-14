@@ -8,12 +8,14 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
+import org.jboss.resteasy.plugins.guice.GuiceResourceFactory;
 import org.jboss.resteasy.plugins.guice.ModuleProcessor;
 import org.jboss.resteasy.plugins.server.vertx.VertxRegistry;
 import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
+import org.jzenith.rest.metrics.MetricsFeature;
 import org.jzenith.rest.metrics.PrometheusResource;
 
 import java.util.Arrays;
@@ -39,7 +41,7 @@ public class RestPlugin extends AbstractPlugin {
 
     @Override
     protected List<Module> getModules() {
-        return MODULES;
+        return ImmutableList.copyOf(Iterables.concat(MODULES, ImmutableList.of(new ResourceModule(resources))));
     }
 
     @Override
@@ -50,19 +52,21 @@ public class RestPlugin extends AbstractPlugin {
         final VertxResteasyDeployment deployment = new VertxResteasyDeployment();
         deployment.start();
         final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
+
+        providerFactory.getServerDynamicFeatures().add(new MetricsFeature());
+
         final VertxRegistry registry = deployment.getRegistry();
         final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
 
-        processor.processInjector(injector);
 
-        resources.forEach(registry::addPerInstanceResource);
+        processor.processInjector(injector);
 
         final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
         final Vertx vertx = injector.getInstance(Vertx.class);
 
         vertx.createHttpServer()
-                .requestHandler(new VertxRequestHandler(vertx, deployment))
+                .requestHandler(new GuiceVertxRequestHandler(vertx, deployment))
                 .listen(8080, ar -> {
                     if (ar.succeeded()) {
                         log.info("jZenith Server started on port " + ar.result().actualPort());
