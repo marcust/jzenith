@@ -26,19 +26,16 @@ public class HelloWorldResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public void getQuery(
+    public void getHelloWorld(
             @Suspended final AsyncResponse response,
             @Context HttpServerRequest vertxRequest,
             @Context Vertx vertx) {
 
-        vertx.runOnContext(new Handler<Void>() {
-            @Override
-            public void handle(Void aVoid) {
-                try {
-                    response.resume(service.getResponse());
-                } catch (final Exception e) {
-                    response.resume(e);
-                }
+        vertx.runOnContext(aVoid -> {
+            try {
+                response.resume(service.getResponse());
+            } catch (final Exception e) {
+                response.resume(e);
             }
         });
     }

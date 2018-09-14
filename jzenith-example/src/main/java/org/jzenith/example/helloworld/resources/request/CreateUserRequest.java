@@ -1,15 +1,13 @@
 package org.jzenith.example.helloworld.resources.request;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 @Data
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class CreateUserRequest {
 
     @NonNull
-    private final String name;
+    private String name;
 
 }

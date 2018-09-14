@@ -4,6 +4,7 @@ import org.jzenith.core.JZenith;
 import org.jzenith.example.helloworld.mapper.MapperModule;
 import org.jzenith.example.helloworld.persistence.PersistenceLayerModule;
 import org.jzenith.example.helloworld.resources.HelloWorldResource;
+import org.jzenith.example.helloworld.resources.UserResource;
 import org.jzenith.example.helloworld.service.ServiceLayerModule;
 import org.jzenith.rest.RestPlugin;
 import org.jzenith.postgresql.PostgresqlPlugin;
@@ -15,7 +16,7 @@ public class ExampleApp {
     public static void main(String[] args) {
         JZenith.application(args)
                 .withPlugins(
-                        RestPlugin.withResources(HelloWorldResource.class),
+                        RestPlugin.withResources(HelloWorldResource.class, UserResource.class),
                         PostgresqlPlugin.create()
                                 .database("test")
                                 .username("test")
