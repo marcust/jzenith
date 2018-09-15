@@ -23,7 +23,11 @@ public class PostgresqlBinder extends AbstractModule {
 
         bind(PostgresqlClient.class).in(Singleton.class);
         bind(PostgresqlConfiguration.class).toInstance(configuration);
-        bind(DSLContext.class).toInstance(DSL.using(SQLDialect.POSTGRES_10));
+        final DSLContext context = DSL.using(SQLDialect.POSTGRES_10);
+
+        // Initialize Jooq on startup, because that takes a while
+        context.select().from("1").getSQL();
+        bind(DSLContext.class).toInstance(context);
     }
 
     private void configurePgPool() {
