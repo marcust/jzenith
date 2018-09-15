@@ -5,6 +5,7 @@ import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jzenith.core.CoreConfiguration;
+import org.jzenith.core.util.EnvironmentVariableExpander;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -69,12 +70,21 @@ public class ConfigurationProvider<T> implements Provider<T> {
                     () -> logValue(propertyConfiguration(configurationBaseNameUpper.toLowerCase(), configurationPropertyName), configurationPropertyName, configurationPropertyName, "property file"),
                     () -> logValue(defaultConfiguration(method), configurationPropertyName, method.getName(), "default annotation"));
 
+            final String expandedValue;
+            if (value.startsWith("$")) {
+                expandedValue = EnvironmentVariableExpander.expand(value);
+            } else if (value.startsWith("\\")) {
+                expandedValue = value.substring(1);
+            } else {
+                expandedValue = value;
+            }
+
             final Class<?> returnType = method.getReturnType();
             if (returnType == int.class) {
-                return Integer.parseInt(value);
+                return Integer.parseInt(expandedValue);
             }
             if (returnType == String.class) {
-                return value;
+                return expandedValue;
             }
 
             throw new NotImplementedException("No support for configuration of type " + returnType.getName());
