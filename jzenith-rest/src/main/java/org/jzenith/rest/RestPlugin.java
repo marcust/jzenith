@@ -14,7 +14,6 @@ import org.jboss.resteasy.plugins.server.vertx.VertxResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
-import org.jzenith.core.Configuration;
 import org.jzenith.rest.metrics.MetricsFeature;
 import org.jzenith.rest.metrics.PrometheusResource;
 
@@ -63,11 +62,11 @@ public class RestPlugin extends AbstractPlugin {
         final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
         final Vertx vertx = injector.getInstance(Vertx.class);
-        final Configuration configuration = injector.getInstance(Configuration.class);
+        final RestConfiguration restConfiguration = injector.getInstance(RestConfiguration.class);
 
         vertx.createHttpServer()
                 .requestHandler(new GuiceVertxRequestHandler(vertx, deployment))
-                .listen(configuration.getPort(), configuration.getHost(), ar -> {
+                .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
                     if (ar.succeeded()) {
                         final HttpServer server = ar.result();
                         log.info("jZenith Server started on port " + server.actualPort());

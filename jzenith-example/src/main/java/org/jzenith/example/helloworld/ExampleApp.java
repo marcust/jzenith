@@ -18,12 +18,11 @@ public class ExampleApp {
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class),
                         PostgresqlPlugin.create()
-                                .database("test")
-                                .username("test")
-                                .password("test")
                 )
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
-                .bind(8080)
+                .withConfiguration("postgresql.database", "test")
+                .withConfiguration("postgresql.username", "test")
+                .withConfiguration("postgresql.password", "test")
                 .run();
     }
 }

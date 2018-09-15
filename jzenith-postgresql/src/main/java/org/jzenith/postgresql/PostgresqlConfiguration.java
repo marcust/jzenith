@@ -1,31 +1,25 @@
 package org.jzenith.postgresql;
 
 import io.reactiverse.pgclient.PgConnectOptions;
-import io.reactiverse.pgclient.PgPoolOptions;
-import lombok.Builder;
-import lombok.Getter;
+import org.jzenith.core.configuration.ConfigDefault;
 
-@Builder
-@Getter
-public class PostgresqlConfiguration {
+public interface PostgresqlConfiguration {
 
-    @Builder.Default
-    private int port = PgConnectOptions.DEFAULT_PORT;
+    @ConfigDefault("5432")
+    int getPort();
 
-    @Builder.Default
-    private String host = PgConnectOptions.DEFAULT_HOST;
+    @ConfigDefault(PgConnectOptions.DEFAULT_HOST)
+    String getHost();
 
-    @Builder.Default
-    private String database = PgConnectOptions.DEFAULT_DATABASE;
+    @ConfigDefault(PgConnectOptions.DEFAULT_DATABASE)
+    String getDatabase();
 
-    @Builder.Default
-    private String username = PgConnectOptions.DEFAULT_USER;
+    @ConfigDefault(PgConnectOptions.DEFAULT_USER)
+    String getUsername();
 
-    @Builder.Default
-    private String password = PgConnectOptions.DEFAULT_PASSWORD;
+    @ConfigDefault(PgConnectOptions.DEFAULT_PASSWORD)
+    String getPassword();
 
-    @Builder.Default
-    private int poolSize = PgPoolOptions.DEFAULT_MAX_POOL_SIZE;
-
-
+    @ConfigDefault("4")
+    int getPoolSize();
 }

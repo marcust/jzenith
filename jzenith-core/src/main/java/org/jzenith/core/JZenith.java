@@ -5,26 +5,27 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import io.reactivex.internal.operators.completable.CompletableOnErrorComplete;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
 import lombok.NonNull;
 import one.util.streamex.StreamEx;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
 import org.apache.logging.log4j.core.util.Constants;
+import org.jzenith.core.configuration.ExtraConfiguration;
 import org.jzenith.core.metrics.JZenithDefaultExports;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class JZenith {
@@ -40,16 +41,17 @@ public class JZenith {
 
     private final LinkedList<AbstractPlugin> plugins = Lists.newLinkedList();
     private final LinkedList<Module> modules = Lists.newLinkedList();
+    private final Map<String, String> extraConfiguration = Maps.newHashMap();
 
-    private final Configuration.ConfigurationBuilder configurationBuilder;
+    private final CoreConfiguration configuration;
 
-    public JZenith(Configuration.ConfigurationBuilder configurationBuilder) {
-        this.configurationBuilder = configurationBuilder;
+    private JZenith(CoreConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     public static JZenith application(@NonNull String... args) {
         //Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.error("Uncaught exception", throwable));
-        return new JZenith(Configuration.builder().commandLineArguments(Arrays.asList(args)));
+        return new JZenith(() -> Arrays.asList(args));
     }
 
     public JZenith withPlugins(@NonNull AbstractPlugin... modules) {
@@ -60,28 +62,13 @@ public class JZenith {
         return this;
     }
 
-    public JZenith bind(int port) {
-        configurationBuilder.port(port);
-
-        return this;
-    }
-
-    public Configuration.ConfigurationBuilder configuration() {
-        return configurationBuilder;
-    }
-
     public void run() {
-        run(new JsonObject());
-    }
-
-    public void run(@NonNull final JsonObject vertxOptionsJson) {
         final Stopwatch stopwatch = Stopwatch.createStarted();
         if (log.isDebugEnabled()) {
-            log.debug("jZenith starting up\nOptions: {}", vertxOptionsJson.encode());
+            log.debug("jZenith starting up");
         }
-        final VertxOptions vertxOptions = new VertxOptions(vertxOptionsJson);
 
-        final Vertx vertx = Vertx.vertx(vertxOptions);
+        final Vertx vertx = Vertx.vertx();
         final Injector injector = createInjector(vertx);
         StreamEx.of(vertx.verticleFactories())
                 .select(GuiceVerticleFactory.class)
@@ -105,11 +92,14 @@ public class JZenith {
     }
 
     private Injector createInjector(Vertx vertx) {
+        final Map<String,String> extraConfigurationCopy = ImmutableMap.copyOf(this.extraConfiguration);
+
         final List<Module> allModules = ImmutableList.<Module>builder()
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
-                        bind(Configuration.class).toInstance(configurationBuilder.build());
+                        bind(CoreConfiguration.class).toInstance(configuration);
+                        bind(ExtraConfiguration.class).toInstance(key -> extraConfigurationCopy.get(key));
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
                     }
@@ -124,6 +114,12 @@ public class JZenith {
     @SafeVarargs
     public final JZenith withModules(AbstractModule... modules) {
         this.modules.addAll(Arrays.asList(modules));
+
+        return this;
+    }
+
+    public JZenith withConfiguration(String name, String value) {
+        this.extraConfiguration.put(name, value);
 
         return this;
     }
