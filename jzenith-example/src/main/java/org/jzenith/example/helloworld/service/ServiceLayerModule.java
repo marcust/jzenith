@@ -9,8 +9,8 @@ public class ServiceLayerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(HelloWorldService.class).to(HelloWorldServiceImpl.class).in(Singleton.class);
-        bind(UserService.class).to(UserServiceImpl.class).in(Singleton.class);
+        bind(HelloWorldService.class).to(HelloWorldServiceImpl.class).asEagerSingleton();
+        bind(UserService.class).to(UserServiceImpl.class).asEagerSingleton();
     }
 }
 

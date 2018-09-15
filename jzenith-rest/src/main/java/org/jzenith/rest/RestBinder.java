@@ -16,9 +16,7 @@ public class RestBinder extends AbstractModule {
         install(new RequestScopeModule());
 
         bind(HttpServerRequest.class).toProvider(new ResteasyContextProvider(HttpServerRequest.class)).in(RequestScoped.class);
-
     }
-
 
     private static class ResteasyContextProvider<T> implements Provider<T> {
 

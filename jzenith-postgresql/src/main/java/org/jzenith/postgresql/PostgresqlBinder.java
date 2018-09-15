@@ -1,6 +1,7 @@
 package org.jzenith.postgresql;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import io.reactiverse.pgclient.PgPoolOptions;
 import io.reactiverse.reactivex.pgclient.PgClient;
 import io.reactiverse.reactivex.pgclient.PgPool;
@@ -16,6 +17,9 @@ public class PostgresqlBinder extends AbstractModule {
     @Override
     protected void configure() {
         configurePgPool();
+
+        bind(PostgresqlClient.class).in(Singleton.class);
+        bind(PostgresqlConfiguration.class).toInstance(configuration);
     }
 
     private void configurePgPool() {
@@ -30,7 +34,6 @@ public class PostgresqlBinder extends AbstractModule {
         final PgPool client = PgClient.pool(options);
 
         bind(PgPool.class).toInstance(client);
-        bind(PostgresqlConfiguration.class).toInstance(configuration);
     }
 
 

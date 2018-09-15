@@ -99,8 +99,9 @@ public class JZenith {
             CompletableFuture.allOf(deploymentResults)
                     .get();
         } catch (Exception e) {
-           Throwables.throwIfUnchecked(e);
-           throw new RuntimeException(e);
+            vertx.close();
+            Throwables.throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
 
         log.debug("jZenith startup complete");
