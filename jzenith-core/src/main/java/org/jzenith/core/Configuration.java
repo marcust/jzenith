@@ -13,8 +13,10 @@ public class Configuration {
     @NonNull
     private final List<String> commandLineArguments;
 
-    private final int port;
+    @Builder.Default
+    private final int port = 8080;
 
-    private final String host;
+    @Builder.Default
+    private final String host = "localhost";
 
 }

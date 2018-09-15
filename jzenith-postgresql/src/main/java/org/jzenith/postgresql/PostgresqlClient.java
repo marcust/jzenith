@@ -2,11 +2,11 @@ package org.jzenith.postgresql;
 
 import com.google.common.collect.Iterables;
 import io.reactiverse.pgclient.impl.ArrayTuple;
-import io.reactiverse.reactivex.pgclient.PgPool;
-import io.reactiverse.reactivex.pgclient.PgRowSet;
-import io.reactiverse.reactivex.pgclient.Tuple;
+import io.reactiverse.reactivex.pgclient.*;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import org.jooq.Query;
+import org.jooq.Select;
 import org.postgresql.core.NativeQuery;
 import org.postgresql.core.Parser;
 
@@ -32,10 +32,21 @@ public class PostgresqlClient {
         } catch (SQLException e) {
             return Single.error(e);
         }
-
     }
 
+    public Maybe<Row> executeForSingleRow(Query query) {
+        return execute(query)
+                .flatMapMaybe(pgRowSet -> {
+                    if (pgRowSet.size() > 1) {
+                        return Maybe.error(new RuntimeException("Expected one result for query '" + query.getSQL() + "' but got " + pgRowSet.size()));
+                    }
 
-
-
+                    final PgIterator iterator = pgRowSet.iterator();
+                    if (iterator.hasNext()) {
+                        return Maybe.just(iterator.next());
+                    } else {
+                        return Maybe.empty();
+                    }
+                });
+    }
 }

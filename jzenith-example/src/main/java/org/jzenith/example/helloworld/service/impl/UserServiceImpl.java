@@ -1,5 +1,6 @@
 package org.jzenith.example.helloworld.service.impl;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import org.jzenith.example.helloworld.persistence.UserDao;
 import org.jzenith.example.helloworld.service.UserService;
@@ -20,5 +21,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Single<User> createUser(String name) {
         return userDao.save(new User(UUID.randomUUID(), name));
+    }
+
+    @Override
+    public Maybe<User> getById(UUID id) {
+        return userDao.getById(id);
     }
 }

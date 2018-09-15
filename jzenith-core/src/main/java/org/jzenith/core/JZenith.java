@@ -2,6 +2,7 @@ package org.jzenith.core;
 
 import com.englishtown.vertx.guice.GuiceVerticleFactory;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -9,10 +10,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import io.vertx.core.DeploymentOptions;
+import io.reactivex.internal.operators.completable.CompletableOnErrorComplete;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
@@ -75,6 +75,7 @@ public class JZenith {
     }
 
     public void run(@NonNull final JsonObject vertxOptionsJson) {
+        final Stopwatch stopwatch = Stopwatch.createStarted();
         if (log.isDebugEnabled()) {
             log.debug("jZenith starting up\nOptions: {}", vertxOptionsJson.encode());
         }
@@ -86,10 +87,6 @@ public class JZenith {
                 .select(GuiceVerticleFactory.class)
                 .findFirst()
                 .ifPresent(guiceVerticleFactory -> guiceVerticleFactory.setInjector(injector));
-
-        final DeploymentOptions deploymentOptions = new DeploymentOptions();
-        deploymentOptions.setConfig(new JsonObject());
-        deploymentOptions.getConfig().put("guice_binder", new JsonArray());
 
         final CompletableFuture[] deploymentResults = plugins.stream()
                 .map(plugin -> plugin.start(injector))
@@ -104,7 +101,7 @@ public class JZenith {
             throw new RuntimeException(e);
         }
 
-        log.debug("jZenith startup complete");
+        log.debug("jZenith startup complete after " + stopwatch);
     }
 
     private Injector createInjector(Vertx vertx) {
@@ -112,6 +109,7 @@ public class JZenith {
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
+                        bind(Configuration.class).toInstance(configurationBuilder.build());
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
                     }

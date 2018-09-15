@@ -1,38 +1,30 @@
 package org.jzenith.example.helloworld.persistence.impl;
 
-import io.reactiverse.pgclient.impl.ArrayTuple;
-import io.reactiverse.reactivex.pgclient.PgPool;
-import io.reactiverse.reactivex.pgclient.Tuple;
+import io.reactiverse.reactivex.pgclient.Row;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import lombok.NonNull;
-import org.jooq.*;
-import org.jooq.conf.ParamType;
-import org.jooq.impl.DSL;
+import org.jooq.DSLContext;
+import org.jooq.Insert;
+import org.jooq.Select;
 import org.jzenith.example.helloworld.persistence.UserDao;
 import org.jzenith.example.helloworld.service.model.User;
 import org.jzenith.postgresql.PostgresqlClient;
 
 import javax.inject.Inject;
-
 import java.util.UUID;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.name;
-import static org.jooq.impl.DSL.table;
-import static org.jzenith.example.helloworld.persistence.impl.Users.ID_FIELD;
-import static org.jzenith.example.helloworld.persistence.impl.Users.NAME_FIELD;
-import static org.jzenith.example.helloworld.persistence.impl.Users.USERS_TABLE;
+import static org.jzenith.example.helloworld.persistence.impl.Users.*;
 
 public class UserDaoImpl implements UserDao {
-
 
     private final PostgresqlClient client;
     private final DSLContext dslContext;
 
     @Inject
-    public UserDaoImpl(PostgresqlClient client) {
+    public UserDaoImpl(PostgresqlClient client, DSLContext dslContext) {
         this.client = client;
-        this.dslContext = DSL.using(SQLDialect.POSTGRES_10);
+        this.dslContext = dslContext;
     }
 
     @Override
@@ -44,5 +36,20 @@ public class UserDaoImpl implements UserDao {
 
         return client.execute(insert)
                 .map(result -> user);
+    }
+
+    @Override
+    public Maybe<User> getById(UUID id) {
+        final Select<?> select = dslContext.select(ID_FIELD, NAME_FIELD)
+                .from(USERS_TABLE)
+                .where(ID_FIELD.eq(id));
+
+        return client.executeForSingleRow(select)
+                .map(this::toUser);
+    }
+
+    private User toUser(Row row) {
+        return new User((UUID) row.getValue(ID_FIELD.getName()),
+                row.getString(NAME_FIELD.getName()));
     }
 }

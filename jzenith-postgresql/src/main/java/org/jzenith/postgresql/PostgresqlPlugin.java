@@ -8,9 +8,12 @@ import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 import org.jzenith.core.AbstractPlugin;
 import org.jzenith.core.util.CompletableHandler;
+import org.jzenith.core.util.VerticleDeploymentUtil;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import static org.jzenith.core.util.VerticleDeploymentUtil.forGuiceVerticleLoader;
 
 @Slf4j
 public class PostgresqlPlugin extends AbstractPlugin {
@@ -75,7 +78,7 @@ public class PostgresqlPlugin extends AbstractPlugin {
         final Vertx vertx = injector.getInstance(Vertx.class);
 
         final CompletableHandler<String> completableHandler = new CompletableHandler<>();
-        vertx.deployVerticle("java-guice:" + MigrationVerticle.class.getName(), new DeploymentOptions(), completableHandler.handler());
+        vertx.deployVerticle("java-guice:" + MigrationVerticle.class.getName(), forGuiceVerticleLoader(), completableHandler.handler());
 
         return completableHandler;
     }

@@ -3,20 +3,18 @@ package org.jzenith.rest;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.resteasy.plugins.guice.GuiceResourceFactory;
-import org.jboss.resteasy.plugins.guice.ModuleProcessor;
-import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxRegistry;
-import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
 import org.jboss.resteasy.plugins.server.vertx.VertxResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
+import org.jzenith.core.Configuration;
 import org.jzenith.rest.metrics.MetricsFeature;
 import org.jzenith.rest.metrics.PrometheusResource;
 
@@ -62,17 +60,17 @@ public class RestPlugin extends AbstractPlugin {
         resources.forEach(resourceClass ->
             registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
 
-        //processor.processInjector(injector);
-
         final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
         final Vertx vertx = injector.getInstance(Vertx.class);
+        final Configuration configuration = injector.getInstance(Configuration.class);
 
         vertx.createHttpServer()
                 .requestHandler(new GuiceVertxRequestHandler(vertx, deployment))
-                .listen(8080, ar -> {
+                .listen(configuration.getPort(), configuration.getHost(), ar -> {
                     if (ar.succeeded()) {
-                        log.info("jZenith Server started on port " + ar.result().actualPort());
+                        final HttpServer server = ar.result();
+                        log.info("jZenith Server started on port " + server.actualPort());
                         completableFuture.complete("Done");
                     } else {
                         completableFuture.completeExceptionally(ar.cause());

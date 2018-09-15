@@ -5,6 +5,9 @@ import com.google.inject.Singleton;
 import io.reactiverse.pgclient.PgPoolOptions;
 import io.reactiverse.reactivex.pgclient.PgClient;
 import io.reactiverse.reactivex.pgclient.PgPool;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 public class PostgresqlBinder extends AbstractModule {
 
@@ -20,6 +23,7 @@ public class PostgresqlBinder extends AbstractModule {
 
         bind(PostgresqlClient.class).in(Singleton.class);
         bind(PostgresqlConfiguration.class).toInstance(configuration);
+        bind(DSLContext.class).toInstance(DSL.using(SQLDialect.POSTGRES_10));
     }
 
     private void configurePgPool() {
