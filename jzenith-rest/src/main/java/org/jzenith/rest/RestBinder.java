@@ -1,5 +1,7 @@
 package org.jzenith.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -19,6 +21,7 @@ public class RestBinder extends AbstractModule {
 
         bind(HttpServerRequest.class).toProvider(new ResteasyContextProvider(HttpServerRequest.class)).in(RequestScoped.class);
         bind(RestConfiguration.class).toProvider(new ConfigurationProvider<>(RestConfiguration.class)).in(Singleton.class);
+
     }
 
     private static class ResteasyContextProvider<T> implements Provider<T> {

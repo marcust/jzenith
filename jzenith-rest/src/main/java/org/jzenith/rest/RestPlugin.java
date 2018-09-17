@@ -68,12 +68,15 @@ public class RestPlugin extends AbstractPlugin {
         final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
 
         providerFactory.getServerDynamicFeatures().add(new MetricsFeature());
+
         exceptionMappings.forEach((clz, exceptionMapping) -> providerFactory.getExceptionMappers().put(clz, exceptionMapping.toExceptionHandler()));
 
         final VertxRegistry registry = deployment.getRegistry();
 
         resources.forEach(resourceClass ->
             registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
+
+        providerFactory.registerProviderInstance(new JacksonConfig());
 
         final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 

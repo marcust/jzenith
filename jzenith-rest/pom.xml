@@ -94,13 +94,6 @@
             <version>${prometheus.version}</version>
         </dependency>
 
-        <!-- Health Checks -->
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-healthchecks</artifactId>
-            <version>${vertx.version}</version>
-        </dependency>
-
         <!-- Swagger -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>

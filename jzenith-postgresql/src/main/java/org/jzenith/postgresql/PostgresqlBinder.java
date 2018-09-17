@@ -36,7 +36,7 @@ class PostgresqlBinder extends AbstractModule {
         bind(DSLContext.class).toInstance(context);
 
         final Multibinder<HealthCheck> healthCheckMultibinder = Multibinder.newSetBinder(binder(), HealthCheck.class);
-        healthCheckMultibinder.addBinding().to(PostgresHealthCheck.class);
+        healthCheckMultibinder.addBinding().to(PostgresqlHealthCheck.class);
     }
 
     private void configurePgPool() {
@@ -57,7 +57,11 @@ class PostgresqlBinder extends AbstractModule {
                     .setDatabase(configuration.getDatabase())
                     .setUser(configuration.getUsername())
                     .setPassword(configuration.getPassword())
-                    .setMaxSize(configuration.getPoolSize());
+                    .setMaxSize(configuration.getPoolSize())
+                    .setConnectTimeout(1000)
+                    .set
+                    .setIdleTimeout(1000 * 60);
+
 
             final PgPool pool = PgClient.pool(options);
 
