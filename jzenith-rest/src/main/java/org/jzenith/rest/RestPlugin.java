@@ -8,7 +8,6 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.impl.HttpServerRequestImpl;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.resteasy.plugins.guice.GuiceResourceFactory;
@@ -19,9 +18,11 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
 import org.jzenith.rest.exception.ConstantMessageExceptionMapping;
 import org.jzenith.rest.exception.ExceptionMapping;
+import org.jzenith.rest.exception.ValidationExceptionMapping;
 import org.jzenith.rest.metrics.MetricsFeature;
 import org.jzenith.rest.metrics.PrometheusResource;
 
+import javax.validation.ValidationException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +41,7 @@ public class RestPlugin extends AbstractPlugin {
         this.resources = ImmutableList.copyOf(Iterables.concat(resources, ImmutableList.of(PrometheusResource.class)));
 
         exceptionMappings.put(Exception.class, new ConstantMessageExceptionMapping(Exception.class, 500, "Unknown error"));
+        exceptionMappings.put(ValidationException.class, new ValidationExceptionMapping());
     }
 
     public static RestPlugin withResources(Class<?>... resources) {

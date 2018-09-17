@@ -11,6 +11,7 @@ import org.jzenith.example.helloworld.service.UserService;
 import org.jzenith.rest.model.Page;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,7 +32,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Single<UserResponse> createUser(@NonNull final CreateUserRequest createUserRequest) {
+    public Single<UserResponse> createUser(@NonNull @Valid final CreateUserRequest createUserRequest) {
         return Single.just(createUserRequest)
                 .flatMap(request -> userService.createUser(request.getName()))
                 .map(userMapper::mapToUserResponse);
@@ -66,7 +67,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}")
-    public Single<UserResponse> updateUser(@NonNull @PathParam("id") final UUID id, final UpdateUserRequest updateUserRequest) {
+    public Single<UserResponse> updateUser(@NonNull @PathParam("id") final UUID id, @Valid() final UpdateUserRequest updateUserRequest) {
         return  userService.updateById(id, updateUserRequest.getName())
                 .map(userMapper::mapToUserResponse);
     }

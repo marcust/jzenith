@@ -12,14 +12,14 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 @Data
 @AllArgsConstructor
-public class ExceptionMapping {
+public class ExceptionMapping<T extends Exception> {
 
     @NonNull
-    private final Class<? extends Exception> exception;
+    private final Class<T> exceptionType;
 
     private final int statusCode;
 
-    public Response toResponse(Throwable exception) {
+    public Response toResponse(T exception) {
         if (exception instanceof WebApplicationException) {
             final WebApplicationException webApplicationException = (WebApplicationException) exception;
 
@@ -29,7 +29,7 @@ public class ExceptionMapping {
         return makeResponse(exception, statusCode);
     }
 
-    private Response makeResponse(Throwable exception, int statusCode) {
+    private Response makeResponse(Exception exception, int statusCode) {
         return Response.status(statusCode)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(new ErrorResponse(statusCode, exception.getMessage()))
@@ -37,6 +37,6 @@ public class ExceptionMapping {
     }
 
     public ExceptionMapper toExceptionHandler() {
-        return exception -> toResponse(exception);
+        return exception -> toResponse(exceptionType.cast(exception));
     }
 }
