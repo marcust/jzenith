@@ -6,6 +6,7 @@ import org.jzenith.example.helloworld.persistence.PersistenceLayerModule;
 import org.jzenith.example.helloworld.resources.HelloWorldResource;
 import org.jzenith.example.helloworld.resources.UserResource;
 import org.jzenith.example.helloworld.service.ServiceLayerModule;
+import org.jzenith.example.helloworld.service.exception.NoSuchUserException;
 import org.jzenith.rest.RestPlugin;
 import org.jzenith.postgresql.PostgresqlPlugin;
 
@@ -16,7 +17,8 @@ public class ExampleApp {
     public static void main(String[] args) {
         JZenith.application(args)
                 .withPlugins(
-                        RestPlugin.withResources(HelloWorldResource.class, UserResource.class),
+                        RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
+                                  .withMapping(NoSuchUserException.class, 404),
                         PostgresqlPlugin.create()
                 )
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())

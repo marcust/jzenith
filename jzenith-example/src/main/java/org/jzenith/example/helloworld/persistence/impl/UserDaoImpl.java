@@ -1,16 +1,13 @@
 package org.jzenith.example.helloworld.persistence.impl;
 
-import com.google.common.collect.ImmutableList;
 import io.reactiverse.reactivex.pgclient.Row;
 import io.reactivex.Maybe;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import lombok.NonNull;
-import org.jooq.DSLContext;
-import org.jooq.Insert;
-import org.jooq.Select;
-import org.jooq.Update;
+import org.jooq.*;
 import org.jzenith.example.helloworld.persistence.UserDao;
+import org.jzenith.example.helloworld.persistence.model.Deleted;
+import org.jzenith.example.helloworld.persistence.model.Updated;
 import org.jzenith.example.helloworld.service.model.User;
 import org.jzenith.postgresql.PostgresqlClient;
 import org.jzenith.rest.model.Page;
@@ -56,17 +53,17 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Maybe<User> updateNameById(@NonNull UUID id, @NonNull String name) {
+    public Maybe<Updated> updateNameById(@NonNull UUID id, @NonNull String name) {
         final Update<?> update = dslContext.update(USERS_TABLE)
                 .set(NAME_FIELD, name)
                 .where(ID_FIELD.eq(id));
 
         return client.executeForSingleRow(update)
-                .map(this::toUser);
+                .map(row -> row.getInteger(0) > 0 ? Updated.YES : Updated.NO);
     }
 
     @Override
-    public Single<Page<User>> listUsers(Integer offset, Integer limit) {
+    public Single<Page<User>> listUsers(@NonNull Integer offset, @NonNull Integer limit) {
         final Select<?> select = dslContext.select(ID_FIELD, NAME_FIELD)
                 .from(USERS_TABLE)
                 .orderBy(NAME_FIELD.asc())
@@ -80,6 +77,15 @@ public class UserDaoImpl implements UserDao {
                 client.executeForSingleRow(count).toSingle(),
                 client.stream(select, offset, limit).toList(),
                 (countRow, valueRows) -> new Page<>(offset, limit, countRow.getLong(0), mapToUsers(valueRows)));
+    }
+
+    @Override
+    public Maybe<Deleted> deleteById(@NonNull UUID id) {
+        final Delete<?> delete = dslContext.deleteFrom(USERS_TABLE)
+                .where(ID_FIELD.eq(id));
+
+        return client.executeForSingleRow(delete)
+                .map(row -> row.getInteger(0) > 0 ? Deleted.YES : Deleted.NO);
     }
 
     private List<User> mapToUsers(List<Row> valueRows) {

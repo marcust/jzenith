@@ -13,6 +13,7 @@ import org.jzenith.rest.model.Page;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.UUID;
 
 @Path("/user")
@@ -50,8 +51,15 @@ public class UserResource {
     @Path("/{id}")
     public Single<UserResponse> getUser(@NonNull @PathParam("id") final UUID id) {
         return  userService.getById(id)
-                .switchIfEmpty(Single.error(new NotFoundException("No user with " + id + " found")))
                 .map(userMapper::mapToUserResponse);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @DELETE
+    @Path("/{id}")
+    public Single<Response> deleteUser(@NonNull @PathParam("id") final UUID id) {
+        return userService.deleteById(id)
+                .andThen(Single.just(Response.ok().build()));
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -60,7 +68,6 @@ public class UserResource {
     @Path("/{id}")
     public Single<UserResponse> updateUser(@NonNull @PathParam("id") final UUID id, final UpdateUserRequest updateUserRequest) {
         return  userService.updateById(id, updateUserRequest.getName())
-                .switchIfEmpty(Single.error(new NotFoundException("No user with " + id + " found")))
                 .map(userMapper::mapToUserResponse);
     }
 

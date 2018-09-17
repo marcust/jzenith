@@ -15,5 +15,4 @@ public abstract class AbstractPlugin {
 
     protected abstract CompletableFuture<String> start(Injector deploymentOptions);
 
-
 }
