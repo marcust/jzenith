@@ -6,6 +6,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import lombok.NonNull;
@@ -16,6 +17,7 @@ import org.jboss.resteasy.plugins.server.vertx.VertxResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
+import org.jzenith.rest.docs.CustomOpenApiResource;
 import org.jzenith.rest.exception.ConstantMessageExceptionMapping;
 import org.jzenith.rest.exception.ExceptionMapping;
 import org.jzenith.rest.exception.ValidationExceptionMapping;
@@ -33,12 +35,13 @@ import java.util.concurrent.CompletableFuture;
 public class RestPlugin extends AbstractPlugin {
 
     private static final ImmutableList<Module> MODULES = ImmutableList.of(new RestBinder());
+    public static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class);
 
     private final List<Class<?>> resources;
     private final Map<Class<? extends Exception>, ExceptionMapping> exceptionMappings = Maps.newHashMap();
 
     public RestPlugin(Collection<Class<?>> resources) {
-        this.resources = ImmutableList.copyOf(Iterables.concat(resources, ImmutableList.of(PrometheusResource.class)));
+        this.resources = ImmutableList.copyOf(Iterables.concat(resources, DEFAULT_RESOURCES));
 
         exceptionMappings.put(Exception.class, new ConstantMessageExceptionMapping(Exception.class, 500, "Unknown error"));
         exceptionMappings.put(ValidationException.class, new ValidationExceptionMapping());

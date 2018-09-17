@@ -20,6 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <resteasy.version>3.6.1.Final</resteasy.version>
+        <swagger.version>2.0.4</swagger.version>
     </properties>
 
     <dependencies>
@@ -85,6 +86,7 @@
             <artifactId>activation</artifactId>
             <version>1.1.1</version>
         </dependency>
+
         <!-- Metrics -->
         <dependency>
             <groupId>io.prometheus</groupId>
@@ -92,6 +94,12 @@
             <version>${prometheus.version}</version>
         </dependency>
 
+        <!-- Swagger -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
 
         <!-- Compile Time tools -->
         <dependency>
