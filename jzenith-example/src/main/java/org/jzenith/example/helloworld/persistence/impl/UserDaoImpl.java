@@ -53,13 +53,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Maybe<Updated> updateNameById(@NonNull UUID id, @NonNull String name) {
+    public Single<Updated> updateNameById(@NonNull UUID id, @NonNull String name) {
         final Update<?> update = dslContext.update(USERS_TABLE)
                 .set(NAME_FIELD, name)
                 .where(ID_FIELD.eq(id));
 
-        return client.executeForSingleRow(update)
-                .map(row -> row.getInteger(0) > 0 ? Updated.YES : Updated.NO);
+        return client.executeForRowCount(update)
+                .map(count -> count > 0 ? Updated.YES : Updated.NO);
     }
 
     @Override
@@ -80,12 +80,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Maybe<Deleted> deleteById(@NonNull UUID id) {
+    public Single<Deleted> deleteById(@NonNull UUID id) {
         final Delete<?> delete = dslContext.deleteFrom(USERS_TABLE)
                 .where(ID_FIELD.eq(id));
 
-        return client.executeForSingleRow(delete)
-                .map(row -> row.getInteger(0) > 0 ? Deleted.YES : Deleted.NO);
+        return client.executeForRowCount(delete)
+                .map(count -> count > 0 ? Deleted.YES : Deleted.NO);
     }
 
     private List<User> mapToUsers(List<Row> valueRows) {

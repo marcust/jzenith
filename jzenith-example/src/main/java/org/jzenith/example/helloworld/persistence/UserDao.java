@@ -1,6 +1,5 @@
 package org.jzenith.example.helloworld.persistence;
 
-import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import org.jzenith.example.helloworld.persistence.model.Deleted;
@@ -16,9 +15,9 @@ public interface UserDao {
 
     Maybe<User> getById(UUID id);
 
-    Maybe<Updated> updateNameById(UUID id, String name);
+    Single<Updated> updateNameById(UUID id, String name);
 
     Single<Page<User>> listUsers(Integer offset, Integer limit);
 
-    Maybe<Deleted> deleteById(UUID id);
+    Single<Deleted> deleteById(UUID id);
 }

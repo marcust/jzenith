@@ -43,6 +43,11 @@ public class PostgresqlClient {
         return Iterables.getOnlyElement(nativeQueries);
     }
 
+    public Single<Integer> executeForRowCount(@NonNull Query query) {
+        return execute(query)
+                .map(PgResult::rowCount);
+    }
+
     public Maybe<Row> executeForSingleRow(@NonNull Query query) {
         return execute(query)
                 .flatMapMaybe(pgRowSet -> {
