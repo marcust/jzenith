@@ -16,6 +16,7 @@ import org.postgresql.core.Parser;
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class PostgresqlClient {
@@ -64,9 +65,12 @@ public class PostgresqlClient {
 
             final List<Object> bindValues = retypeBindValues(query, offset, limit);
 
-            return pgPool.rxGetConnection()
-                    .flatMapObservable(conn -> conn.rxPrepare(nativeQuery.nativeSql)
-                            .flatMapObservable(pgPreparedQuery -> pgPreparedQuery.createStream(limit, new Tuple(new ArrayTuple(bindValues))).toObservable()));
+            // I've no idea how the rxStreams are supposed to work, because they leak connections
+            // when you do it like in the docs ....
+            return pgPool.rxPreparedQuery(nativeQuery.nativeSql, new Tuple(new ArrayTuple(bindValues)))
+                    .flatMapObservable(pgRowSet -> Observable.fromIterable(pgRowSet.getDelegate()))
+                    .map(Row::newInstance);
+
         } catch (SQLException e) {
             return Observable.error(e);
         }
@@ -75,10 +79,9 @@ public class PostgresqlClient {
     /**
      * This is a hack, because jOOQ believes that offsets and limits are integers, whereas postgres and thus reactive-pg-client
      * believes them to be int8 aka Long.
-     *
+     * <p>
      * I actually think reactive-pg-client should upcast that, but as I don't have a minimal test case now and before
      * somebody asks my why I use jOOQ with reactive-pg-client I wait till I publish this and then raise an issue
-     *
      */
     private List<Object> retypeBindValues(@NonNull Query query, @NonNull Integer offset, @NonNull Integer limit) {
         final List<Object> bindValues = new ArrayList<>(query.getBindValues());
@@ -95,7 +98,7 @@ public class PostgresqlClient {
                 final int secondLastElementIndex = lastElementIndex - 1;
                 final Object secondLastBindValue = bindValues.get(secondLastElementIndex);
                 if (offset.equals(secondLastBindValue)) {
-                    bindValues.set(secondLastElementIndex, (long)offset);
+                    bindValues.set(secondLastElementIndex, (long) offset);
                 } else {
                     throw new IllegalThreadStateException("Expecting offset to be second last bind value, but it is " + secondLastBindValue);
                 }

@@ -8,6 +8,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.impl.HttpServerRequestImpl;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.resteasy.plugins.guice.GuiceResourceFactory;
@@ -73,8 +74,9 @@ public class RestPlugin extends AbstractPlugin {
         final Vertx vertx = injector.getInstance(Vertx.class);
         final RestConfiguration restConfiguration = injector.getInstance(RestConfiguration.class);
 
+        final GuiceVertxRequestHandler handler = new GuiceVertxRequestHandler(vertx, deployment);
         vertx.createHttpServer()
-                .requestHandler(new GuiceVertxRequestHandler(vertx, deployment))
+                .requestHandler(handler)
                 .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
                     if (ar.succeeded()) {
                         final HttpServer server = ar.result();
