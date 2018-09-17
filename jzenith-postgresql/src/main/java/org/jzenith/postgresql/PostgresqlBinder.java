@@ -54,7 +54,12 @@ class PostgresqlBinder extends AbstractModule {
                     .setPassword(configuration.getPassword())
                     .setMaxSize(configuration.getPoolSize());
 
-            return PgClient.pool(options);
+            final PgPool pool = PgClient.pool(options);
+
+            // warm up the pool
+            pool.rxQuery("select 1;").subscribe();
+
+            return pool;
         }
     }
 }

@@ -5,8 +5,10 @@ import io.reactivex.Single;
 import lombok.NonNull;
 import org.jzenith.example.helloworld.mapper.UserMapper;
 import org.jzenith.example.helloworld.resources.request.CreateUserRequest;
+import org.jzenith.example.helloworld.resources.request.UpdateUserRequest;
 import org.jzenith.example.helloworld.resources.response.UserResponse;
 import org.jzenith.example.helloworld.service.UserService;
+import org.jzenith.rest.model.Page;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -36,6 +38,15 @@ public class UserResource {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    public Single<Page<UserResponse>> listUsers(@QueryParam("offset") @DefaultValue("0") Integer offset,
+                                                @QueryParam("limit") @DefaultValue("20") Integer limit) {
+        return userService
+                .listUsers(offset, limit)
+                .map(userMapper::mapToPageUserResponse);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
     @Path("/{id}")
     public Single<UserResponse> getUser(@NonNull @PathParam("id") final UUID id) {
         return  userService.getById(id)
@@ -43,6 +54,15 @@ public class UserResource {
                 .map(userMapper::mapToUserResponse);
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}")
+    public Single<UserResponse> updateUser(@NonNull @PathParam("id") final UUID id, final UpdateUserRequest updateUserRequest) {
+        return  userService.updateById(id, updateUserRequest.getName())
+                .switchIfEmpty(Single.error(new NotFoundException("No user with " + id + " found")))
+                .map(userMapper::mapToUserResponse);
+    }
 
 
 }
