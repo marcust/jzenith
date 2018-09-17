@@ -21,6 +21,7 @@ import org.jzenith.rest.docs.CustomOpenApiResource;
 import org.jzenith.rest.exception.ConstantMessageExceptionMapping;
 import org.jzenith.rest.exception.ExceptionMapping;
 import org.jzenith.rest.exception.ValidationExceptionMapping;
+import org.jzenith.rest.health.HealthCheckResource;
 import org.jzenith.rest.metrics.MetricsFeature;
 import org.jzenith.rest.metrics.PrometheusResource;
 
@@ -35,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 public class RestPlugin extends AbstractPlugin {
 
     private static final ImmutableList<Module> MODULES = ImmutableList.of(new RestBinder());
-    public static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class);
+    public static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class, HealthCheckResource.class);
 
     private final List<Class<?>> resources;
     private final Map<Class<? extends Exception>, ExceptionMapping> exceptionMappings = Maps.newHashMap();

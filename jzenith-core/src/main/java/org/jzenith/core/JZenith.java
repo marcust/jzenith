@@ -12,6 +12,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.multibindings.Multibinder;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
@@ -20,6 +21,7 @@ import one.util.streamex.StreamEx;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
 import org.apache.logging.log4j.core.util.Constants;
 import org.jzenith.core.configuration.ExtraConfiguration;
+import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.metrics.JZenithDefaultExports;
 
 import java.util.Arrays;
@@ -102,6 +104,8 @@ public class JZenith {
                         bind(ExtraConfiguration.class).toInstance(key -> extraConfigurationCopy.get(key));
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
+
+                        Multibinder.newSetBinder(binder(), HealthCheck.class);
                     }
                 })
                 .addAll(plugins.stream().flatMap(plugins -> plugins.getModules().stream()).collect(ImmutableList.toImmutableList()))
