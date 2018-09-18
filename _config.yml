@@ -3,6 +3,8 @@ title: jZenith
 theme: jekyll-theme-minimal
 
 title-img: /docs/logo/logo.png
+logo: /docs/logo/logo.png
+
 
 author:
   name: Marcus Thiesen
