@@ -1,6 +1,7 @@
 package org.jzenith.core.health;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import lombok.*;
 
 @Getter
@@ -20,7 +21,7 @@ public class HealthCheckResult {
     }
 
     public static HealthCheckResult create(@NonNull Throwable error, @NonNull String name) {
-        return HealthCheckResult.builder().state(HealthState.DOWN).message(error.getMessage()).healtCheckName(name).build();
+        return HealthCheckResult.builder().state(HealthState.DOWN).message(MoreObjects.firstNonNull(error.getMessage(), error.getClass().getSimpleName())).healtCheckName(name).build();
     }
 
     @JsonIgnore

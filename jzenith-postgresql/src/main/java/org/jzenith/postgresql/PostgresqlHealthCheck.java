@@ -7,7 +7,7 @@ import org.jzenith.core.health.HealthCheckResult;
 
 import javax.inject.Inject;
 
-public class PostgresqlHealthCheck implements HealthCheck {
+public class PostgresqlHealthCheck extends HealthCheck {
 
     private final PgPool pool;
 
@@ -17,9 +17,11 @@ public class PostgresqlHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Single<HealthCheckResult> execute() {
+    public Single<HealthCheckResult> executeInternal() {
         return pool.rxQuery("select 1")
-                .map(pgRowSet -> HealthCheckResult.create(pgRowSet.size() > 0, PostgresqlHealthCheck.class.getSimpleName()))
-                .onErrorResumeNext(error -> Single.just(HealthCheckResult.create(error, PostgresqlHealthCheck.class.getSimpleName())));
+                .map(pgRowSet -> createResult(pgRowSet.size() > 0))
+                .onErrorResumeNext(error -> Single.just(createResult(error)));
     }
+
+
 }

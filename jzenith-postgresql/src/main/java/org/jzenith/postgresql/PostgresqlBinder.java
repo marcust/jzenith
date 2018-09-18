@@ -59,7 +59,6 @@ class PostgresqlBinder extends AbstractModule {
                     .setPassword(configuration.getPassword())
                     .setMaxSize(configuration.getPoolSize())
                     .setConnectTimeout(1000)
-                    .set
                     .setIdleTimeout(1000 * 60);
 
 
