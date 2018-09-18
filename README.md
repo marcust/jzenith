@@ -33,7 +33,7 @@ different [Plugins](docs/PLUGINS.md).
 
 ## Getting started
 
-*No Maven artefacts yet*
+*No Maven artifacts yet*
 
 Clone the repository, run `mvn clean install`. jZenith currently
 expects Java 10 and a fairly current maven. 
@@ -47,7 +47,7 @@ JZenith.application(args)
        )
        .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
        .withConfiguration("postgresql.database", "test")
-	   .run();
+       .run();
 ```
 
 Modules are simply Guice Modules, as jZenith uses Guice for dependency
