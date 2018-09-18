@@ -27,7 +27,7 @@ class PostgresqlBinder extends AbstractModule {
 
         bind(PostgresqlClient.class).in(Singleton.class);
 
-        bind(PostgresqlConfiguration.class).toProvider(new ConfigurationProvider(PostgresqlConfiguration.class));
+        bind(PostgresqlConfiguration.class).toProvider(new ConfigurationProvider<>(PostgresqlConfiguration.class));
         final DSLContext context = DSL.using(SQLDialect.POSTGRES_10);
 
         // Initialize Jooq on startup, because that takes a while
@@ -58,9 +58,7 @@ class PostgresqlBinder extends AbstractModule {
                     .setUser(configuration.getUsername())
                     .setPassword(configuration.getPassword())
                     .setMaxSize(configuration.getPoolSize())
-                    .setConnectTimeout(1000)
-                    .setIdleTimeout(1000 * 60);
-
+                    .setConnectTimeout(1000);
 
             final PgPool pool = PgClient.pool(options);
 

@@ -39,12 +39,12 @@ public class RestPlugin extends AbstractPlugin {
     public static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class, HealthCheckResource.class);
 
     private final List<Class<?>> resources;
-    private final Map<Class<? extends Exception>, ExceptionMapping> exceptionMappings = Maps.newHashMap();
+    private final Map<Class<? extends Exception>, ExceptionMapping<?>> exceptionMappings = Maps.newHashMap();
 
     public RestPlugin(Collection<Class<?>> resources) {
         this.resources = ImmutableList.copyOf(Iterables.concat(resources, DEFAULT_RESOURCES));
 
-        exceptionMappings.put(Exception.class, new ConstantMessageExceptionMapping(Exception.class, 500, "Unknown error"));
+        exceptionMappings.put(Exception.class, new ConstantMessageExceptionMapping<>(Exception.class, 500, "Unknown error"));
         exceptionMappings.put(ValidationException.class, new ValidationExceptionMapping());
     }
 
@@ -101,13 +101,13 @@ public class RestPlugin extends AbstractPlugin {
     }
 
     public RestPlugin withMapping(@NonNull Class<? extends Exception> exception, int statusCode) {
-        exceptionMappings.put(exception, new ExceptionMapping(exception, statusCode));
+        exceptionMappings.put(exception, new ExceptionMapping<>(exception, statusCode));
 
         return this;
     }
 
     public RestPlugin withMapping(@NonNull Class<? extends Exception> exception, int statusCode, @NonNull String message) {
-        exceptionMappings.put(exception, new ConstantMessageExceptionMapping(exception, statusCode, message));
+        exceptionMappings.put(exception, new ConstantMessageExceptionMapping<>(exception, statusCode, message));
 
         return this;
     }

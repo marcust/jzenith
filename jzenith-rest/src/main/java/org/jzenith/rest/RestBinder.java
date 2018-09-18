@@ -19,7 +19,7 @@ public class RestBinder extends AbstractModule {
     protected void configure() {
         install(new RequestScopeModule());
 
-        bind(HttpServerRequest.class).toProvider(new ResteasyContextProvider(HttpServerRequest.class)).in(RequestScoped.class);
+        bind(HttpServerRequest.class).toProvider(new ResteasyContextProvider<>(HttpServerRequest.class)).in(RequestScoped.class);
         bind(RestConfiguration.class).toProvider(new ConfigurationProvider<>(RestConfiguration.class)).in(Singleton.class);
 
     }

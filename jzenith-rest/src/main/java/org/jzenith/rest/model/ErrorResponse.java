@@ -1,14 +1,13 @@
 package org.jzenith.rest.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 
 @AllArgsConstructor
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorResponse {
 
-    private final int status;
+    private int status;
 
-    private final @NonNull String message;
+    private @NonNull String message;
 }

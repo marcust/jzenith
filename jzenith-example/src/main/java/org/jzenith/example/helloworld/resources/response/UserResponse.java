@@ -1,13 +1,12 @@
 package org.jzenith.example.helloworld.resources.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserResponse {
 
     @NonNull

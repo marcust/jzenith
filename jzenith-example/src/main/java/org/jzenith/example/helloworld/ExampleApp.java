@@ -1,5 +1,6 @@
 package org.jzenith.example.helloworld;
 
+import com.google.inject.Injector;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.helloworld.mapper.MapperModule;
 import org.jzenith.example.helloworld.persistence.PersistenceLayerModule;
@@ -14,8 +15,13 @@ import org.jzenith.postgresql.PostgresqlPlugin;
  * Example app for simple Rest ExampleApp
  */
 public class ExampleApp {
+
     public static void main(String... args) {
-        JZenith.application(args)
+        startApplication(args);
+    }
+
+    public static Injector startApplication(String... args) {
+        return JZenith.application(args)
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserException.class, 404),

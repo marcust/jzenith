@@ -37,9 +37,9 @@ public class ConfigurationProvider<T> implements Provider<T> {
 
     @Override
     public T get() {
-        return (T)Proxy.newProxyInstance(this.getClass().getClassLoader(),
+        return configurationClass.cast(Proxy.newProxyInstance(this.getClass().getClassLoader(),
                     new Class[] {configurationClass},
-                    new ConfigurationInvocationHandler(configurationBaseNameUpper, coreConfiguration, extraConfiguration));
+                    new ConfigurationInvocationHandler(configurationBaseNameUpper, coreConfiguration, extraConfiguration)));
     }
 
     private static class ConfigurationInvocationHandler implements InvocationHandler {
@@ -48,7 +48,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
         private final CoreConfiguration coreConfiguration;
         private final ExtraConfiguration extraConfiguration;
 
-        public ConfigurationInvocationHandler(String configurationBaseNameUpper,
+        private ConfigurationInvocationHandler(String configurationBaseNameUpper,
                                               CoreConfiguration coreConfiguration,
                                               ExtraConfiguration extraConfiguration) {
             this.configurationBaseNameUpper = configurationBaseNameUpper;
@@ -156,6 +156,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
             return null;
         }
 
+        @SafeVarargs
         private static String firstNonNull(Supplier<String>... suppliers) {
             for (final Supplier<String> supplier : suppliers) {
                 final String s = supplier.get();
