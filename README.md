@@ -1,4 +1,4 @@
-[jZenith Logo](docs/logo/logo.png)
+![jZenith Logo](docs/logo/logo.png)
 
 # jZenith
 
