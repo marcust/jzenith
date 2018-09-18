@@ -9,7 +9,24 @@
     <version>0.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
-    <name>root-pom</name>
+
+    <name>jZenith Root Pom</name>
+    <url>http://www.jzenith.org</url>
+    <description>jZenith Application Framework</description>
+    <inceptionYear>2018</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url> http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>1</id>
+            <name>Marcus Thiesen</name>
+        </developer>
+    </developers>
 
     <properties>
         <java.version>10</java.version>
@@ -119,6 +136,28 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
+                    <properties>
+                        <owner>Marcus Thiesen</owner>
+                        <email>marcus@thiesen.org</email>
+                    </properties>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
