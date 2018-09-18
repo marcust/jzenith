@@ -27,7 +27,7 @@ class JvmOptionMetricCollector extends Collector {
             final HotSpotDiagnosticMXBean platformMXBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
             final VMOption maxDirectMemorySize = platformMXBean.getVMOption(optionName);
 
-            return Long.valueOf(maxDirectMemorySize.getValue());
+            return Long.parseLong(maxDirectMemorySize.getValue());
         } catch (Throwable e) {
             log.warn("Can not get {}, will return -1", optionName, e);
 

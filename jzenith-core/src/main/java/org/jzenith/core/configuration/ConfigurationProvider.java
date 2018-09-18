@@ -2,6 +2,7 @@ package org.jzenith.core.configuration;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Splitter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jzenith.core.CoreConfiguration;
@@ -110,15 +111,22 @@ public class ConfigurationProvider<T> implements Provider<T> {
             return annotation.value();
         }
 
+        @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Wrong positive on unclosed stream")
         private String propertyConfiguration(String configurationBaseNameLower, String propertyName) {
-            final InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties");
-            if (specificStream != null) {
-                return loadPropertyFrom(specificStream, configurationBaseNameLower + "." + propertyName);
-            }
+            try {
+                try (final InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties")) {
+                    if (specificStream != null) {
+                        return loadPropertyFrom(specificStream, configurationBaseNameLower + "." + propertyName);
+                    }
+                }
 
-            final InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties");
-            if (globalStream != null) {
-                return loadPropertyFrom(globalStream, configurationBaseNameLower + "." + propertyName);
+                try (final InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties")) {
+                    if (globalStream != null) {
+                        return loadPropertyFrom(globalStream, configurationBaseNameLower + "." + propertyName);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
             return null;
