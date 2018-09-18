@@ -1,3 +1,5 @@
+[jZenith Logo](docs/logo/logo.png)
+
 # jZenith
 
 An opinionated approach to building modern Java Microservices
@@ -6,7 +8,9 @@ An opinionated approach to building modern Java Microservices
 myself busy while I'm looking for a new challenge to take on. I don't
 know if it will ever be released, I don't know if it will ever reach
 1.0. Due to this fact the best documentation is currently
-`jzenith-example`, though I try to keep this up to date as well.*
+`jzenith-example`, though I try to keep this up to date as well. If
+you want to know what I'm up to check out the [Project
+Plan](https://github.com/marcust/jzenith/projects/1)*
 
 ## Overview
 
@@ -16,7 +20,9 @@ world by having a minimal dependency footprint.
 
 jZenith consists of a *core* that can be extended by using different
 *plugins*, currently there is a [PostgreSQL](docs/POSTGRES_PLUGIN.md)
-and a [REST](docs/REST_PLUGIN.md) plugin.
+and a [REST](docs/REST_PLUGIN.md) plugin. All bindings are configured
+in code in order to allow for a application that is fully initialized
+at startup time, hopefully allowing GraalVM support in the future. 
 
 jZenith is basically some glue code between existing Java
 libraries. It uses Guice for dependency injection and Vert.x as it's
@@ -35,12 +41,16 @@ expects Java 10 and a fairly current maven.
 A typical jZenith main class will look like:
 ```
 JZenith.application(args)
-                .withPlugins(
-                        RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
-                        PostgresqlPlugin.create()
-                )
-                .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
-                .withConfiguration("postgresql.database", "test")
-				.run();
+       .withPlugins(
+           RestPlugin.withResources(UserResource.class),
+           PostgresqlPlugin.create()
+       )
+       .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
+       .withConfiguration("postgresql.database", "test")
+	   .run();
 ```
 
+Modules are simply Guice Modules, as jZenith uses Guice for dependency
+injection.
+
+Read more about [Plugins](docs/PLUGINS.md) and [Configuration](docs/CONFIGURATION.md).

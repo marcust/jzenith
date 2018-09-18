@@ -17,4 +17,18 @@ You can start a dockerized PostgreSQL with
 
 `mvn docker:start`
 
+Once you run both you can play a little bit with the example
+endpoints:
+
+Create a *User*:
+
+`curl -H "Content-Type: application/json" -XPOST -d '{"name":"Test"}'
+-v localhost:8080/user`
+
+List all *Users*:
+
+`curl -v http://localhost:8080/user`
+
+There is an integration test that lists all the allowed endpoints and
+methods. 
 
