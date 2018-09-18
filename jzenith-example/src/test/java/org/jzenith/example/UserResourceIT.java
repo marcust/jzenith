@@ -31,6 +31,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.jzenith.core.JZenith;
 import org.jzenith.example.helloworld.ExampleApp;
 import org.jzenith.example.helloworld.persistence.UserDao;
 import org.jzenith.example.helloworld.resources.request.CreateUserRequest;
@@ -62,7 +63,9 @@ public class UserResourceIT {
 
     @BeforeClass
     public static void startup() throws Exception {
-        injector = ExampleApp.startApplication();
+        final JZenith jZenith = ExampleApp.configureApplication();
+        injector = jZenith.createInjectorForTesting();
+        jZenith.run();
     }
 
     private static IDatabaseConnection getConnection() throws Exception {
