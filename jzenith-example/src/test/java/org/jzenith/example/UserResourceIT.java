@@ -48,7 +48,7 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserResourceIntegrationTest {
+public class UserResourceIT {
 
     private final static UUID USER_UUID = UUID.fromString("71aebc48-78e2-4298-8d13-7a2bfb58c555");
     private final static String USER_NAME = "jzenith_user";
@@ -81,7 +81,7 @@ public class UserResourceIntegrationTest {
         injector.injectMembers(this);
 
         final IDatabaseConnection connection = getConnection();
-        final IDataSet dataSet = new FlatXmlDataSetBuilder().build(UserResourceIntegrationTest.class.getResourceAsStream("/user.xml"));
+        final IDataSet dataSet = new FlatXmlDataSetBuilder().build(UserResourceIT.class.getResourceAsStream("/user.xml"));
 
         DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
 
