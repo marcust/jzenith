@@ -107,13 +107,13 @@ public class ReferenceCountedOpenSslEngine extends SSLEngine implements Referenc
     @Override
     public String[] getEnabledCipherSuites() {
         // empty dummy implementation
-        return null;
+        return new String[0];
     }
 
     @Override
     public String[] getEnabledProtocols() {
         // empty dummy implementation
-        return null;
+        return new String[0];
     }
 
     @Override
@@ -137,13 +137,13 @@ public class ReferenceCountedOpenSslEngine extends SSLEngine implements Referenc
     @Override
     public String[] getSupportedCipherSuites() {
         // empty dummy implementation
-        return null;
+        return new String[0];
     }
 
     @Override
     public String[] getSupportedProtocols() {
         // empty dummy implementation
-        return null;
+        return new String[0];
     }
 
     @Override

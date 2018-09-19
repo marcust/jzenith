@@ -19,8 +19,6 @@ import org.jzenith.example.helloworld.resources.response.UserResponse;
 import org.jzenith.example.helloworld.service.model.User;
 import org.jzenith.rest.model.Page;
 
-import java.util.List;
-
 public class UserMapper {
 
     public UserResponse mapToUserResponse(User user) {
