@@ -17,7 +17,9 @@ package org.jzenith.core.metrics;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.hotspot.DefaultExports;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class JZenithDefaultExports {
 
     public static void initialize() {

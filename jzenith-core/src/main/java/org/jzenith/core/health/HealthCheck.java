@@ -21,6 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class HealthCheck {
 
+    private static final int DEFAULT_TIMEOUT = 5;
+    private static final TimeUnit DEFAULT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
     public Single<HealthCheckResult> execute() {
         return executeInternal().timeout(getTimeout(), getTimeoutUnit())
                 .onErrorResumeNext(error -> Single.just(createResult(error)));
@@ -41,10 +44,10 @@ public abstract class HealthCheck {
     }
 
     public long getTimeout() {
-        return 5;
+        return DEFAULT_TIMEOUT;
     }
 
     public TimeUnit getTimeoutUnit() {
-        return TimeUnit.SECONDS;
+        return DEFAULT_TIMEOUT_UNIT;
     }
 }

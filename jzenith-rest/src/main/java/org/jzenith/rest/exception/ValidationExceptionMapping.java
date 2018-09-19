@@ -24,8 +24,4 @@ public class ValidationExceptionMapping extends ExceptionMapping<ValidationExcep
         super(ValidationException.class, Response.Status.BAD_REQUEST.getStatusCode());
     }
 
-    @Override
-    public Response toResponse(ValidationException exception) {
-        return super.toResponse(exception);
-    }
 }

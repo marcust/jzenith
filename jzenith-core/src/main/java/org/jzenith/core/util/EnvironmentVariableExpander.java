@@ -18,8 +18,6 @@ package org.jzenith.core.util;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.CharSource;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

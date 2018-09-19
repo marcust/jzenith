@@ -22,7 +22,6 @@ import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.integration.api.OpenAPIConfiguration;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ResourceModule extends AbstractModule {
     private final List<Class<?>> resources;

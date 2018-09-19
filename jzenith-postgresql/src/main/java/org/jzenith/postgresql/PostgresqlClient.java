@@ -23,15 +23,12 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import lombok.NonNull;
 import org.jooq.Query;
-import org.jooq.Select;
-import org.jooq.SelectJoinStep;
 import org.postgresql.core.NativeQuery;
 import org.postgresql.core.Parser;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class PostgresqlClient {

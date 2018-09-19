@@ -21,7 +21,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import lombok.NonNull;

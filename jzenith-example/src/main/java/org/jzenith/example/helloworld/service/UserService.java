@@ -16,7 +16,6 @@
 package org.jzenith.example.helloworld.service;
 
 import io.reactivex.Completable;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import org.jzenith.example.helloworld.service.model.User;
 import org.jzenith.rest.model.Page;

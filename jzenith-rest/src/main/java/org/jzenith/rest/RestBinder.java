@@ -15,18 +15,14 @@
  */
 package org.jzenith.rest;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
 import io.vertx.core.http.HttpServerRequest;
 import org.jboss.resteasy.plugins.guice.RequestScoped;
 import org.jboss.resteasy.plugins.guice.ext.RequestScopeModule;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.configuration.ConfigurationProvider;
-import org.jzenith.rest.metrics.MetricsFeature;
 
 public class RestBinder extends AbstractModule {
 

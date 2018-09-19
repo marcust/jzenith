@@ -15,7 +15,6 @@
  */
 package org.jzenith.example.helloworld.resources;
 
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import lombok.NonNull;
 import org.jzenith.example.helloworld.mapper.UserMapper;

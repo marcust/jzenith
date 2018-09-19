@@ -21,6 +21,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jzenith.core.CoreConfiguration;
+import org.jzenith.core.JZenithException;
 import org.jzenith.core.util.EnvironmentVariableExpander;
 
 import javax.inject.Inject;
@@ -141,7 +142,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new JZenithException(e);
             }
 
             return null;
@@ -157,7 +158,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
                 }
 
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new JZenithException(e);
             }
             return null;
         }

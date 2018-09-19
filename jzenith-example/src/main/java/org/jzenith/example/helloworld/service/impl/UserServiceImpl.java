@@ -16,7 +16,6 @@
 package org.jzenith.example.helloworld.service.impl;
 
 import io.reactivex.Completable;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import lombok.NonNull;
 import org.jzenith.example.helloworld.persistence.UserDao;

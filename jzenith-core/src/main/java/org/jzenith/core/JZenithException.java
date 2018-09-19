@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.core.util;
+package org.jzenith.core;
 
-import lombok.experimental.UtilityClass;
+public class JZenithException extends RuntimeException {
 
-@UtilityClass
-public class ReflectionUtil {
-
-    public static Class<?> loadClass(String name) {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public JZenithException() {
     }
 
+    public JZenithException(String message) {
+        super(message);
+    }
+
+    public JZenithException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public JZenithException(Throwable cause) {
+        super(cause);
+    }
+
+    public JZenithException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

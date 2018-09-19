@@ -21,7 +21,6 @@ import io.prometheus.client.Histogram;
 import javax.ws.rs.container.*;
 import javax.ws.rs.core.Request;
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 public class MetricsInterceptor implements ContainerRequestFilter, ContainerResponseFilter {
 

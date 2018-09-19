@@ -16,7 +16,6 @@
 package org.jzenith.example.helloworld.service;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Singleton;
 import org.jzenith.example.helloworld.service.impl.HelloWorldServiceImpl;
 import org.jzenith.example.helloworld.service.impl.UserServiceImpl;
 

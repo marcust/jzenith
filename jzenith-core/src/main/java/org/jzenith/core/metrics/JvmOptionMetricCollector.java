@@ -43,7 +43,7 @@ class JvmOptionMetricCollector extends Collector {
             final VMOption maxDirectMemorySize = platformMXBean.getVMOption(optionName);
 
             return Long.parseLong(maxDirectMemorySize.getValue());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.warn("Can not get {}, will return -1", optionName, e);
 
             return -1L;

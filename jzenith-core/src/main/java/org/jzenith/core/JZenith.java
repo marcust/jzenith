@@ -67,7 +67,7 @@ public class JZenith {
     }
 
     public static JZenith application(@NonNull String... args) {
-        //Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.error("Uncaught exception", throwable));
+        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> log.error("Uncaught exception", throwable));
         return new JZenith(() -> Arrays.asList(args));
     }
 
@@ -102,10 +102,10 @@ public class JZenith {
         } catch (Exception e) {
             vertx.close();
             Throwables.throwIfUnchecked(e);
-            throw new RuntimeException(e);
+            throw new JZenithException(e);
         }
 
-        log.debug("jZenith startup complete after " + stopwatch);
+        log.debug("jZenith startup complete after {}", stopwatch);
     }
 
     public Injector createInjectorForTesting() {
@@ -120,14 +120,14 @@ public class JZenith {
                     @Override
                     protected void configure() {
                         bind(CoreConfiguration.class).toInstance(configuration);
-                        bind(ExtraConfiguration.class).toInstance(key -> extraConfigurationCopy.get(key));
+                        bind(ExtraConfiguration.class).toInstance(extraConfigurationCopy::get);
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
 
                         Multibinder.newSetBinder(binder(), HealthCheck.class);
                     }
                 })
-                .addAll(plugins.stream().flatMap(plugins -> plugins.getModules().stream()).collect(ImmutableList.toImmutableList()))
+                .addAll(plugins.stream().flatMap(plugin -> plugin.getModules().stream()).collect(ImmutableList.toImmutableList()))
                 .addAll(modules)
                 .build();
 

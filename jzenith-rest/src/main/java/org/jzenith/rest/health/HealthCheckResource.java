@@ -44,7 +44,7 @@ public class HealthCheckResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Single<Response> doHealthChecks() {
         return Observable.fromIterable(healthChecks)
-                .flatMapSingle(healthCheck -> healthCheck.execute())
+                .flatMapSingle(HealthCheck::execute)
                 .toList()
                 .map(this::toResponse);
     }

@@ -15,7 +15,6 @@
  */
 package org.jzenith.example.helloworld.resources;
 
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import org.jzenith.example.helloworld.service.HelloWorldService;
