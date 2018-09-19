@@ -71,7 +71,7 @@ public class UserResourceIT {
     private static IDatabaseConnection getConnection() throws Exception {
         // database connection
         PGSimpleDataSource.class.getName();
-        Connection jdbcConnection = DriverManager.getConnection("jdbc:postgresql:test", "test", "test");
+        Connection jdbcConnection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test", "test", "test");
         final DatabaseConnection databaseConnection = new DatabaseConnection(jdbcConnection);
         final DatabaseConfig config = databaseConnection.getConfig();
         config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());

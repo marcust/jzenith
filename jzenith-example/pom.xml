@@ -127,7 +127,7 @@
                                     <time>20000</time>
                                 </wait>
                                 <ports>
-                                    <port>5432:5432</port>
+                                    <port>5433:5432</port>
                                 </ports>
                                 <env>
                                     <POSTGRES_USER>test</POSTGRES_USER>

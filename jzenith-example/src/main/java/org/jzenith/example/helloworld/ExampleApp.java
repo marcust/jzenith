@@ -44,6 +44,7 @@ public class ExampleApp {
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
                 .withConfiguration("postgresql.database", "test")
                 .withConfiguration("postgresql.username", "test")
-                .withConfiguration("postgresql.password", "test");
+                .withConfiguration("postgresql.password", "test")
+                .withConfiguration("postgresql.port", "5433");
     }
 }
