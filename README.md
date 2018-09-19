@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/marcust/jzenith.svg?branch=master)](https://travis-ci.com/marcust/jzenith)
+
 **Disclaimer**: *This is basically me tinkering with tech and keeping
 myself busy while I'm looking for a new challenge to take on. I don't
 know if it will ever be released, I don't know if it will ever reach
