@@ -8,6 +8,10 @@ addons:
   sonarcloud:
     organization: "marcust-github"
 
+before_script:
+  - sudo /etc/init.d/mysql stop
+  - sudo /etc/init.d/postgresql stop
+
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
 
