@@ -22,8 +22,10 @@ import org.jzenith.example.helloworld.resources.HelloWorldResource;
 import org.jzenith.example.helloworld.resources.UserResource;
 import org.jzenith.example.helloworld.service.ServiceLayerModule;
 import org.jzenith.example.helloworld.service.exception.NoSuchUserException;
+import org.jzenith.jdbc.JdbcDatabaseType;
+import org.jzenith.jdbc.JdbcPlugin;
 import org.jzenith.rest.RestPlugin;
-import org.jzenith.postgresql.PostgresqlPlugin;
+import org.postgresql.ds.PGSimpleDataSource;
 
 /**
  * Example app for simple Rest ExampleApp
@@ -35,16 +37,24 @@ public class ExampleApp {
     }
 
     public static JZenith configureApplication(String... args) {
+        final PGSimpleDataSource dataSource = createDataSource();
+
         return JZenith.application(args)
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserException.class, 404),
-                        PostgresqlPlugin.create()
+                        JdbcPlugin.create(dataSource, JdbcDatabaseType.POSTGRES)
                 )
-                .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
-                .withConfiguration("postgresql.database", "test")
-                .withConfiguration("postgresql.username", "test")
-                .withConfiguration("postgresql.password", "test")
-                .withConfiguration("postgresql.port", "5433");
+                .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule());
+    }
+
+    private static PGSimpleDataSource createDataSource() {
+        final PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setPortNumber(5433);
+        dataSource.setServerName("localhost");
+        dataSource.setDatabaseName("test");
+        dataSource.setUser("test");
+        dataSource.setPassword("test");
+        return dataSource;
     }
 }

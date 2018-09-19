@@ -113,14 +113,16 @@ public class JZenith {
     }
 
     private Injector createInjector(Vertx vertx) {
-        final Map<String,String> extraConfigurationCopy = ImmutableMap.copyOf(this.extraConfiguration);
+        final ImmutableMap.Builder<String, Object> extraConfigurationBuilder = ImmutableMap.builder();
+        extraConfigurationBuilder.putAll(this.extraConfiguration);
+        plugins.forEach(plugin -> extraConfigurationBuilder.putAll(plugin.getExtraConfiguration()));
 
         final List<Module> allModules = ImmutableList.<Module>builder()
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
                         bind(CoreConfiguration.class).toInstance(configuration);
-                        bind(ExtraConfiguration.class).toInstance(extraConfigurationCopy::get);
+                        bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
 

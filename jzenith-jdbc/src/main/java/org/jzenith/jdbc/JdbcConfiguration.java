@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.core;
+package org.jzenith.jdbc;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.inject.Injector;
-import com.google.inject.Module;
+import org.jzenith.core.configuration.ConfigDefault;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+public interface JdbcConfiguration {
 
-public abstract class AbstractPlugin {
+    @ConfigDefault("4")
+    int getPoolSize();
 
-    protected List<Module> getModules() {
-        return ImmutableList.of();
-    }
+    JdbcDatabaseType getDatabaseType();
 
-    protected Map<String, Object> getExtraConfiguration() {
-        return ImmutableMap.of();
-    }
-
-    protected abstract CompletableFuture<String> start(Injector deploymentOptions);
-
+    @ConfigDefault("select 1")
+    String getTestQuerySql();
 }

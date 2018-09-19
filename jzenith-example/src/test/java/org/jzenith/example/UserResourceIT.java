@@ -282,8 +282,9 @@ public class UserResourceIT {
         assertThat(response).isNotNull();
         assertThat(response.getOffset()).isEqualTo(0);
         assertThat(response.getLimit()).isEqualTo(20);
-        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getTotalElements()).isEqualTo(2);
         assertThat(response.getElements()).isNotNull();
+        assertThat(response.getElements().size()).isEqualTo(2);
         assertThat(response.getElements().get(0).getId()).isEqualTo(USER_UUID);
         assertThat(response.getElements().get(0).getName()).isEqualTo(USER_NAME);
     }

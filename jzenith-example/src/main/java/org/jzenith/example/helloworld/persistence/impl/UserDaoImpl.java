@@ -15,16 +15,20 @@
  */
 package org.jzenith.example.helloworld.persistence.impl;
 
-import io.reactiverse.reactivex.pgclient.Row;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import lombok.NonNull;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Delete;
+import org.jooq.Insert;
+import org.jooq.Select;
+import org.jooq.Update;
 import org.jzenith.example.helloworld.persistence.UserDao;
 import org.jzenith.example.helloworld.persistence.model.Deleted;
 import org.jzenith.example.helloworld.persistence.model.Updated;
 import org.jzenith.example.helloworld.service.model.User;
-import org.jzenith.postgresql.PostgresqlClient;
+import org.jzenith.jdbc.JdbcClient;
+import org.jzenith.jdbc.model.Row;
 import org.jzenith.rest.model.Page;
 
 import javax.inject.Inject;
@@ -37,11 +41,11 @@ import static org.jzenith.example.helloworld.persistence.impl.Users.*;
 
 public class UserDaoImpl implements UserDao {
 
-    private final PostgresqlClient client;
+    private final JdbcClient client;
     private final DSLContext dslContext;
 
     @Inject
-    public UserDaoImpl(PostgresqlClient client, DSLContext dslContext) {
+    public UserDaoImpl(JdbcClient client, DSLContext dslContext) {
         this.client = client;
         this.dslContext = dslContext;
     }
@@ -53,8 +57,8 @@ public class UserDaoImpl implements UserDao {
                         NAME_FIELD)
                 .values(user.getId(), user.getName());
 
-        return client.execute(insert)
-                .map(result -> user);
+        return client.executeInsert(insert)
+                .andThen(Single.just(user));
     }
 
     @Override
@@ -91,7 +95,7 @@ public class UserDaoImpl implements UserDao {
         return Single.zip(
                 client.executeForSingleRow(count).toSingle(),
                 client.stream(select, offset, limit).toList(),
-                (countRow, valueRows) -> new Page<>(offset, limit, countRow.getLong(0), mapToUsers(valueRows)));
+                (countRow, valueRows) -> new Page<>(offset, limit, countRow.getOnlyLong(), mapToUsers(valueRows)));
     }
 
     @Override
@@ -108,7 +112,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private User toUser(Row row) {
-        return new User((UUID) row.getValue(ID_FIELD.getName()),
+        return new User(row.getUUID(ID_FIELD.getName()),
                 row.getString(NAME_FIELD.getName()));
     }
 }

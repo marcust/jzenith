@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.core;
+package org.jzenith.jdbc;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.inject.Injector;
-import com.google.inject.Module;
+import lombok.Getter;
+import org.davidmoten.rx.jdbc.pool.DatabaseType;
+import org.jooq.SQLDialect;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+@Getter
+public enum JdbcDatabaseType {
 
-public abstract class AbstractPlugin {
+    POSTGRES(SQLDialect.POSTGRES_10, org.davidmoten.rx.jdbc.pool.DatabaseType.POSTGRES);
 
-    protected List<Module> getModules() {
-        return ImmutableList.of();
+    private final SQLDialect dialect;
+    private final DatabaseType type;
+
+    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
+        this.dialect = dialect;
+        this.type = type;
     }
-
-    protected Map<String, Object> getExtraConfiguration() {
-        return ImmutableMap.of();
-    }
-
-    protected abstract CompletableFuture<String> start(Injector deploymentOptions);
-
 }

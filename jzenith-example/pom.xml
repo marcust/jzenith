@@ -13,8 +13,7 @@
     <version>0.1-SNAPSHOT</version>
 
     <name>jzenith-example</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <url>http://www.jzenith.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,8 +27,15 @@
         </dependency>
         <dependency>
             <groupId>org.jzenith</groupId>
-            <artifactId>jzenith-postgresql</artifactId>
+            <artifactId>jzenith-jdbc</artifactId>
             <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Database drivers -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
         </dependency>
 
         <!-- Compile Time tools -->

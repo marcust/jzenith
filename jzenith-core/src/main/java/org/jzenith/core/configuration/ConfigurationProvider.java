@@ -18,6 +18,7 @@ package org.jzenith.core.configuration;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Splitter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jzenith.core.CoreConfiguration;
@@ -80,41 +81,33 @@ public class ConfigurationProvider<T> implements Provider<T> {
             final String configurationNameCommandLine = "--" + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, environmentVariableName);
             final String configurationPropertyName = configurationBaseNameUpper.toLowerCase() + "." + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, configurationName).replace('_', '.');
 
-            final String value = firstNonNull(
+            final Object value = firstNonNull(
                     () -> logValue(extraConfigurationValue(configurationPropertyName), configurationPropertyName, configurationPropertyName, "code"),
                     () -> logValue(commandLineArgument(configurationNameCommandLine), configurationPropertyName, configurationNameCommandLine, "command line"),
                     () -> logValue(environmentConfiguration(environmentVariableName), configurationPropertyName, environmentVariableName, "environment"),
                     () -> logValue(propertyConfiguration(configurationBaseNameUpper.toLowerCase(), configurationPropertyName), configurationPropertyName, configurationPropertyName, "property file"),
                     () -> logValue(defaultConfiguration(method), configurationPropertyName, method.getName(), "default annotation"));
 
-            final String expandedValue;
-            if (value.startsWith("$")) {
-                expandedValue = EnvironmentVariableExpander.expand(value);
-            } else if (value.startsWith("\\")) {
-                expandedValue = value.substring(1);
-            } else {
-                expandedValue = value;
-            }
-
             final Class<?> returnType = method.getReturnType();
-            if (returnType == int.class) {
-                return Integer.parseInt(expandedValue);
-            }
-            if (returnType == String.class) {
-                return expandedValue;
+            if (value.getClass() == returnType) {
+                return value;
             }
 
-            throw new NotImplementedException("No support for configuration of type " + returnType.getName());
+            if (value instanceof String) {
+                return handleVariableExpansion((String) value, returnType);
+            }
+
+            throw new IllegalStateException("Don't know how to handle a value of type " + value.getClass() + "(" + value + ") in " + method.getReturnType() + " context");
         }
 
-        private String logValue(String value, String propertyName, String lookupName, String from) {
+        private Object logValue(Object value, String propertyName, String lookupName, String from) {
             if (value != null) {
                 log.info("Using value '" + value + "' for property " + propertyName + " obtained from " + from + " (" + lookupName + ")");
             }
             return value;
         }
 
-        private String extraConfigurationValue(String key) {
+        private Object extraConfigurationValue(String key) {
             return extraConfiguration.getValue(key);
         }
 
@@ -181,9 +174,9 @@ public class ConfigurationProvider<T> implements Provider<T> {
         }
 
         @SafeVarargs
-        private static String firstNonNull(Supplier<String>... suppliers) {
-            for (final Supplier<String> supplier : suppliers) {
-                final String s = supplier.get();
+        private static Object firstNonNull(Supplier<Object>... suppliers) {
+            for (final Supplier<Object> supplier : suppliers) {
+                final Object s = supplier.get();
                 if (s != null) {
                     return s;
                 }
@@ -191,5 +184,24 @@ public class ConfigurationProvider<T> implements Provider<T> {
 
             throw new IllegalStateException("Non of the provided suppliers supplied a value");
         }
+    }
+
+    private static Object handleVariableExpansion(@NonNull String stringValue, @NonNull Class<?> returnType) {
+        final String expandedValue;
+        if (stringValue.startsWith("$")) {
+            expandedValue = EnvironmentVariableExpander.expand(stringValue);
+        } else if (stringValue.startsWith("\\")) {
+            expandedValue = stringValue.substring(1);
+        } else {
+            expandedValue = stringValue;
+        }
+
+        if (returnType == int.class) {
+            return Integer.parseInt(expandedValue);
+        }
+        if (returnType == String.class) {
+            return expandedValue;
+        }
+        throw new NotImplementedException("No support for configuration of type " + returnType.getName());
     }
 }
