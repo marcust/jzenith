@@ -4,5 +4,12 @@ language: java
 
 jdk: openjdk10
 
+addons:
+  sonarcloud:
+    organization: "marcust-github"
+
+script:
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+
 services:
   - docker
