@@ -2,7 +2,7 @@ sudo: required
 
 language: java
 
-jdk: openjdk10
+jdk: oraclejdk10
 
 addons:
   sonarcloud:
