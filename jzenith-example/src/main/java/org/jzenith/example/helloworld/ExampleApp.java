@@ -15,6 +15,7 @@
  */
 package org.jzenith.example.helloworld;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.helloworld.mapper.MapperModule;
 import org.jzenith.example.helloworld.persistence.PersistenceLayerModule;
@@ -25,7 +26,8 @@ import org.jzenith.example.helloworld.service.exception.NoSuchUserException;
 import org.jzenith.jdbc.JdbcDatabaseType;
 import org.jzenith.jdbc.JdbcPlugin;
 import org.jzenith.rest.RestPlugin;
-import org.postgresql.ds.PGSimpleDataSource;
+
+import javax.sql.DataSource;
 
 /**
  * Example app for simple Rest ExampleApp
@@ -37,24 +39,24 @@ public class ExampleApp {
     }
 
     public static JZenith configureApplication(String... args) {
-        final PGSimpleDataSource dataSource = createDataSource();
+        final DataSource dataSource = createDataSource();
 
         return JZenith.application(args)
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserException.class, 404),
-                        JdbcPlugin.create(dataSource, JdbcDatabaseType.POSTGRES)
+                        JdbcPlugin.create(dataSource, JdbcDatabaseType.MYSQL)
                 )
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule());
     }
 
-    private static PGSimpleDataSource createDataSource() {
-        final PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setPortNumber(5433);
+    public static DataSource createDataSource() {
+        final MysqlDataSource dataSource = new MysqlDataSource();
+        dataSource.setPort(3307);
         dataSource.setServerName("localhost");
         dataSource.setDatabaseName("test");
-        dataSource.setUser("test");
-        dataSource.setPassword("test");
+        dataSource.setUser("root");
+        dataSource.setPassword("root");
         return dataSource;
     }
 }

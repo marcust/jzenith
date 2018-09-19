@@ -29,7 +29,7 @@ class Users {
 
     static final Table<Record> USERS_TABLE = table(name("users"));
 
-    static final Field<UUID> ID_FIELD = field(name("id"), UUID.class);
+    static final Field<String> ID_FIELD = field(name("id"), String.class);
     static final Field<String> NAME_FIELD = field(name("name"), String.class);
 
 }

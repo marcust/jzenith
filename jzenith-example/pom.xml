@@ -32,11 +32,17 @@
         </dependency>
 
         <!-- Database drivers -->
-        <dependency>
+        <!-- dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.5</version>
+        </dependency -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.12</version>
         </dependency>
+
 
         <!-- Compile Time tools -->
         <dependency>
@@ -125,19 +131,25 @@
                 <configuration>
                     <images>
                         <image>
-                            <alias>postgres</alias>
-                            <name>postgres:latest</name>
+                            <alias>database</alias>
+                            <name>mysql:8.0</name>
+                            <!-- name>postgres:10</name-->
                             <run>
                                 <wait>
-                                    <log>database system is ready to accept connections</log>
+                                    <log>ready for connections</log>
                                     <time>20000</time>
                                 </wait>
                                 <ports>
-                                    <port>5433:5432</port>
+                                    <!-- port>5433:5432</port -->
+                                    <port>3307:3306</port>
                                 </ports>
                                 <env>
                                     <POSTGRES_USER>test</POSTGRES_USER>
                                     <POSTGRES_PASSWORD>test</POSTGRES_PASSWORD>
+                                    <MYSQL_ROOT_PASSWORD>root</MYSQL_ROOT_PASSWORD>
+                                    <MYSQL_DATABASE>test</MYSQL_DATABASE>
+                                    <MYSQL_USER>test</MYSQL_USER>
+                                    <MYSQL_PASSWORD>test</MYSQL_PASSWORD>
                                 </env>
                             </run>
                         </image>

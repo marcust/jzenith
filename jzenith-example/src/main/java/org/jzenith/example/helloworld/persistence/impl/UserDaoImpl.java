@@ -55,7 +55,7 @@ public class UserDaoImpl implements UserDao {
         final Insert<?> insert = dslContext.insertInto(USERS_TABLE)
                 .columns(ID_FIELD,
                         NAME_FIELD)
-                .values(user.getId(), user.getName());
+                .values(user.getId().toString(), user.getName());
 
         return client.executeInsert(insert)
                 .andThen(Single.just(user));
@@ -65,7 +65,7 @@ public class UserDaoImpl implements UserDao {
     public Maybe<User> getById(@NonNull UUID id) {
         final Select<?> select = dslContext.select(ID_FIELD, NAME_FIELD)
                 .from(USERS_TABLE)
-                .where(ID_FIELD.eq(id));
+                .where(ID_FIELD.eq(id.toString()));
 
         return client.executeForSingleRow(select)
                 .map(this::toUser);
@@ -75,7 +75,7 @@ public class UserDaoImpl implements UserDao {
     public Single<Updated> updateNameById(@NonNull UUID id, @NonNull String name) {
         final Update<?> update = dslContext.update(USERS_TABLE)
                 .set(NAME_FIELD, name)
-                .where(ID_FIELD.eq(id));
+                .where(ID_FIELD.eq(id.toString()));
 
         return client.executeForRowCount(update)
                 .map(count -> count > 0 ? Updated.YES : Updated.NO);
@@ -101,7 +101,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Single<Deleted> deleteById(@NonNull UUID id) {
         final Delete<?> delete = dslContext.deleteFrom(USERS_TABLE)
-                .where(ID_FIELD.eq(id));
+                .where(ID_FIELD.eq(id.toString()));
 
         return client.executeForRowCount(delete)
                 .map(count -> count > 0 ? Deleted.YES : Deleted.NO);
@@ -112,7 +112,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private User toUser(Row row) {
-        return new User(row.getUUID(ID_FIELD.getName()),
-                row.getString(NAME_FIELD.getName()));
+        return new User(row.get(ID_FIELD, UUID::fromString),
+                row.get(NAME_FIELD));
     }
 }

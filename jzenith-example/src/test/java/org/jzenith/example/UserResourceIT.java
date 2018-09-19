@@ -26,6 +26,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.ext.mysql.MySqlDataTypeFactory;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
@@ -40,10 +41,8 @@ import org.jzenith.example.helloworld.resources.response.UserResponse;
 import org.jzenith.example.helloworld.service.model.User;
 import org.jzenith.rest.model.ErrorResponse;
 import org.jzenith.rest.model.Page;
-import org.postgresql.ds.PGSimpleDataSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -70,11 +69,11 @@ public class UserResourceIT {
 
     private static IDatabaseConnection getConnection() throws Exception {
         // database connection
-        PGSimpleDataSource.class.getName();
-        Connection jdbcConnection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/test", "test", "test");
+        Connection jdbcConnection = ExampleApp.createDataSource().getConnection();
         final DatabaseConnection databaseConnection = new DatabaseConnection(jdbcConnection);
         final DatabaseConfig config = databaseConnection.getConfig();
-        config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
+        //config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
+        config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
 
         return databaseConnection;
     }

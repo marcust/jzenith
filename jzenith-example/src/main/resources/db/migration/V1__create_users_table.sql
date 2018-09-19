@@ -1,4 +1,4 @@
-create table USERS (
-    ID uuid not null,
-    NAME varchar(100) not null
+create table users (
+    id varchar(36) not null,
+    name varchar(100) not null
 );
