@@ -50,7 +50,7 @@ import java.util.concurrent.CompletableFuture;
 public class RestPlugin extends AbstractPlugin {
 
     private static final ImmutableList<Module> MODULES = ImmutableList.of(new RestBinder());
-    public static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class, HealthCheckResource.class);
+    private static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class, HealthCheckResource.class);
 
     private final List<Class<?>> resources;
     private final Map<Class<? extends Exception>, ExceptionMapping<?>> exceptionMappings = Maps.newHashMap();

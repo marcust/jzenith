@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/marcust/jzenith.svg?branch=master)](https://travis-ci.com/marcust/jzenith)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=marcust_jzenith&metric=alert_status)](https://sonarcloud.io/dashboard?id=marcust_jzenith)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=org.jzenith%3Aroot-pom&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.jzenith%3Aroot-pom)
 
 **Disclaimer**: *This is basically me tinkering with tech and keeping
 myself busy while I'm looking for a new challenge to take on. I don't
