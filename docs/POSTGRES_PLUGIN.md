@@ -1,5 +1,13 @@
 # Postgres Plugin
 
+```
+<dependency>
+  <groupId>org.jzenith</groupId>
+  <artifactId>jzenith-postgresql</artifactId>
+  <version>0.1-SNAPSHOT</version>
+</dependency>
+```
+
 The Postgres Plugin gives you
 * jOOQ
 * running with reactive-pg-client

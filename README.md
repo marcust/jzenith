@@ -30,7 +30,15 @@ different [Plugins](docs/PLUGINS.md).
 
 ## Getting started
 
-*No Maven artifacts yet*
+Snapshots are published to the Sonatype OSS repository.
+
+```
+<dependency>
+  <groupId>org.jzenith</groupId>
+  <artifactId>jzenith-core</artifactId>
+  <version>0.1-SNAPSHOT</version>
+</dependency>
+```
 
 Clone the repository, run `mvn clean install`. jZenith currently
 expects Java 10 and a fairly current maven. 

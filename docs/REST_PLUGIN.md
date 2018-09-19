@@ -1,5 +1,15 @@
 # REST Plugin
 
+Snapshots are published to the Sonatype OSS repository.
+
+```
+<dependency>
+  <groupId>org.jzenith</groupId>
+  <artifactId>jzenith-rest</artifactId>
+  <version>0.1-SNAPSHOT</version>
+</dependency>
+```
+
 The REST Plugin gives you
 * Resteasy with enabled validation
 * A health check endpoint at `/health`
