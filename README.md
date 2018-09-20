@@ -31,9 +31,10 @@ different [Plugins](docs/PLUGINS.md).
 
 ## Getting started
 
-Snapshots are published to the Sonatype OSS repository.
+Snapshots are published to the Sonatype OSS repository, see *Using Snapshots Version*
+at the end.
 
-```
+```xml
 <dependency>
   <groupId>org.jzenith</groupId>
   <artifactId>jzenith-core</artifactId>
@@ -45,7 +46,7 @@ Clone the repository, run `mvn clean install`. jZenith currently
 expects Java 10 and a fairly current maven. 
 
 A typical jZenith main class will look like:
-```
+```java
 JZenith.application(args)
        .withPlugins(
            RestPlugin.withResources(UserResource.class),
@@ -60,3 +61,27 @@ Modules are simply Guice Modules, as jZenith uses Guice for dependency
 injection.
 
 Read more about [Plugins](docs/PLUGINS.md) and [Configuration](docs/CONFIGURATION.md).
+
+## Using Snapshot Versions
+
+Add the following repository configurations to your `pom.xml` to enable snapshot versions of this
+plugin to be used.
+
+```xml
+  <repositories>
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>sonatype-nexus-snapshot</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+```

@@ -2,7 +2,7 @@
 
 Snapshots are published to the Sonatype OSS repository.
 
-```
+```xml
 <dependency>
   <groupId>org.jzenith</groupId>
   <artifactId>jzenith-rest</artifactId>
@@ -18,7 +18,7 @@ The REST Plugin gives you
 
 The Rest Plugin can be enabled by calling
 
-```
+```java
 JZenith.application(args)
        .withPlugins(
          RestPlugin.withResources(UserResource.class)
@@ -32,7 +32,7 @@ for your domain exceptions.
 Due to the great support for RxJava in Resteasy you can define
 Resources that look like this 
 
-```
+```java
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/{id}")

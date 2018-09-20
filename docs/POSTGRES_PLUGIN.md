@@ -1,6 +1,6 @@
 # Postgres Plugin
 
-```
+```xml
 <dependency>
   <groupId>org.jzenith</groupId>
   <artifactId>jzenith-postgresql</artifactId>
@@ -15,7 +15,7 @@ The Postgres Plugin gives you
 
 The Postgres Plugin can be enabled by calling 
 
-```
+```java
 JZenith.application(args)
        .withPlugins(
          PostgresqlPlugin.create()
@@ -24,7 +24,7 @@ JZenith.application(args)
 
 Typical DAO implements look like 
 
-```
+```java
     public Maybe<User> getById(@NonNull UUID id) {
         final Select<?> select = dslContext.select(ID_FIELD, NAME_FIELD)
                 .from(USERS_TABLE)

@@ -1,6 +1,6 @@
 # JDBC Plugin
 
-```
+```xml
 <dependency>
   <groupId>org.jzenith</groupId>
   <artifactId>jzenith-jdbc</artifactId>
@@ -15,7 +15,7 @@ The JDBC Plugin gives you
 
 The JDBC Plugin can be enabled by calling 
 
-```
+```java
 JZenith.application(args)
        .withPlugins(
          JdbcPlugin.create(dataSource, JdbcDatabaseType.POSTGRES)
@@ -24,7 +24,7 @@ JZenith.application(args)
 
 Typical DAO implements look like 
 
-```
+```java
     public Maybe<User> getById(@NonNull UUID id) {
         final Select<?> select = dslContext.select(ID_FIELD, NAME_FIELD)
                 .from(USERS_TABLE)
@@ -56,7 +56,7 @@ a `DataSource` instance.
 You can initialize that completely manually, like e.g. for
 Postgres
 
-```
+```java
 final PGSimpleDataSource dataSource = new PGSimpleDataSource();
 dataSource.setPortNumber(5433);
 dataSource.setServerName("localhost");

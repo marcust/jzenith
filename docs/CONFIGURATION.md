@@ -18,7 +18,7 @@ order:
 Wherever jZenith get the value from, it will still support environment
 variable expansion, thus something like 
 
-```
+```java
 JZenith.withConfiguration("rest.port","$PORT");
 ```
 
