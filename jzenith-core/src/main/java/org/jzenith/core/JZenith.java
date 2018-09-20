@@ -27,6 +27,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -40,6 +41,7 @@ import org.apache.logging.log4j.core.util.Constants;
 import org.jzenith.core.configuration.ExtraConfiguration;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.metrics.JZenithDefaultExports;
+import org.jzenith.core.tracing.OpenTracingInterceptor;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -138,7 +140,9 @@ public class JZenith {
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
 
+
                         if (tracer != null) {
+                            bindInterceptor(Matchers.any(), Matchers.any(), new OpenTracingInterceptor(tracer));
                             bind(Tracer.class).toInstance(tracer);
                         }
 

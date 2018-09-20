@@ -133,7 +133,7 @@ public class RestPlugin extends AbstractPlugin {
         final VertxRegistry registry = deployment.getRegistry();
 
         resources.forEach(resourceClass ->
-            registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
+                registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
 
         providerFactory.registerProviderInstance(new JacksonConfig());
         return new GuiceVertxRequestHandler(vertx, deployment);
