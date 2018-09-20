@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.jdbc;
+package org.jzenith.example.resources.response;
 
-import lombok.Getter;
-import org.davidmoten.rx.jdbc.pool.DatabaseType;
-import org.jooq.SQLDialect;
+import lombok.*;
 
-@Getter
-public enum JdbcDatabaseType {
+import java.util.UUID;
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
-    ;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UserResponse {
 
-    private final SQLDialect dialect;
-    private final DatabaseType type;
+    @NonNull
+    private UUID id;
 
-    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
-        this.dialect = dialect;
-        this.type = type;
-    }
+    @NonNull
+    private String name;
 }

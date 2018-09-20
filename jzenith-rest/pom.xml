@@ -12,8 +12,7 @@
     <artifactId>jzenith-rest</artifactId>
     <version>0.1-SNAPSHOT</version>
 
-    <name>jzenith-rest</name>
-    <url>http://www.jzenith.org</url>
+    <name>jZenith REST Plugin</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

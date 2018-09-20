@@ -18,9 +18,11 @@ package org.jzenith.jdbc.model;
 import com.google.common.collect.Iterables;
 import lombok.NonNull;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.jooq.Field;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class Row {
 
@@ -52,5 +54,13 @@ public class Row {
 
     private Long getOnlyValue(@NonNull final Class<Long> type) {
         return type.cast(Iterables.getOnlyElement(rowMap.values()));
+    }
+
+    public <T> T get(@NonNull final Field<T> field) {
+        return getColumn(field.getName(), field.getType());
+    }
+
+    public <T,U> U get(@NonNull Field<T> field, final Function<T,U> converter) {
+        return converter.apply(get(field));
     }
 }

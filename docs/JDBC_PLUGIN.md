@@ -8,7 +8,7 @@
 </dependency>
 ```
 
-The Postgres Plugin gives you
+The JDBC Plugin gives you
 * jOOQ
 * running with rxjava2-jdbc
 * Flyway for db setup and migration

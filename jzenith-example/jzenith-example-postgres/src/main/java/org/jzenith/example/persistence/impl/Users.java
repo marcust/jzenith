@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.jdbc;
+package org.jzenith.example.persistence.impl;
 
-import lombok.Getter;
-import org.davidmoten.rx.jdbc.pool.DatabaseType;
-import org.jooq.SQLDialect;
+import lombok.experimental.UtilityClass;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.Table;
 
-@Getter
-public enum JdbcDatabaseType {
+import java.util.UUID;
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
-    ;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.name;
+import static org.jooq.impl.DSL.table;
 
-    private final SQLDialect dialect;
-    private final DatabaseType type;
+@UtilityClass
+class Users {
 
-    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
-        this.dialect = dialect;
-        this.type = type;
-    }
+    static final Table<Record> USERS_TABLE = table(name("users"));
+
+    static final Field<UUID> ID_FIELD = field(name("id"), UUID.class);
+    static final Field<String> NAME_FIELD = field(name("name"), String.class);
+
 }

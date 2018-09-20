@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.jdbc;
+package org.jzenith.example.service;
 
-import lombok.Getter;
-import org.davidmoten.rx.jdbc.pool.DatabaseType;
-import org.jooq.SQLDialect;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import org.jzenith.example.service.model.User;
+import org.jzenith.rest.model.Page;
 
-@Getter
-public enum JdbcDatabaseType {
+import java.util.UUID;
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
-    ;
+public interface UserService {
 
-    private final SQLDialect dialect;
-    private final DatabaseType type;
+    Single<User> createUser(String name);
 
-    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
-        this.dialect = dialect;
-        this.type = type;
-    }
+    Single<User> getById(UUID id);
+
+    Single<User> updateById(UUID id, String name);
+
+    Single<Page<User>> listUsers(Integer offset, Integer limit);
+
+    Completable deleteById(UUID id);
 }

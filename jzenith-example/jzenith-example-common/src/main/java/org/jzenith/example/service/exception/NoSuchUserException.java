@@ -13,24 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.jdbc;
+package org.jzenith.example.service.exception;
 
-import lombok.Getter;
-import org.davidmoten.rx.jdbc.pool.DatabaseType;
-import org.jooq.SQLDialect;
+import java.util.UUID;
 
-@Getter
-public enum JdbcDatabaseType {
+public class NoSuchUserException extends Exception {
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
-    ;
-
-    private final SQLDialect dialect;
-    private final DatabaseType type;
-
-    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
-        this.dialect = dialect;
-        this.type = type;
+    public NoSuchUserException(UUID uuid) {
+        super("No such user " + uuid);
     }
 }

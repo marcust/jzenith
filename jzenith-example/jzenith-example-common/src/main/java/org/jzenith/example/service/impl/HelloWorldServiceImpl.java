@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.jdbc;
+package org.jzenith.example.service.impl;
 
-import lombok.Getter;
-import org.davidmoten.rx.jdbc.pool.DatabaseType;
-import org.jooq.SQLDialect;
+import org.jzenith.example.service.HelloWorldService;
 
-@Getter
-public enum JdbcDatabaseType {
+public class HelloWorldServiceImpl implements HelloWorldService {
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
-    ;
-
-    private final SQLDialect dialect;
-    private final DatabaseType type;
-
-    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
-        this.dialect = dialect;
-        this.type = type;
+    @Override
+    public String getResponse() {
+        return "Hello World";
     }
 }

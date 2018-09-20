@@ -12,7 +12,7 @@
     <artifactId>jzenith-core</artifactId>
     <version>0.1-SNAPSHOT</version>
 
-    <name>jzenith-core</name>
+    <name>jZenith Core</name>
     <url>http://www.jzenith.org</url>
 
     <properties>

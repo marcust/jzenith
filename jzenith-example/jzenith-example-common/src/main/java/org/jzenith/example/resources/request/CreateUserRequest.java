@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.jdbc;
+package org.jzenith.example.resources.request;
 
-import lombok.Getter;
-import org.davidmoten.rx.jdbc.pool.DatabaseType;
-import org.jooq.SQLDialect;
+import lombok.*;
 
-@Getter
-public enum JdbcDatabaseType {
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
-    ;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class CreateUserRequest {
 
-    private final SQLDialect dialect;
-    private final DatabaseType type;
+    @NonNull
+    @NotBlank
+    @Size(max = 100)
+    private String name;
 
-    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
-        this.dialect = dialect;
-        this.type = type;
-    }
 }

@@ -12,7 +12,7 @@
     <artifactId>jzenith-jdbc</artifactId>
     <version>0.1-SNAPSHOT</version>
 
-    <name>jzenith-jdbc</name>
+    <name>jZenith JDBC Plugin</name>
     <url>http://www.jzenith.org</url>
 
     <properties>

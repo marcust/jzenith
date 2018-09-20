@@ -12,7 +12,7 @@
     <artifactId>jzenith-graalvm-extras</artifactId>
     <version>0.1-SNAPSHOT</version>
 
-    <name>jzenith-graalvm-extras</name>
+    <name>jZenith GraalVM Extras</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

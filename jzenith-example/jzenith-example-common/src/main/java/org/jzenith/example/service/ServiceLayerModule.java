@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.jdbc;
+package org.jzenith.example.service;
 
-import lombok.Getter;
-import org.davidmoten.rx.jdbc.pool.DatabaseType;
-import org.jooq.SQLDialect;
+import com.google.inject.AbstractModule;
+import org.jzenith.example.service.impl.HelloWorldServiceImpl;
+import org.jzenith.example.service.impl.UserServiceImpl;
 
-@Getter
-public enum JdbcDatabaseType {
+public class ServiceLayerModule extends AbstractModule {
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
-    ;
-
-    private final SQLDialect dialect;
-    private final DatabaseType type;
-
-    JdbcDatabaseType(SQLDialect dialect, DatabaseType type) {
-        this.dialect = dialect;
-        this.type = type;
+    @Override
+    protected void configure() {
+        bind(HelloWorldService.class).to(HelloWorldServiceImpl.class).asEagerSingleton();
+        bind(UserService.class).to(UserServiceImpl.class).asEagerSingleton();
     }
 }
+

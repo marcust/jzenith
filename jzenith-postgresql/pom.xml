@@ -12,9 +12,7 @@
     <artifactId>jzenith-postgresql</artifactId>
     <version>0.1-SNAPSHOT</version>
 
-    <name>jzenith-postgresql</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.jzenith.org</url>
+    <name>jZenith PostgreSQL Plugin</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
