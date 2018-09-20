@@ -28,17 +28,18 @@ import org.jzenith.jdbc.JdbcPlugin;
 import org.jzenith.rest.RestPlugin;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Example app for simple Rest ExampleApp
  */
 public class ExampleApp {
 
-    public static void main(String... args) {
+    public static void main(String... args) throws SQLException {
         configureApplication(args).run();
     }
 
-    public static JZenith configureApplication(String... args) {
+    public static JZenith configureApplication(String... args) throws SQLException {
         final DataSource dataSource = createDataSource();
 
         return JZenith.application(args)
@@ -50,13 +51,15 @@ public class ExampleApp {
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule());
     }
 
-    public static DataSource createDataSource() {
+    public static DataSource createDataSource() throws SQLException {
         final MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setPort(3307);
         dataSource.setServerName("localhost");
         dataSource.setDatabaseName("test");
         dataSource.setUser("root");
         dataSource.setPassword("root");
+        dataSource.setUseSSL(false);
+        dataSource.setAllowPublicKeyRetrieval(true);
         return dataSource;
     }
 }
