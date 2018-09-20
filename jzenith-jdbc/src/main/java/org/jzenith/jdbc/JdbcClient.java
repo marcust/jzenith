@@ -31,8 +31,6 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class JdbcClient {
@@ -92,9 +90,9 @@ public class JdbcClient {
         return map;
     }
 
-    public Observable<Row> stream(@NonNull Query query, @NonNull Integer offset, @NonNull Integer limit) {
+    public Observable<Row> stream(@NonNull Query query) {
             return prepareSelect(query)
-                    .get(resultSet -> mapRow(resultSet))
+                    .get(this::mapRow)
                     .map(Row::fromMap)
                     .toObservable();
     }

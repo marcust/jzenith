@@ -56,8 +56,8 @@ public class ConfigurationProvider<T> implements Provider<T> {
     @Override
     public T get() {
         return configurationClass.cast(Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                    new Class[] {configurationClass},
-                    new ConfigurationInvocationHandler(configurationBaseNameUpper, coreConfiguration, extraConfiguration)));
+                new Class[]{configurationClass},
+                new ConfigurationInvocationHandler(configurationBaseNameUpper, coreConfiguration, extraConfiguration)));
     }
 
     private static class ConfigurationInvocationHandler implements InvocationHandler {
@@ -67,8 +67,8 @@ public class ConfigurationProvider<T> implements Provider<T> {
         private final ExtraConfiguration extraConfiguration;
 
         private ConfigurationInvocationHandler(String configurationBaseNameUpper,
-                                              CoreConfiguration coreConfiguration,
-                                              ExtraConfiguration extraConfiguration) {
+                                               CoreConfiguration coreConfiguration,
+                                               ExtraConfiguration extraConfiguration) {
             this.configurationBaseNameUpper = configurationBaseNameUpper;
             this.coreConfiguration = coreConfiguration;
             this.extraConfiguration = extraConfiguration;
@@ -184,24 +184,25 @@ public class ConfigurationProvider<T> implements Provider<T> {
 
             throw new IllegalStateException("Non of the provided suppliers supplied a value");
         }
-    }
 
-    private static Object handleVariableExpansion(@NonNull String stringValue, @NonNull Class<?> returnType) {
-        final String expandedValue;
-        if (stringValue.startsWith("$")) {
-            expandedValue = EnvironmentVariableExpander.expand(stringValue);
-        } else if (stringValue.startsWith("\\")) {
-            expandedValue = stringValue.substring(1);
-        } else {
-            expandedValue = stringValue;
+        private static Object handleVariableExpansion(@NonNull String stringValue, @NonNull Class<?> returnType) {
+            final String expandedValue;
+            if (stringValue.startsWith("$")) {
+                expandedValue = EnvironmentVariableExpander.expand(stringValue);
+            } else if (stringValue.startsWith("\\")) {
+                expandedValue = stringValue.substring(1);
+            } else {
+                expandedValue = stringValue;
+            }
+
+            if (returnType == int.class) {
+                return Integer.parseInt(expandedValue);
+            }
+            if (returnType == String.class) {
+                return expandedValue;
+            }
+            throw new NotImplementedException("No support for configuration of type " + returnType.getName());
         }
 
-        if (returnType == int.class) {
-            return Integer.parseInt(expandedValue);
-        }
-        if (returnType == String.class) {
-            return expandedValue;
-        }
-        throw new NotImplementedException("No support for configuration of type " + returnType.getName());
     }
 }

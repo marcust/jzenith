@@ -21,7 +21,6 @@ import com.google.inject.multibindings.Multibinder;
 import lombok.NonNull;
 import org.davidmoten.rx.jdbc.Database;
 import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.jzenith.core.configuration.ConfigurationProvider;
 import org.jzenith.core.health.HealthCheck;

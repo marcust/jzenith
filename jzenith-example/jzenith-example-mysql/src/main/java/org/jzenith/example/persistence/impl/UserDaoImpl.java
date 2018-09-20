@@ -93,7 +93,7 @@ public class UserDaoImpl implements UserDao {
 
         return Single.zip(
                 client.executeForSingleRow(count).toSingle(),
-                client.stream(select, offset, limit).toList(),
+                client.stream(select).toList(),
                 (countRow, valueRows) -> new Page<>(offset, limit, countRow.getOnlyLong(), mapToUsers(valueRows)));
     }
 
