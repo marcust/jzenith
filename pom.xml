@@ -164,7 +164,7 @@
                         </dependency>
                     </dependencies>
                     <configuration>
-                        <repoToken>$COVERALLS_REPO_TOKEN</repoToken>
+                        <repoToken>${env.COVERALLS_REPO_TOKEN}</repoToken>
                     </configuration>
                 </plugin>
                 <plugin>
