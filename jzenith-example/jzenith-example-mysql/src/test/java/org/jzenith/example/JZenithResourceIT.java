@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.rest.health;
+package org.jzenith.example;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.jzenith.core.health.HealthCheckResult;
-import org.jzenith.core.health.HealthState;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.jzenith.core.JZenith;
 
-import java.util.List;
+public class JZenithResourceIT extends AbstractJZenithResourcesTest {
 
-@Getter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class HealthCheckResponse {
+    private static JZenith jZenith;
 
-    @NonNull
-    private HealthState globalState;
+    @BeforeClass
+    public static void startup() throws Exception {
+        jZenith = ExampleApp.configureApplication();
+        jZenith.run();
+    }
 
-    @NonNull
-    private List<HealthCheckResult> results;
-
+    @AfterClass
+    public static void shutdown() {
+        if (jZenith != null) {
+            jZenith.stop();
+        }
+    }
 }

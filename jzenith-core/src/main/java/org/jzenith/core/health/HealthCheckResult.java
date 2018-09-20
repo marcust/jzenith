@@ -21,15 +21,17 @@ import lombok.*;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HealthCheckResult {
 
     @NonNull
-    private final String healtCheckName;
+    private String healtCheckName;
 
     @NonNull
-    private final HealthState state;
+    private HealthState state;
 
-    private final String message;
+    private String message;
 
     public static HealthCheckResult create(boolean up, @NonNull String name) {
         return HealthCheckResult.builder().state(up ? HealthState.UP : HealthState.DOWN).healtCheckName(name).build();

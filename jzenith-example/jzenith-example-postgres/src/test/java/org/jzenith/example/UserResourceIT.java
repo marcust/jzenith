@@ -28,6 +28,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,11 +51,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserResourceIT extends AbstractUserResourceIT {
 
+    private static JZenith jZenith;
+
     @BeforeClass
     public static void startup() throws Exception {
-        final JZenith jZenith = ExampleApp.configureApplication();
+        jZenith = ExampleApp.configureApplication();
         injector = jZenith.createInjectorForTesting();
         jZenith.run();
+    }
+
+    @AfterClass
+    public static void shutdown() {
+        if (jZenith != null) {
+            jZenith.stop();
+        }
     }
 
     @Override

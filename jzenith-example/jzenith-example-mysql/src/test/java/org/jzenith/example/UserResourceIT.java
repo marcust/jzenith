@@ -22,6 +22,7 @@ import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.ext.mysql.MySqlDataTypeFactory;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.persistence.UserDao;
@@ -31,11 +32,20 @@ import java.util.UUID;
 
 public class UserResourceIT extends AbstractUserResourceIT {
 
+    private static JZenith jZenith;
+
     @BeforeClass
     public static void startup() throws Exception {
-        final JZenith jZenith = ExampleApp.configureApplication();
+        jZenith = ExampleApp.configureApplication();
         AbstractUserResourceIT.injector = jZenith.createInjectorForTesting();
         jZenith.run();
+    }
+
+    @AfterClass
+    public static void shutdown() {
+        if (jZenith != null) {
+            jZenith.stop();
+        }
     }
 
     protected IDatabaseConnection getConnection() throws Exception {

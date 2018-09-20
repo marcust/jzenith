@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class OpenTracingInterceptor implements MethodInterceptor {
+
+    private static final String ERROR = "error";
+
     private final Tracer tracer;
 
     public OpenTracingInterceptor(Tracer tracer) {
@@ -66,7 +69,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnSuccess(event -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, "error", Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
 
@@ -83,7 +86,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnComplete(() -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, "error", Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
     }
@@ -99,7 +102,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnComplete(() -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, "error", Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
     }
@@ -116,7 +119,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnSuccess(event -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, "error", Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
     }

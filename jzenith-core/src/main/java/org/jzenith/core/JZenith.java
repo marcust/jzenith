@@ -39,9 +39,12 @@ import one.util.streamex.StreamEx;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
 import org.apache.logging.log4j.core.util.Constants;
 import org.jzenith.core.configuration.ExtraConfiguration;
+import org.jzenith.core.guice.CloseableListener;
+import org.jzenith.core.guice.LifeCycleObjectRepository;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.metrics.JZenithDefaultExports;
 import org.jzenith.core.tracing.OpenTracingInterceptor;
+import org.jzenith.core.util.CompletableHandler;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -65,7 +68,11 @@ public class JZenith {
     private final Map<String, String> extraConfiguration = Maps.newHashMap();
 
     private final CoreConfiguration configuration;
+
+    private final LifeCycleObjectRepository repository = new LifeCycleObjectRepository();
+
     private Tracer tracer;
+    private Vertx vertx;
 
     private JZenith(CoreConfiguration configuration) {
         this.configuration = configuration;
@@ -95,11 +102,11 @@ public class JZenith {
         if (log.isDebugEnabled()) {
             log.debug("jZenith starting up");
         }
-        if (tracer != null) {
+        if (tracer != null && !GlobalTracer.isRegistered()) {
             GlobalTracer.register(tracer);
         }
 
-        final Vertx vertx = Vertx.vertx();
+        vertx = Vertx.vertx();
         final Injector injector = createInjector(vertx);
         StreamEx.of(vertx.verticleFactories())
                 .select(GuiceVerticleFactory.class)
@@ -139,7 +146,7 @@ public class JZenith {
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
-
+                        bindListener(Matchers.any(), new CloseableListener(repository));
 
                         if (tracer != null) {
                             bindInterceptor(Matchers.any(), Matchers.any(), new OpenTracingInterceptor(tracer));
@@ -167,5 +174,21 @@ public class JZenith {
         this.extraConfiguration.put(name, value);
 
         return this;
+    }
+
+    public void stop() {
+        final CompletableHandler<Void> completableHandler = new CompletableHandler<>();
+        if (vertx != null) {
+            vertx.close(completableHandler.handler());
+
+            try {
+                completableHandler.get();
+            } catch (Exception e) {
+                Throwables.throwIfUnchecked(e);
+                throw new JZenithException(e);
+            }
+        }
+
+        repository.closeAll();
     }
 }
