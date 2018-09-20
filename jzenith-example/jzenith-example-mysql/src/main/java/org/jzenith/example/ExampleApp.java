@@ -16,6 +16,9 @@
 package org.jzenith.example;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import io.opentracing.contrib.reporter.TracerR;
+import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
+import io.opentracing.noop.NoopTracerFactory;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.mapper.MapperModule;
 import org.jzenith.example.persistence.PersistenceLayerModule;
@@ -26,6 +29,8 @@ import org.jzenith.example.service.exception.NoSuchUserException;
 import org.jzenith.jdbc.JdbcDatabaseType;
 import org.jzenith.jdbc.JdbcPlugin;
 import org.jzenith.rest.RestPlugin;
+import org.jzenith.rest.tracing.RequestScopedScopeManager;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -43,6 +48,7 @@ public class ExampleApp {
         final DataSource dataSource = createDataSource();
 
         return JZenith.application(args)
+                .withTracer(new TracerR(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("opentracing"), true), new RequestScopedScopeManager()))
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserException.class, 404),

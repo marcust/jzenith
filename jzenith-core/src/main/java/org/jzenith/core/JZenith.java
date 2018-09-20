@@ -28,6 +28,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
@@ -61,6 +63,7 @@ public class JZenith {
     private final Map<String, String> extraConfiguration = Maps.newHashMap();
 
     private final CoreConfiguration configuration;
+    private Tracer tracer;
 
     private JZenith(CoreConfiguration configuration) {
         this.configuration = configuration;
@@ -79,10 +82,19 @@ public class JZenith {
         return this;
     }
 
+    public JZenith withTracer(@NonNull final Tracer tracer) {
+        this.tracer = tracer;
+
+        return this;
+    }
+
     public void run() {
         final Stopwatch stopwatch = Stopwatch.createStarted();
         if (log.isDebugEnabled()) {
             log.debug("jZenith starting up");
+        }
+        if (tracer != null) {
+            GlobalTracer.register(tracer);
         }
 
         final Vertx vertx = Vertx.vertx();
@@ -125,6 +137,10 @@ public class JZenith {
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(vertx);
                         bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
+
+                        if (tracer != null) {
+                            bind(Tracer.class).toInstance(tracer);
+                        }
 
                         Multibinder.newSetBinder(binder(), HealthCheck.class);
                     }

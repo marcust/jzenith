@@ -72,16 +72,24 @@ plugin to be used.
     <repository>
       <id>sonatype-nexus-snapshots</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases><enabled>false</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>sonatype-nexus-snapshot</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases><enabled>false</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
+      <releases>
+        <enabled>false</enabled>
+       </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
 ```

@@ -98,6 +98,18 @@
             <version>${prometheus.version}</version>
         </dependency>
 
+        <!-- Tracing -->
+        <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-rxjava-2</artifactId>
+            <version>0.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-jaxrs2</artifactId>
+            <version>0.1.7</version>
+        </dependency>
+
         <!-- Swagger -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>

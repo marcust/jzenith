@@ -21,6 +21,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import io.opentracing.Tracer;
+import io.opentracing.contrib.jaxrs2.server.ServerTracingDynamicFeature;
+import io.opentracing.rxjava2.TracingRxJava2Utils;
+import io.opentracing.util.GlobalTracer;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import lombok.NonNull;
@@ -40,6 +44,7 @@ import org.jzenith.rest.metrics.MetricsFeature;
 import org.jzenith.rest.metrics.PrometheusResource;
 
 import javax.validation.ValidationException;
+import javax.ws.rs.container.DynamicFeature;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -77,27 +82,14 @@ public class RestPlugin extends AbstractPlugin {
         if (log.isDebugEnabled()) {
             log.debug("jZenith Rest is starting and registering the following resources:\n{}", Joiner.on('\n').join(resources));
         }
-        final VertxResteasyDeployment deployment = new VertxResteasyDeployment();
-        deployment.start();
-        final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
+        initRxJavaTracing();
 
-        providerFactory.getServerDynamicFeatures().add(new MetricsFeature());
-
-        exceptionMappings.forEach((clz, exceptionMapping) -> providerFactory.getExceptionMappers().put(clz, exceptionMapping.toExceptionHandler()));
-
-        final VertxRegistry registry = deployment.getRegistry();
-
-        resources.forEach(resourceClass ->
-            registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
-
-        providerFactory.registerProviderInstance(new JacksonConfig());
+        final GuiceVertxRequestHandler handler = initResteasy(injector);
 
         final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
-        final Vertx vertx = injector.getInstance(Vertx.class);
         final RestConfiguration restConfiguration = injector.getInstance(RestConfiguration.class);
-
-        final GuiceVertxRequestHandler handler = new GuiceVertxRequestHandler(vertx, deployment);
+        final Vertx vertx = injector.getInstance(Vertx.class);
         vertx.createHttpServer()
                 .requestHandler(handler)
                 .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
@@ -114,13 +106,46 @@ public class RestPlugin extends AbstractPlugin {
         return completableFuture;
     }
 
-    public RestPlugin withMapping(@NonNull Class<? extends Exception> exception, int statusCode) {
+    private void initRxJavaTracing() {
+        if (GlobalTracer.isRegistered()) {
+            final Tracer tracer = GlobalTracer.get();
+
+            TracingRxJava2Utils.enableTracing(tracer);
+        }
+    }
+
+    private GuiceVertxRequestHandler initResteasy(@NonNull final Injector injector) {
+        final Vertx vertx = injector.getInstance(Vertx.class);
+        final VertxResteasyDeployment deployment = new VertxResteasyDeployment();
+        deployment.start();
+        final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
+
+        providerFactory.getServerDynamicFeatures().add(new MetricsFeature());
+
+        if (GlobalTracer.isRegistered()) {
+            final DynamicFeature tracing = new ServerTracingDynamicFeature.Builder(GlobalTracer.get())
+                    .build();
+            providerFactory.getServerDynamicFeatures().add(tracing);
+        }
+
+        exceptionMappings.forEach((clz, exceptionMapping) -> providerFactory.getExceptionMappers().put(clz, exceptionMapping.toExceptionHandler()));
+
+        final VertxRegistry registry = deployment.getRegistry();
+
+        resources.forEach(resourceClass ->
+            registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
+
+        providerFactory.registerProviderInstance(new JacksonConfig());
+        return new GuiceVertxRequestHandler(vertx, deployment);
+    }
+
+    public RestPlugin withMapping(@NonNull final Class<? extends Exception> exception, int statusCode) {
         exceptionMappings.put(exception, new ExceptionMapping<>(exception, statusCode));
 
         return this;
     }
 
-    public RestPlugin withMapping(@NonNull Class<? extends Exception> exception, int statusCode, @NonNull String message) {
+    public RestPlugin withMapping(@NonNull final Class<? extends Exception> exception, int statusCode, @NonNull String message) {
         exceptionMappings.put(exception, new ConstantMessageExceptionMapping<>(exception, statusCode, message));
 
         return this;
