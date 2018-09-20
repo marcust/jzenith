@@ -23,6 +23,13 @@
             <artifactId>jzenith-example-common</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.jzenith</groupId>
+            <artifactId>jzenith-jdbc</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>mysql</groupId>
