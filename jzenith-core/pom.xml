@@ -18,7 +18,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <guice.version>4.2.0</guice.version>
+        <guice.version>4.2.1</guice.version>
         <opentracing.version>0.31.0</opentracing.version>
     </properties>
 
