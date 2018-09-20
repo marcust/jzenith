@@ -33,9 +33,9 @@ public class LifeCycleObjectRepository {
     }
 
     public void closeAll() {
-        final Set<Closer> closers = Sets.newHashSet(this.closers);
+        final Set<Closer> localClosers = Sets.newHashSet(this.closers);
 
-        closers.forEach(c -> {
+        localClosers.forEach(c -> {
             try {
                 c.close();
             } catch (Exception e) {
@@ -43,6 +43,6 @@ public class LifeCycleObjectRepository {
                 throw new JZenithException(e);
             }
         });
-        this.closers.removeAll(closers);
+        this.closers.removeAll(localClosers);
     }
 }
