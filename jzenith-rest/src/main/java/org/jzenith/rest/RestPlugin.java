@@ -21,6 +21,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.jaxrs2.server.ServerTracingDynamicFeature;
 import io.opentracing.rxjava2.TracingRxJava2Utils;
@@ -120,7 +121,7 @@ public class RestPlugin extends AbstractPlugin {
         deployment.start();
         final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
 
-        providerFactory.getServerDynamicFeatures().add(new MetricsFeature());
+        providerFactory.getServerDynamicFeatures().add(new MetricsFeature(injector.getInstance(MeterRegistry.class)));
 
         if (GlobalTracer.isRegistered()) {
             final DynamicFeature tracing = new ServerTracingDynamicFeature.Builder(GlobalTracer.get())

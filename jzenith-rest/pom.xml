@@ -92,11 +92,6 @@
         </dependency>
 
         <!-- Metrics -->
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_common</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
 
         <!-- Tracing -->
         <dependency>

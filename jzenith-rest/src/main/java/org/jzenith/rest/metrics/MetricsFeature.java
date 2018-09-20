@@ -15,14 +15,23 @@
  */
 package org.jzenith.rest.metrics;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.NonNull;
+
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 
 public class MetricsFeature implements DynamicFeature {
 
+    private final MeterRegistry registry;
+
+    public MetricsFeature(@NonNull final MeterRegistry registry) {
+        this.registry = registry;
+    }
+
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-        context.register(new MetricsInterceptor(resourceInfo));
+        context.register(new MetricsInterceptor(registry, resourceInfo));
     }
 }

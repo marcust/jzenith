@@ -29,6 +29,14 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.vertx.core.Vertx;
@@ -42,7 +50,7 @@ import org.jzenith.core.configuration.ExtraConfiguration;
 import org.jzenith.core.guice.CloseableListener;
 import org.jzenith.core.guice.LifeCycleObjectRepository;
 import org.jzenith.core.health.HealthCheck;
-import org.jzenith.core.metrics.JZenithDefaultExports;
+import org.jzenith.core.metrics.JvmOptionMetrics;
 import org.jzenith.core.tracing.OpenTracingInterceptor;
 import org.jzenith.core.util.CompletableHandler;
 
@@ -57,7 +65,6 @@ public class JZenith {
     static {
         System.setProperty(Constants.LOG4J_CONTEXT_SELECTOR, AsyncLoggerContextSelector.class.getName());
         System.setProperty(LoggerFactory.LOGGER_DELEGATE_FACTORY_CLASS_NAME, SLF4JLogDelegateFactory.class.getName());
-        JZenithDefaultExports.initialize();
     }
 
     // Manually (not Lombok) after static block to ensure that the property for the context selector has been set.
@@ -142,6 +149,7 @@ public class JZenith {
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
+                        bind(MeterRegistry.class).toInstance(makeMeterRegistry());
                         bind(CoreConfiguration.class).toInstance(configuration);
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(vertx);
@@ -161,6 +169,19 @@ public class JZenith {
                 .build();
 
         return Guice.createInjector(allModules);
+    }
+
+    private MeterRegistry makeMeterRegistry() {
+        final PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        new ClassLoaderMetrics().bindTo(registry);
+        new JvmMemoryMetrics().bindTo(registry);
+        new JvmGcMetrics().bindTo(registry);
+        new ProcessorMetrics().bindTo(registry);
+        new JvmThreadMetrics().bindTo(registry);
+        new JvmOptionMetrics().bindTo(registry);
+
+        return registry;
+
     }
 
     @SafeVarargs

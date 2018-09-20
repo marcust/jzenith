@@ -20,6 +20,7 @@
 
         <guice.version>4.2.1</guice.version>
         <opentracing.version>0.31.0</opentracing.version>
+        <micrometer.version>1.0.6</micrometer.version>
     </properties>
 
     <dependencies>
@@ -97,14 +98,14 @@
 
         <!-- Metrics -->
         <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
-            <version>${prometheus.version}</version>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>${micrometer.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_hotspot</artifactId>
-            <version>${prometheus.version}</version>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>${micrometer.version}</version>
         </dependency>
 
         <!-- Tracing -->
