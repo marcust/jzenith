@@ -31,19 +31,14 @@ import javax.ws.rs.container.Suspended;
 @Path("/metrics")
 public class PrometheusResource {
 
-
-    private final HttpServerRequest httpServerRequest;
     private final Vertx vertx;
     private final PrometheusMeterRegistry registry;
 
     @Inject
-    public PrometheusResource(final HttpServerRequest httpServerRequest,
-                              final Vertx vertx,
+    public PrometheusResource(final Vertx vertx,
                               final MeterRegistry registry) {
-        this.registry = (PrometheusMeterRegistry)registry;
+        this.registry = (PrometheusMeterRegistry) registry;
 
-
-        this.httpServerRequest = httpServerRequest;
         this.vertx = vertx;
     }
 
@@ -51,9 +46,7 @@ public class PrometheusResource {
     @Path("/prometheus")
     @Produces(TextFormat.CONTENT_TYPE_004)
     public void prometheusEndpoint(@Suspended final AsyncResponse asyncResponse) {
-        vertx.executeBlocking(future -> {
-                    future.complete(registry.scrape());
-                },
+        vertx.executeBlocking(future -> future.complete(registry.scrape()),
                 result -> {
                     if (result.failed()) {
                         asyncResponse.resume(result.cause());
@@ -63,7 +56,5 @@ public class PrometheusResource {
                     return;
                 }
         );
-
-
     }
 }
