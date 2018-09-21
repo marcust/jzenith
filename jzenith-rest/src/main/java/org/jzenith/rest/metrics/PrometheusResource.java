@@ -19,7 +19,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerRequest;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

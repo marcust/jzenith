@@ -52,10 +52,19 @@ public class MetricsInterceptor implements ContainerRequestFilter, ContainerResp
                 .description("Request duration seconds")
                 .minimumExpectedValue(Duration.ofMillis(5))
                 .maximumExpectedValue(Duration.ofSeconds(10))
-                .sla(Duration.ofMillis(500))
-                .publishPercentileHistogram()
-                .percentilePrecision(2)
-                .publishPercentiles(0.5, 0.95, 0.99);
+                .sla(Duration.ofMillis(5),
+                        Duration.ofMillis(10),
+                        Duration.ofMillis(50),
+                        Duration.ofMillis(100),
+                        Duration.ofMillis(250),
+                        Duration.ofMillis(500),
+                        Duration.ofMillis(750),
+                        Duration.ofMillis(1000),
+                        Duration.ofMillis(2000),
+                        Duration.ofMillis(3000),
+                        Duration.ofMillis(4000),
+                        Duration.ofMillis(7500),
+                        Duration.ofMillis(10000));
     }
 
 
