@@ -82,11 +82,14 @@ public class PostgresqlClient {
 
             final List<Object> bindValues = retypeBindValues(query, offset, limit);
 
-            // I've no idea how the rxStreams are supposed to work, because they leak connections
-            // when you do it like in the docs ....
-            return pgPool.rxPreparedQuery(nativeQuery.nativeSql, new Tuple(new ArrayTuple(bindValues)))
-                    .flatMapObservable(pgRowSet -> Observable.fromIterable(pgRowSet.getDelegate()))
-                    .map(Row::newInstance);
+            return pgPool.rxGetConnection()
+                    .flatMapObservable(conn -> conn
+                            .rxPrepare(nativeQuery.nativeSql)
+                            .flatMapObservable(pq -> {
+                                PgStream<Row> stream = pq.createStream(limit, new Tuple(new ArrayTuple(bindValues)));
+                                return stream.toObservable();
+                            })
+                            .doAfterTerminate(conn::close));
 
         } catch (SQLException e) {
             return Observable.error(e);
