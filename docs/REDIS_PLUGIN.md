@@ -39,7 +39,8 @@ public class UserDaoImpl extends RedisDao<User> implements UserDao {
 }
 ```
 
-Your bean should be `serializable`, you should subclass `RedisDao`
+Your bean should be `Serializable`, you should also subclass `RedisDao`
+for a couple of methods to load and store data.
 
 ## Configuration properties
 *defined in `RedisConfiguration`*
