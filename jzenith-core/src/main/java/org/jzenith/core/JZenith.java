@@ -197,6 +197,12 @@ public class JZenith {
         return this;
     }
 
+    public JZenith withConfiguration(String name, int value) {
+        this.extraConfiguration.put(name, String.valueOf(value));
+
+        return this;
+    }
+
     public void stop() {
         final CompletableHandler<Void> completableHandler = new CompletableHandler<>();
         if (vertx != null) {

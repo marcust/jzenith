@@ -25,12 +25,12 @@ import org.jzenith.example.resources.HelloWorldResource;
 import org.jzenith.example.resources.UserResource;
 import org.jzenith.example.service.ServiceLayerModule;
 import org.jzenith.example.service.exception.NoSuchUserException;
-import org.jzenith.postgresql.PostgresqlPlugin;
+import org.jzenith.redis.RedisPlugin;
 import org.jzenith.rest.RestPlugin;
 import org.jzenith.rest.tracing.RequestScopedScopeManager;
 import org.slf4j.LoggerFactory;
 
-public class PostgresPluginExampleApp {
+public class RedisPluginExampleApp {
 
     public static void main(String... args) {
         configureApplication(args).run();
@@ -42,13 +42,10 @@ public class PostgresPluginExampleApp {
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserException.class, 404),
-                        PostgresqlPlugin.create()
+                        RedisPlugin.create()
                 )
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
-                .withConfiguration("postgresql.port", 5433)
-                .withConfiguration("postgresql.database", "test")
-                .withConfiguration("postgresql.username", "test")
-                .withConfiguration("postgresql.password", "test");
+                .withConfiguration("redis.port", 6378);
     }
 
 }

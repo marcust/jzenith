@@ -15,23 +15,12 @@
  */
 package org.jzenith.example;
 
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.entity.ContentType;
-import org.dbunit.JdbcDatabaseTester;
-import org.dbunit.database.DatabaseConfig;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.ext.mysql.MySqlDataTypeFactory;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.jzenith.core.JZenith;
 import org.jzenith.example.persistence.UserDao;
 import org.jzenith.example.resources.request.CreateUserRequest;
 import org.jzenith.example.resources.request.UpdateUserRequest;
@@ -40,7 +29,7 @@ import org.jzenith.example.service.model.User;
 import org.jzenith.rest.model.ErrorResponse;
 import org.jzenith.rest.model.Page;
 
-import java.sql.Connection;
+import javax.inject.Inject;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -48,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractUserResourceIT {
 
-    private final static UUID USER_UUID = UUID.fromString("71aebc48-78e2-4298-8d13-7a2bfb58c555");
-    private final static String USER_NAME = "jzenith_user";
+    protected final static UUID USER_UUID = UUID.fromString("71aebc48-78e2-4298-8d13-7a2bfb58c555");
+    protected final static String USER_NAME = "jzenith_user";
 
     protected static Injector injector;
 
@@ -59,16 +48,7 @@ public abstract class AbstractUserResourceIT {
     @Before
     public void setup() throws Exception {
         injector.injectMembers(this);
-
-        final IDatabaseConnection connection = getConnection();
-        final IDataSet dataSet = new FlatXmlDataSetBuilder().build(AbstractUserResourceIT.class.getResourceAsStream("/user.xml"));
-
-        DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-
     }
-
-    protected abstract IDatabaseConnection getConnection() throws Exception;
-
 
     @Test
     public void testGetUser_200() {

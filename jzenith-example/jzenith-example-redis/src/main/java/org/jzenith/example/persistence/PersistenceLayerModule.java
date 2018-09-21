@@ -13,29 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.postgresql;
+package org.jzenith.example.persistence;
 
-import io.reactiverse.reactivex.pgclient.PgPool;
-import io.reactivex.Single;
-import org.jzenith.core.health.HealthCheck;
-import org.jzenith.core.health.HealthCheckResult;
+import com.google.inject.AbstractModule;
+import org.jzenith.example.persistence.impl.UserDaoImpl;
 
-import javax.inject.Inject;
-
-public class PostgresqlHealthCheck extends HealthCheck {
-
-    private final PgPool pool;
-
-    @Inject
-    public PostgresqlHealthCheck(PgPool pool) {
-        this.pool = pool;
-    }
+public class PersistenceLayerModule extends AbstractModule {
 
     @Override
-    public Single<HealthCheckResult> executeInternal() {
-        return pool.rxQuery("select 1")
-                .map(pgRowSet -> createResult(pgRowSet.size() > 0));
+    protected void configure() {
+        bind(UserDao.class).to(UserDaoImpl.class).asEagerSingleton();
     }
-
-
 }

@@ -45,6 +45,7 @@
         <module>jzenith-rest</module>
         <module>jzenith-postgresql</module>
         <module>jzenith-jdbc</module>
+        <module>jzenith-redis</module>
         <module>jzenith-graalvm-extras</module>
         <module>jzenith-example</module>
     </modules>

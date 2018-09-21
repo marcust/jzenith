@@ -30,7 +30,7 @@ import java.sql.DriverManager;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserResourceIT extends AbstractUserResourceIT {
+public class UserResourceIT extends AbstractDatabaseUserResourceIT {
 
     private static JZenith jZenith;
 

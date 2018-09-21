@@ -63,7 +63,7 @@ public class JdbcPlugin extends AbstractPlugin {
     @Override
     protected CompletableFuture<String> start(Injector injector) {
         if (log.isDebugEnabled()) {
-            log.debug("jZenith SQL is starting");
+            log.debug("jZenith JDBC is starting");
         }
 
         final Vertx vertx = injector.getInstance(Vertx.class);

@@ -13,48 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.postgresql;
+package org.jzenith.redis;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 import org.jzenith.core.AbstractPlugin;
-import org.jzenith.core.util.CompletableHandler;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static org.jzenith.core.util.VerticleDeploymentUtil.forGuiceVerticleLoader;
-
 @Slf4j
-public class PostgresqlPlugin extends AbstractPlugin {
+public class RedisPlugin extends AbstractPlugin {
 
-    private PostgresqlPlugin() {
+    private RedisPlugin() {
     }
 
-    public static PostgresqlPlugin create() {
-        return new PostgresqlPlugin();
+    public static RedisPlugin create() {
+        return new RedisPlugin();
     }
 
     @Override
     protected List<Module> getModules() {
-        return ImmutableList.of(new PostgresqlBinder());
+        return ImmutableList.of(new RedisBinder());
     }
 
     @Override
     protected CompletableFuture<String> start(Injector injector) {
         if (log.isDebugEnabled()) {
-            log.debug("jZenith PostgreSQL is starting");
+            log.debug("jZenith Redis is starting");
         }
 
-        final Vertx vertx = injector.getInstance(Vertx.class);
-
-        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
-        vertx.deployVerticle("java-guice:" + MigrationVerticle.class.getName(), forGuiceVerticleLoader(), completableHandler.handler());
-
-        return completableHandler;
+        return CompletableFuture.completedFuture("Done");
     }
 
 

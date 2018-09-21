@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.postgresql;
+package org.jzenith.redis;
 
-import io.reactiverse.reactivex.pgclient.PgPool;
 import io.reactivex.Single;
+import io.vertx.reactivex.redis.RedisClient;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.health.HealthCheckResult;
 
 import javax.inject.Inject;
 
-public class PostgresqlHealthCheck extends HealthCheck {
+public class RedisHealthCheck extends HealthCheck {
 
-    private final PgPool pool;
+    private final RedisClient client;
 
     @Inject
-    public PostgresqlHealthCheck(PgPool pool) {
-        this.pool = pool;
+    public RedisHealthCheck(RedisClient client) {
+        this.client = client;
     }
 
     @Override
     public Single<HealthCheckResult> executeInternal() {
-        return pool.rxQuery("select 1")
-                .map(pgRowSet -> createResult(pgRowSet.size() > 0));
+        return client.rxPing()
+                .map(response -> createResult("PONG".equalsIgnoreCase(response)));
     }
 
 

@@ -37,8 +37,7 @@ public class JdbcHealthCheck extends HealthCheck {
     public Single<HealthCheckResult> executeInternal() {
         return Single.fromPublisher(database.select(configuration.getTestQuerySql())
                 .getTupleN())
-                .map(tuple -> createResult(!tuple.values().isEmpty()))
-                .onErrorResumeNext(error -> Single.just(createResult(error)));
+                .map(tuple -> createResult(!tuple.values().isEmpty()));
     }
 
 }

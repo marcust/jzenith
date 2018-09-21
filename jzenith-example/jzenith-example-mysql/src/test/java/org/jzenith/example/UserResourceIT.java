@@ -25,7 +25,7 @@ import org.jzenith.core.JZenith;
 
 import java.sql.Connection;
 
-public class UserResourceIT extends AbstractUserResourceIT {
+public class UserResourceIT extends AbstractDatabaseUserResourceIT {
 
     private static JZenith jZenith;
 

@@ -9,9 +9,9 @@
     </parent>
 
     <groupId>org.jzenith</groupId>
-    <artifactId>jzenith-example-mysql</artifactId>
+    <artifactId>jzenith-example-redis</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>Example - MySQL</name>
+    <name>Example - Redis</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,18 +25,9 @@
         </dependency>
         <dependency>
             <groupId>org.jzenith</groupId>
-            <artifactId>jzenith-jdbc</artifactId>
+            <artifactId>jzenith-redis</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
-
-
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.12</version>
-        </dependency>
-
 
         <!-- Compile Time tools -->
         <dependency>
@@ -132,22 +123,19 @@
                 <configuration>
                     <images>
                         <image>
-                            <alias>database</alias>
-                            <name>mysql:8</name>
+                            <alias>redis</alias>
+                            <name>redis:4</name>
                             <run>
                                 <wait>
-                                    <log>Using a password on the command line interface can be insecure</log>
+                                    <log>Ready to accept connections</log>
                                     <time>20000</time>
                                 </wait>
                                 <ports>
-                                    <!-- port>5433:5432</port -->
-                                    <port>3307:3306</port>
+                                    <port>6378:6379</port>
                                 </ports>
                                 <env>
-                                    <MYSQL_ROOT_PASSWORD>root</MYSQL_ROOT_PASSWORD>
-                                    <MYSQL_DATABASE>test</MYSQL_DATABASE>
-                                    <MYSQL_USER>test</MYSQL_USER>
-                                    <MYSQL_PASSWORD>test</MYSQL_PASSWORD>
+                                    <POSTGRES_USER>test</POSTGRES_USER>
+                                    <POSTGRES_PASSWORD>test</POSTGRES_PASSWORD>
                                 </env>
                             </run>
                         </image>

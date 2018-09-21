@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.postgresql;
+package org.jzenith.example;
 
-import io.reactiverse.reactivex.pgclient.PgPool;
-import io.reactivex.Single;
-import org.jzenith.core.health.HealthCheck;
-import org.jzenith.core.health.HealthCheckResult;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.jzenith.core.JZenith;
 
-import javax.inject.Inject;
+public class JZenithResourceIT extends AbstractJZenithResourcesTest {
 
-public class PostgresqlHealthCheck extends HealthCheck {
+    private static JZenith jZenith;
 
-    private final PgPool pool;
-
-    @Inject
-    public PostgresqlHealthCheck(PgPool pool) {
-        this.pool = pool;
+    @BeforeClass
+    public static void startup() throws Exception {
+        jZenith = RedisPluginExampleApp.configureApplication();
+        jZenith.run();
     }
 
-    @Override
-    public Single<HealthCheckResult> executeInternal() {
-        return pool.rxQuery("select 1")
-                .map(pgRowSet -> createResult(pgRowSet.size() > 0));
+    @AfterClass
+    public static void shutdown() {
+        if (jZenith != null) {
+            jZenith.stop();
+        }
     }
-
-
 }
