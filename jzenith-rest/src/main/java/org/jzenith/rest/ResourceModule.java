@@ -18,8 +18,11 @@ package org.jzenith.rest;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.AbstractModule;
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.integration.api.OpenAPIConfiguration;
+import org.jzenith.rest.swagger.SingleModelConverter;
 
 import java.util.List;
 
@@ -38,6 +41,8 @@ public class ResourceModule extends AbstractModule {
     }
 
     private OpenAPIConfiguration makeSwaggerConfiguration() {
+        ModelConverters.getInstance().addConverter(new SingleModelConverter(Json.mapper()));
+
         final SwaggerConfiguration configuration = new SwaggerConfiguration();
         configuration.setResourceClasses(resources.stream().map(Class::getName).collect(ImmutableSet.toImmutableSet()));
         configuration.setPrettyPrint(Boolean.TRUE);
