@@ -24,7 +24,6 @@ import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.redis.RedisClient;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
-import org.checkerframework.checker.nullness.Opt;
 import org.nustaq.serialization.FSTConfiguration;
 
 import java.util.Optional;
