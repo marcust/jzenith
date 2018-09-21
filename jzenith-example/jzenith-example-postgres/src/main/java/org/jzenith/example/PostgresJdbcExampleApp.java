@@ -32,10 +32,7 @@ import org.jzenith.rest.tracing.RequestScopedScopeManager;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.LoggerFactory;
 
-/**
- * Example app for simple Rest ExampleApp
- */
-public class ExampleApp {
+public class PostgresJdbcExampleApp {
 
     public static void main(String... args) {
         configureApplication(args).run();

@@ -15,6 +15,7 @@
  */
 package org.jzenith.example;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import io.opentracing.contrib.reporter.TracerR;
 import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
 import io.opentracing.noop.NoopTracerFactory;
@@ -25,33 +26,46 @@ import org.jzenith.example.resources.HelloWorldResource;
 import org.jzenith.example.resources.UserResource;
 import org.jzenith.example.service.ServiceLayerModule;
 import org.jzenith.example.service.exception.NoSuchUserException;
-import org.jzenith.postgresql.PostgresqlPlugin;
+import org.jzenith.jdbc.JdbcDatabaseType;
+import org.jzenith.jdbc.JdbcPlugin;
 import org.jzenith.rest.RestPlugin;
 import org.jzenith.rest.tracing.RequestScopedScopeManager;
 import org.slf4j.LoggerFactory;
 
-/**
- * Example app for simple Rest ExampleApp
- */
-public class ExampleApp {
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
-    public static void main(String... args) {
+/**
+ * Example app for simple Rest MySqlJdbcExampleApp
+ */
+public class MySqlJdbcExampleApp {
+
+    public static void main(String... args) throws SQLException {
         configureApplication(args).run();
     }
 
-    public static JZenith configureApplication(String... args) {
+    public static JZenith configureApplication(String... args) throws SQLException {
+        final DataSource dataSource = createDataSource();
+
         return JZenith.application(args)
                 .withTracer(new TracerR(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("opentracing"), true), new RequestScopedScopeManager()))
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserException.class, 404),
-                        PostgresqlPlugin.create()
+                        JdbcPlugin.create(dataSource, JdbcDatabaseType.MYSQL)
                 )
-                .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
-                .withConfiguration("postgresql.port", "5433")
-                .withConfiguration("postgresql.database", "test")
-                .withConfiguration("postgresql.username", "test")
-                .withConfiguration("postgresql.password", "test");
+                .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule());
     }
 
+    public static DataSource createDataSource() throws SQLException {
+        final MysqlDataSource dataSource = new MysqlDataSource();
+        dataSource.setPort(3307);
+        dataSource.setServerName("localhost");
+        dataSource.setDatabaseName("test");
+        dataSource.setUser("root");
+        dataSource.setPassword("root");
+        dataSource.setUseSSL(false);
+        dataSource.setAllowPublicKeyRetrieval(true);
+        return dataSource;
+    }
 }

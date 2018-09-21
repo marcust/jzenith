@@ -15,9 +15,6 @@
  */
 package org.jzenith.example;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -25,10 +22,8 @@ import org.dbunit.ext.mysql.MySqlDataTypeFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.jzenith.core.JZenith;
-import org.jzenith.example.persistence.UserDao;
 
 import java.sql.Connection;
-import java.util.UUID;
 
 public class UserResourceIT extends AbstractUserResourceIT {
 
@@ -36,7 +31,7 @@ public class UserResourceIT extends AbstractUserResourceIT {
 
     @BeforeClass
     public static void startup() throws Exception {
-        jZenith = ExampleApp.configureApplication();
+        jZenith = MySqlJdbcExampleApp.configureApplication();
         AbstractUserResourceIT.injector = jZenith.createInjectorForTesting();
         jZenith.run();
     }
@@ -50,7 +45,7 @@ public class UserResourceIT extends AbstractUserResourceIT {
 
     protected IDatabaseConnection getConnection() throws Exception {
         // database connection
-        Connection jdbcConnection = ExampleApp.createDataSource().getConnection();
+        Connection jdbcConnection = MySqlJdbcExampleApp.createDataSource().getConnection();
         final DatabaseConnection databaseConnection = new DatabaseConnection(jdbcConnection);
         final DatabaseConfig config = databaseConnection.getConfig();
         //config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());

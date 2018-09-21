@@ -15,36 +15,17 @@
  */
 package org.jzenith.example;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.entity.ContentType;
-import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.jzenith.core.JZenith;
-import org.jzenith.example.persistence.UserDao;
-import org.jzenith.example.resources.request.CreateUserRequest;
-import org.jzenith.example.resources.request.UpdateUserRequest;
-import org.jzenith.example.resources.response.UserResponse;
-import org.jzenith.example.service.model.User;
-import org.jzenith.rest.model.ErrorResponse;
-import org.jzenith.rest.model.Page;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +36,7 @@ public class UserResourceIT extends AbstractUserResourceIT {
 
     @BeforeClass
     public static void startup() throws Exception {
-        jZenith = ExampleApp.configureApplication();
+        jZenith = PostgresJdbcExampleApp.configureApplication();
         injector = jZenith.createInjectorForTesting();
         jZenith.run();
     }

@@ -25,7 +25,7 @@ public class JZenithResourceIT extends AbstractJZenithResourcesTest {
 
     @BeforeClass
     public static void startup() throws Exception {
-        jZenith = ExampleApp.configureApplication();
+        jZenith = PostgresJdbcExampleApp.configureApplication();
         jZenith.run();
     }
 
