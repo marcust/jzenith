@@ -28,7 +28,6 @@ import lombok.NonNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.Iterator;
 
 public class SingleModelConverter extends ModelResolver {
@@ -37,6 +36,7 @@ public class SingleModelConverter extends ModelResolver {
         super(mapper);
     }
 
+    @Override
     public Schema resolve(@NonNull final AnnotatedType annotatedType, @NonNull final ModelConverterContext context, @NonNull final Iterator<ModelConverter> chain) {
         if (annotatedType.isSchemaProperty()) {
             return continueChain(annotatedType, context, chain);
