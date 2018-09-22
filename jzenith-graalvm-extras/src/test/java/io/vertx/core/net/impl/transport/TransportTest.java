@@ -57,7 +57,7 @@ public class TransportTest {
 
         transport.eventLoopGroup(5, Thread::new, 5);
         transport.datagramChannel(InternetProtocolFamily.IPv4);
-        transport.datagramChannel(InternetProtocolFamily.IPv6);
+        //transport.datagramChannel(InternetProtocolFamily.IPv6);
 
         assertThat(transport.unavailabilityCause()).isNull();
     }
