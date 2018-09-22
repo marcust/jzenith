@@ -52,5 +52,18 @@ public abstract class AbstractJZenithResourcesTest {
         assertThat(response).isNotBlank();
     }
 
+    @Test
+    public void testOpenApiEndpoint() {
+        final String response = given()
+                .when()
+                .get("/openapi.json")
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
+
+        assertThat(response).isNotNull();
+    }
+
 
 }

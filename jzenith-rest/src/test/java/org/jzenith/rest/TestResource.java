@@ -1,0 +1,46 @@
+/**
+ * Copyright © 2018 Marcus Thiesen (marcus@thiesen.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jzenith.rest;
+
+import com.google.common.collect.ImmutableList;
+import lombok.Getter;
+import org.jzenith.core.JZenithException;
+import org.jzenith.rest.model.Page;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.UUID;
+
+@Path("/")
+public class TestResource {
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/error")
+    @GET
+    public String getError() {
+        throw new JZenithException("error");
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/page")
+    @GET
+    public Page<UUID> getPage() {
+        return new Page<UUID>(0, 1, 2, ImmutableList.of(UUID.randomUUID()));
+    }
+
+}

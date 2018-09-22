@@ -18,6 +18,7 @@ package org.jzenith.rest.exception;
 import com.google.common.base.Throwables;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jzenith.rest.model.ErrorResponse;
@@ -28,7 +29,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 @Slf4j
-@Data
 @AllArgsConstructor
 public class ExceptionMapping<T extends Exception> {
 
@@ -62,5 +62,9 @@ public class ExceptionMapping<T extends Exception> {
 
     public ExceptionMapper toExceptionHandler() {
         return exception -> toResponse(exceptionType.cast(exception));
+    }
+
+    Class<T> getExceptionType() {
+        return exceptionType;
     }
 }

@@ -22,8 +22,6 @@ import org.jzenith.rest.model.ErrorResponse;
 
 import javax.ws.rs.core.Response;
 
-@SuppressFBWarnings(value = "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", justification = "Lombok foobar")
-@EqualsAndHashCode
 public class ConstantMessageExceptionMapping<T extends Exception> extends ExceptionMapping<T> {
 
     private final Response errorResponse;

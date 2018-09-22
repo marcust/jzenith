@@ -15,14 +15,22 @@
  */
 package org.jzenith.rest.model;
 
-import lombok.*;
+import com.google.common.collect.ImmutableList;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
-@AllArgsConstructor
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ErrorResponse {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    private int status;
+public class PageTest {
 
-    private String message;
+    @Test
+    public void testMapping() {
+        final Page<String> page = new Page<>(0,1,1, ImmutableList.of("5"));
+        final Page<Long> longPage = page.map(Long::valueOf);
+
+        assertThat(longPage.getElements()).isNotNull();
+        assertThat(longPage.getElements().get(0)).isEqualTo(5);
+
+    }
+
 }
