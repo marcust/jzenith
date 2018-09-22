@@ -22,7 +22,7 @@ import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.SQLException;
 
-public class AbstractJdbcPluginTest {
+public abstract class AbstractJdbcPluginTest {
 
     public static MySQLContainer container = new MySQLContainer();
 

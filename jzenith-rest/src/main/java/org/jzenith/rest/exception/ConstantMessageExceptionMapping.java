@@ -16,7 +16,6 @@
 package org.jzenith.rest.exception;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.jzenith.rest.model.ErrorResponse;
 

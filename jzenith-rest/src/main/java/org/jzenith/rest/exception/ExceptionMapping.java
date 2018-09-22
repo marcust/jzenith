@@ -17,8 +17,6 @@ package org.jzenith.rest.exception;
 
 import com.google.common.base.Throwables;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jzenith.rest.model.ErrorResponse;
