@@ -27,6 +27,7 @@ import org.jzenith.rest.model.Page;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -56,7 +57,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Single<Page<UserResponse>> listUsers(@QueryParam("offset") @DefaultValue("0") Integer offset,
-                                                @QueryParam("limit") @DefaultValue("20") @Max(100) Integer limit) {
+                                                @QueryParam("limit") @DefaultValue("20") @Min(1) @Max(100) Integer limit) {
         return userService
                 .listUsers(offset, limit)
                 .map(userMapper::mapToPageUserResponse);

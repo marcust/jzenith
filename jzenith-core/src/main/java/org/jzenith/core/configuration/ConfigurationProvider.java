@@ -93,6 +93,15 @@ public class ConfigurationProvider<T> implements Provider<T> {
                 return value;
             }
 
+            if (value.getClass() == Integer.class && returnType == int.class) {
+                return value;
+            }
+
+            if (value.getClass() == Long.class && returnType == long.class) {
+                return value;
+            }
+
+
             if (value instanceof String) {
                 return handleVariableExpansion((String) value, returnType);
             }

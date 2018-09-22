@@ -16,7 +16,6 @@
 package org.jzenith.rest;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Getter;
 import org.jzenith.core.JZenithException;
 import org.jzenith.rest.model.Page;
 

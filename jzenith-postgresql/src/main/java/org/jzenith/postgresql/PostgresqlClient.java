@@ -105,30 +105,30 @@ public class PostgresqlClient {
      */
     private List<Object> retypeBindValues(@NonNull Query query, @NonNull Integer offset, @NonNull Integer limit) {
         final List<Object> bindValues = new ArrayList<>(query.getBindValues());
-        if (limit > 0) {
+        if (offset > 0) {
             final int lastElementIndex = bindValues.size() - 1;
             final Object lastBindValue = bindValues.get(lastElementIndex);
-            if (limit.equals(lastBindValue)) {
-                bindValues.set(lastElementIndex, (long) limit);
+            if (offset.equals(lastBindValue)) {
+                bindValues.set(lastElementIndex, (long) offset);
             } else {
                 throw new IllegalStateException("Expecting limit to be last value in the bind values, but it is " + lastBindValue);
             }
 
-            if (offset > 0) {
+            if (limit > 0) {
                 final int secondLastElementIndex = lastElementIndex - 1;
                 final Object secondLastBindValue = bindValues.get(secondLastElementIndex);
-                if (offset.equals(secondLastBindValue)) {
-                    bindValues.set(secondLastElementIndex, (long) offset);
+                if (limit.equals(secondLastBindValue)) {
+                    bindValues.set(secondLastElementIndex, (long) limit);
                 } else {
                     throw new IllegalThreadStateException("Expecting offset to be second last bind value, but it is " + secondLastBindValue);
                 }
             }
         } else {
-            if (offset > 0) {
+            if (limit > 0) {
                 final int lastElementIndex = bindValues.size() - 1;
                 final Object lastBindValue = bindValues.get(lastElementIndex);
-                if (offset.equals(lastBindValue)) {
-                    bindValues.set(lastElementIndex, (long) offset);
+                if (limit.equals(lastBindValue)) {
+                    bindValues.set(lastElementIndex, (long) limit);
                 } else {
                     throw new IllegalStateException("Expecting limit to be last value in the bind values, but it is " + lastBindValue);
                 }

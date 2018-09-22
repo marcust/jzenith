@@ -39,6 +39,10 @@ public class ConfigurationTest {
         String getLocalPropertiesValue();
 
         String getGlobalPropertiesValue();
+
+        int getIntForInteger();
+
+        long getLongForLong();
     }
 
     private static class TestModule extends AbstractModule {
@@ -57,6 +61,8 @@ public class ConfigurationTest {
                 .withConfiguration("test.int", 5)
                 .withConfiguration("test.string", "foo")
                 .withConfiguration("test.uuid", uuid)
+                .withConfiguration("test.int.for.integer", Integer.valueOf(4))
+                .withConfiguration("test.long.for.long", Long.valueOf(6))
                 .createInjectorForTesting();
 
         final TestConfiguration instance = injector.getInstance(TestConfiguration.class);
@@ -68,6 +74,8 @@ public class ConfigurationTest {
         assertThat(instance.getCommandLine()).isEqualTo("commandLineValue");
         assertThat(instance.getLocalPropertiesValue()).isEqualTo("localPropertiesValue");
         assertThat(instance.getGlobalPropertiesValue()).isEqualTo("globalPropertiesValue");
+        assertThat(instance.getIntForInteger()).isEqualTo(4);
+        assertThat(instance.getLongForLong()).isEqualTo(6);
     }
 
 }

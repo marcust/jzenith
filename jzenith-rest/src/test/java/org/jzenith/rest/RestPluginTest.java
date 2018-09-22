@@ -176,6 +176,4 @@ public class RestPluginTest {
                 .withPlugins(RestPlugin.withResources(resources));
     }
 
-
-
 }
