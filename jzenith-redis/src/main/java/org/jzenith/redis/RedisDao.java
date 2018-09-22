@@ -41,18 +41,10 @@ public abstract class RedisDao<T> {
         this.type = type;
     }
 
-    protected Completable set(@NonNull final Provider<String> keyProvider, @NonNull T value) {
-        return set(keyProvider.get(), value);
-    }
-
     protected Completable set(@NonNull final String key, @NonNull T value) {
         final Buffer buffer = serialize(value);
 
         return client.rxSetBinary(prefixKey(key), buffer);
-    }
-
-    protected Maybe<T> get(@NonNull final Provider<String> keyProvider) {
-        return get(keyProvider.get());
     }
 
     protected Maybe<T> get(@NonNull final String key) {
@@ -60,10 +52,6 @@ public abstract class RedisDao<T> {
                 .map(this::deserialize)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
-    }
-
-    protected Single<Long> delete(@NonNull final Provider<String> keyProvider) {
-        return delete(keyProvider.get());
     }
 
     protected Single<Long> delete(@NonNull final String key) {
