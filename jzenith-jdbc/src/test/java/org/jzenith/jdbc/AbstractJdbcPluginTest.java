@@ -13,31 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.postgresql;
+package org.jzenith.jdbc;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import io.opentracing.noop.NoopTracerFactory;
-import org.junit.ClassRule;
 import org.jzenith.core.JZenith;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.MySQLContainer;
 
-public abstract class AbstractPostgresqlPluginTest {
+import java.sql.SQLException;
 
-    public static PostgreSQLContainer container = new PostgreSQLContainer();
+public class AbstractJdbcPluginTest {
+
+    public static MySQLContainer container = new MySQLContainer();
 
     static {
         container.start();
     }
 
+    JZenith makeApplication() throws SQLException {
+        final MysqlDataSource dataSource = new MysqlDataSource();
+        dataSource.setPort(container.getFirstMappedPort());
+        dataSource.setServerName("localhost");
+        dataSource.setDatabaseName(container.getDatabaseName());
+        dataSource.setUser(container.getUsername());
+        dataSource.setPassword(container.getPassword());
+        dataSource.setUseSSL(false);
+        dataSource.setAllowPublicKeyRetrieval(true);
 
-    JZenith makeApplication() {
         final JZenith application = JZenith.application();
         return application
                 .withTracer(NoopTracerFactory.create())
-                .withPlugins(PostgresqlPlugin.create())
-                .withConfiguration("postgresql.port", container.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT))
-                .withConfiguration("postgresql.database", container.getDatabaseName())
-                .withConfiguration("postgresql.username", container.getUsername())
-                .withConfiguration("postgresql.password", container.getPassword());
+                .withPlugins(JdbcPlugin.create(dataSource, JdbcDatabaseType.MYSQL));
     }
+
+
 
 }
