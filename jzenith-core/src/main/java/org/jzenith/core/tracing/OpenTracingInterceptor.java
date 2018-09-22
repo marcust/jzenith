@@ -15,6 +15,7 @@
  */
 package org.jzenith.core.tracing;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
@@ -46,23 +47,20 @@ public class OpenTracingInterceptor implements MethodInterceptor {
         final Class<?> returnType = invocation.getMethod().getReturnType();
 
         if (returnType == Single.class) {
-            return handleSingle(invocation);
+            return handleSingle((Single<?>) invocation.proceed(), createChildSpan(invocation));
         } else if (returnType == Observable.class) {
-            return handleObservable(invocation);
+            return handleObservable((Observable<?>)invocation.proceed(), createChildSpan(invocation));
         } else if (returnType == Completable.class) {
-            return handleCompletable(invocation);
+            return handleCompletable((Completable)invocation.proceed(), createChildSpan(invocation));
         } else if (returnType == Maybe.class) {
-            return handleMaybe(invocation);
+            return handleMaybe((Maybe<?>)invocation.proceed(), createChildSpan(invocation));
         }
 
         return invocation.proceed();
     }
 
-    private Object handleSingle(MethodInvocation invocation) throws Throwable {
-        final Single<?> single = (Single<?>) invocation.proceed();
-
-        final Span span = createChildSpan(invocation);
-
+    @VisibleForTesting
+    Single<?> handleSingle(final Single<?> single, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return single.doOnSubscribe(disposable -> activateSpan(currentScope, span))
@@ -75,11 +73,8 @@ public class OpenTracingInterceptor implements MethodInterceptor {
 
     }
 
-    private Object handleObservable(MethodInvocation invocation) throws Throwable {
-        final Observable<?> observable = (Observable<?>) invocation.proceed();
-
-        final Span span = createChildSpan(invocation);
-
+    @VisibleForTesting
+    Observable<?> handleObservable(final Observable<?> observable, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return observable.doOnSubscribe(disposable -> activateSpan(currentScope, span))
@@ -91,11 +86,8 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 });
     }
 
-    private Object handleCompletable(MethodInvocation invocation) throws Throwable {
-        final Completable completable = (Completable) invocation.proceed();
-
-        final Span span = createChildSpan(invocation);
-
+    @VisibleForTesting
+    Completable handleCompletable(final Completable completable, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return completable.doOnSubscribe(disposable -> activateSpan(currentScope, span))
@@ -107,11 +99,8 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 });
     }
 
-    private Object handleMaybe(MethodInvocation invocation) throws Throwable {
-        final Maybe<?> maybe = (Maybe<?>) invocation.proceed();
-
-        final Span span = createChildSpan(invocation);
-
+    @VisibleForTesting
+    Maybe<?> handleMaybe(final Maybe<?> maybe, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return maybe.doOnSubscribe(disposable -> activateSpan(currentScope, span))

@@ -72,7 +72,7 @@ public class JZenith {
 
     private final LinkedList<AbstractPlugin> plugins = Lists.newLinkedList();
     private final LinkedList<Module> modules = Lists.newLinkedList();
-    private final Map<String, String> extraConfiguration = Maps.newHashMap();
+    private final Map<String, Object> extraConfiguration = Maps.newHashMap();
 
     private final CoreConfiguration configuration;
 
@@ -191,13 +191,13 @@ public class JZenith {
         return this;
     }
 
-    public JZenith withConfiguration(String name, String value) {
+    public JZenith withConfiguration(@NonNull  String name, @NonNull Object value) {
         this.extraConfiguration.put(name, value);
 
         return this;
     }
 
-    public JZenith withConfiguration(String name, int value) {
+    public JZenith withConfiguration(@NonNull String name, int value) {
         this.extraConfiguration.put(name, String.valueOf(value));
 
         return this;

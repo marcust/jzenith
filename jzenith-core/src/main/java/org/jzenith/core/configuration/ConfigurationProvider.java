@@ -125,13 +125,16 @@ public class ConfigurationProvider<T> implements Provider<T> {
             try {
                 try (final InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties")) {
                     if (specificStream != null) {
-                        return loadPropertyFrom(specificStream, configurationBaseNameLower + "." + propertyName);
+                        final String value = loadPropertyFrom(specificStream, propertyName);
+                        if (value != null) {
+                            return value;
+                        }
                     }
                 }
 
                 try (final InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties")) {
                     if (globalStream != null) {
-                        return loadPropertyFrom(globalStream, configurationBaseNameLower + "." + propertyName);
+                        return loadPropertyFrom(globalStream, propertyName);
                     }
                 }
             } catch (IOException e) {

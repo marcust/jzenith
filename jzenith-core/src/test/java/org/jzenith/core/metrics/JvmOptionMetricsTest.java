@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.core;
+package org.jzenith.core.metrics;
 
-import java.util.List;
+import org.junit.Test;
 
-public interface CoreConfiguration {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    List<String> getCommandLineArguments();
+public class JvmOptionMetricsTest {
+
+    @Test
+    public void testJvmOptionMetrics() {
+        final JvmOptionMetrics metrics = new JvmOptionMetrics();
+
+        assertThat(metrics.getMaxDirectMemorySize()).isEqualTo(0.0D);
+        assertThat(metrics.getThreadStackSize()).isEqualTo(1048576.0D);
+    }
 
 }

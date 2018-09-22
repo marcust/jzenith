@@ -49,9 +49,9 @@ public class JvmOptionMetrics implements MeterBinder {
 
             return Double.parseDouble(maxDirectMemorySize.getValue());
         } catch (Exception e) {
-            log.warn("Can not get {}, will return -1", optionName, e);
+            log.warn("Can not get {}, will return NaN", optionName, e);
 
-            return -1L;
+            return Double.NaN;
         }
     }
 
