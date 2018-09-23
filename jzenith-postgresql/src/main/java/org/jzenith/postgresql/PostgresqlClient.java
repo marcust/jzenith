@@ -18,7 +18,13 @@ package org.jzenith.postgresql;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
 import io.reactiverse.pgclient.impl.ArrayTuple;
-import io.reactiverse.reactivex.pgclient.*;
+import io.reactiverse.reactivex.pgclient.PgIterator;
+import io.reactiverse.reactivex.pgclient.PgPool;
+import io.reactiverse.reactivex.pgclient.PgResult;
+import io.reactiverse.reactivex.pgclient.PgRowSet;
+import io.reactiverse.reactivex.pgclient.PgStream;
+import io.reactiverse.reactivex.pgclient.Row;
+import io.reactiverse.reactivex.pgclient.Tuple;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -31,7 +37,6 @@ import org.postgresql.core.Parser;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PostgresqlClient {
@@ -89,52 +94,11 @@ public class PostgresqlClient {
                         .flatMapObservable(conn -> conn
                                 .rxPrepare(nativeQuery.nativeSql)
                                 .flatMapObservable(pq -> {
-                                    PgStream<Row> stream = pq.createStream(limit, new Tuple(new ArrayTuple(retypeBindValues(query, offset, limit))));
+                                    PgStream<Row> stream = pq.createStream(limit, bindValuesToTuple(query));
                                     return stream.toObservable();
                                 })
                                 .doAfterTerminate(conn::close))
                 );
-    }
-
-    /**
-     * This is a hack, because jOOQ believes that offsets and limits are integers, whereas postgres and thus reactive-pg-client
-     * believes them to be int8 aka Long.
-     * <p>
-     * I actually think reactive-pg-client should upcast that, but as I don't have a minimal test case now and before
-     * somebody asks my why I use jOOQ with reactive-pg-client I wait till I publish this and then raise an issue
-     */
-    private List<Object> retypeBindValues(@NonNull Query query, @NonNull Integer offset, @NonNull Integer limit) {
-        final List<Object> bindValues = new ArrayList<>(query.getBindValues());
-        if (offset > 0) {
-            final int lastElementIndex = bindValues.size() - 1;
-            final Object lastBindValue = bindValues.get(lastElementIndex);
-            if (offset.equals(lastBindValue)) {
-                bindValues.set(lastElementIndex, (long) offset);
-            } else {
-                throw new IllegalStateException("Expecting limit to be last value in the bind values, but it is " + lastBindValue);
-            }
-
-            if (limit > 0) {
-                final int secondLastElementIndex = lastElementIndex - 1;
-                final Object secondLastBindValue = bindValues.get(secondLastElementIndex);
-                if (limit.equals(secondLastBindValue)) {
-                    bindValues.set(secondLastElementIndex, (long) limit);
-                } else {
-                    throw new IllegalStateException("Expecting offset to be second last bind value, but it is " + secondLastBindValue);
-                }
-            }
-        } else {
-            if (limit > 0) {
-                final int lastElementIndex = bindValues.size() - 1;
-                final Object lastBindValue = bindValues.get(lastElementIndex);
-                if (limit.equals(lastBindValue)) {
-                    bindValues.set(lastElementIndex, (long) limit);
-                } else {
-                    throw new IllegalStateException("Expecting limit to be last value in the bind values, but it is " + lastBindValue);
-                }
-            }
-        }
-        return bindValues;
     }
 
     private Tuple bindValuesToTuple(Query query) {

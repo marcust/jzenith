@@ -132,39 +132,6 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
         assertThat(rows).isNotNull();
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testStreamLimitWrongValue() {
-        final Query query = dslContext.selectOne()
-                .offset(0)
-                .limit(2);
-
-        final Observable<Row> row = client.stream(query, 0, 3);
-
-        row.toList().blockingGet();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testStreamOffsetLimitBothWrongValue() {
-        final Query query = dslContext.selectOne()
-                .offset(1)
-                .limit(2);
-
-        final Observable<Row> row = client.stream(query, 2, 3);
-
-        row.toList().blockingGet();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testStreamOffsetLimitWrongValue() {
-        final Query query = dslContext.selectOne()
-                .offset(1)
-                .limit(2);
-
-        final Observable<Row> row = client.stream(query, 1, 3);
-
-        row.toList().blockingGet();
-    }
-
     @Test(expected = SQLException.class)
     public void testNativeQueryErrorHandling() throws SQLException {
         final PostgresqlClient clientMock = mock(PostgresqlClient.class);
