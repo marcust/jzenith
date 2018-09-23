@@ -121,15 +121,19 @@ public class ExampleCommonTest {
             return response;
         });
 
-        CompletableFuture.runAsync(() -> {
-            try {
-                Thread.sleep(500);
-                final AsyncResponse response = asyncResponseFuture.get(1, TimeUnit.SECONDS);
-                verify(response, times(1)).resume(eq("Hello World"));
-            } catch (final Exception e) {
-                throw new JZenithException(e);
-            }
-        }).get();
+        await()
+                .catchUncaughtExceptions()
+                .pollDelay(500, TimeUnit.MILLISECONDS)
+                .timeout(5, TimeUnit.SECONDS)
+                .until(() -> {
+                    try {
+                        final AsyncResponse response = asyncResponseFuture.get(1, TimeUnit.SECONDS);
+                        verify(response, times(1)).resume(eq("Hello World"));
+                        return true;
+                    } catch (final Exception e) {
+                        throw new JZenithException(e);
+                    }
+                });
     }
 
     @Test

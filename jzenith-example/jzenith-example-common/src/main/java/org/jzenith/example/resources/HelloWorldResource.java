@@ -16,7 +16,6 @@
 package org.jzenith.example.resources;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerRequest;
 import org.jzenith.example.service.HelloWorldService;
 
 import javax.inject.Inject;
