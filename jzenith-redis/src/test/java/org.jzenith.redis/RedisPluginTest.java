@@ -17,7 +17,6 @@ package org.jzenith.redis;
 
 import org.junit.Test;
 import org.jzenith.core.JZenith;
-import org.jzenith.redis.AbstractRedisPluginTest;
 
 public class RedisPluginTest extends AbstractRedisPluginTest {
 

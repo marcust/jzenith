@@ -90,10 +90,10 @@ public class JZenith {
         return new JZenith(() -> Arrays.asList(args));
     }
 
-    public JZenith withPlugins(@NonNull AbstractPlugin... modules) {
-        Preconditions.checkArgument(modules.length > 0, "You need to provide a module");
+    public JZenith withPlugins(@NonNull AbstractPlugin... plugins) {
+        Preconditions.checkArgument(plugins.length > 0, "You need to provide a plugin");
 
-        this.plugins.addAll(Arrays.asList(modules));
+        this.plugins.addAll(Arrays.asList(plugins));
 
         return this;
     }

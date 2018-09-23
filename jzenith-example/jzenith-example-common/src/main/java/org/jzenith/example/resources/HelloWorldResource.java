@@ -42,7 +42,6 @@ public class HelloWorldResource {
     @Produces(MediaType.APPLICATION_JSON)
     public void getHelloWorld(
             @Suspended final AsyncResponse response,
-            @Context HttpServerRequest vertxRequest,
             @Context Vertx vertx) {
 
         vertx.runOnContext(aVoid -> {
