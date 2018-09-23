@@ -44,23 +44,32 @@ public class OpenTracingInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        final Class<?> returnType = invocation.getMethod().getReturnType();
-
-        if (returnType == Single.class) {
-            return handleSingle((Single<?>) invocation.proceed(), createChildSpan(invocation));
-        } else if (returnType == Observable.class) {
-            return handleObservable((Observable<?>)invocation.proceed(), createChildSpan(invocation));
-        } else if (returnType == Completable.class) {
-            return handleCompletable((Completable)invocation.proceed(), createChildSpan(invocation));
-        } else if (returnType == Maybe.class) {
-            return handleMaybe((Maybe<?>)invocation.proceed(), createChildSpan(invocation));
+        final Object returnValue = invocation.proceed();
+        if (returnValue == null) {
+            return null;
         }
 
-        return invocation.proceed();
+        final String operationName = invocation.getThis().getClass().getSuperclass().getSimpleName() + "." + invocation.getMethod().getName();
+
+        return wrapRxTypes(operationName, returnValue);
     }
 
     @VisibleForTesting
-    Single<?> handleSingle(final Single<?> single, final Span span) {
+    Object wrapRxTypes(@NonNull String operationName, Object returnValue) {
+        if (Single.class.isAssignableFrom(returnValue.getClass())) {
+            return handleSingle((Single<?>) returnValue, createChildSpan(operationName));
+        } else if (Observable.class.isAssignableFrom(returnValue.getClass())) {
+            return handleObservable((Observable<?>) returnValue, createChildSpan(operationName));
+        } else if (Completable.class.isAssignableFrom(returnValue.getClass())) {
+            return handleCompletable((Completable) returnValue, createChildSpan(operationName));
+        } else if (Maybe.class.isAssignableFrom(returnValue.getClass())) {
+            return handleMaybe((Maybe<?>) returnValue, createChildSpan(operationName));
+        }
+
+        return returnValue;
+    }
+
+    private Single<?> handleSingle(final Single<?> single, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return single.doOnSubscribe(disposable -> activateSpan(currentScope, span))
@@ -73,8 +82,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
 
     }
 
-    @VisibleForTesting
-    Observable<?> handleObservable(final Observable<?> observable, final Span span) {
+    private Observable<?> handleObservable(final Observable<?> observable, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return observable.doOnSubscribe(disposable -> activateSpan(currentScope, span))
@@ -86,8 +94,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 });
     }
 
-    @VisibleForTesting
-    Completable handleCompletable(final Completable completable, final Span span) {
+    private Completable handleCompletable(final Completable completable, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return completable.doOnSubscribe(disposable -> activateSpan(currentScope, span))
@@ -99,8 +106,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 });
     }
 
-    @VisibleForTesting
-    Maybe<?> handleMaybe(final Maybe<?> maybe, final Span span) {
+    private Maybe<?> handleMaybe(final Maybe<?> maybe, final Span span) {
         final AtomicReference<Scope> currentScope = new AtomicReference<>();
 
         return maybe.doOnSubscribe(disposable -> activateSpan(currentScope, span))
@@ -117,8 +123,9 @@ public class OpenTracingInterceptor implements MethodInterceptor {
         currentScope.set(tracer.scopeManager().activate(span, true));
     }
 
-    private Span createChildSpan(@NonNull final MethodInvocation invocation) {
-        final Tracer.SpanBuilder builder = tracer.buildSpan(invocation.getThis().getClass().getSuperclass().getSimpleName() + "." + invocation.getMethod().getName());
+    @VisibleForTesting
+    Span createChildSpan(@NonNull String operationName) {
+        final Tracer.SpanBuilder builder = tracer.buildSpan(operationName);
 
         final Span span = tracer.activeSpan();
         if (span != null) {

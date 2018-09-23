@@ -16,16 +16,27 @@
 package org.jzenith.core.tracing;
 
 import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.noop.NoopSpan;
+import io.opentracing.noop.NoopSpanBuilder;
 import io.opentracing.noop.NoopTracer;
 import io.opentracing.noop.NoopTracerFactory;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
 import org.jzenith.core.JZenithException;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class OpenTracingInterceptorTest {
 
@@ -34,12 +45,10 @@ public class OpenTracingInterceptorTest {
         final NoopTracer tracer = NoopTracerFactory.create();
         final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
 
-        final Span success = tracer.buildSpan("success").start();
-        interceptor.handleSingle(Single.just("success"), success).blockingGet();
+        ((Single<?>) interceptor.wrapRxTypes("success", Single.just("success"))).blockingGet();
 
-        final Span error = tracer.buildSpan("error").start();
         try {
-            interceptor.handleSingle(Single.<String>error(new JZenithException("error")), error).blockingGet();
+            ((Single<?>) interceptor.wrapRxTypes("error", Single.<String>error(new JZenithException("error")))).blockingGet();
         } catch (JZenithException e) {
             assertThat(e.getMessage()).isEqualTo("error");
         }
@@ -50,12 +59,10 @@ public class OpenTracingInterceptorTest {
         final NoopTracer tracer = NoopTracerFactory.create();
         final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
 
-        final Span success = tracer.buildSpan("success").start();
-        interceptor.handleObservable(Observable.just("success"), success).toList().blockingGet();
+        ((Observable<?>) interceptor.wrapRxTypes("suceess", Observable.just("success"))).toList().blockingGet();
 
-        final Span error = tracer.buildSpan("error").start();
         try {
-            interceptor.handleObservable(Observable.<String>error(new JZenithException("error")), error).toList().blockingGet();
+            ((Observable<?>) interceptor.wrapRxTypes("error", Observable.<String>error(new JZenithException("error")))).toList().blockingGet();
         } catch (JZenithException e) {
             assertThat(e.getMessage()).isEqualTo("error");
         }
@@ -66,12 +73,10 @@ public class OpenTracingInterceptorTest {
         final NoopTracer tracer = NoopTracerFactory.create();
         final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
 
-        final Span success = tracer.buildSpan("success").start();
-        interceptor.handleCompletable(Completable.complete(), success).blockingGet();
+        ((Completable) interceptor.wrapRxTypes("success", Completable.complete())).blockingGet();
 
-        final Span error = tracer.buildSpan("error").start();
         try {
-            interceptor.handleCompletable(Completable.error(new JZenithException("error")), error).blockingGet();
+            ((Completable) interceptor.wrapRxTypes("error", Completable.error(new JZenithException("error")))).blockingGet();
         } catch (JZenithException e) {
             assertThat(e.getMessage()).isEqualTo("error");
         }
@@ -82,19 +87,48 @@ public class OpenTracingInterceptorTest {
         final NoopTracer tracer = NoopTracerFactory.create();
         final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
 
-        final Span success = tracer.buildSpan("success").start();
-        interceptor.handleMaybe(Maybe.just("success"), success).blockingGet();
+        ((Maybe<?>) interceptor.wrapRxTypes("success", Maybe.just("success"))).blockingGet();
 
-        final Span error = tracer.buildSpan("error").start();
         try {
-            interceptor.handleMaybe(Maybe.<String>error(new JZenithException("error")), error).blockingGet();
+            ((Maybe<?>) interceptor.wrapRxTypes("error", Maybe.<String>error(new JZenithException("error")))).blockingGet();
         } catch (JZenithException e) {
             assertThat(e.getMessage()).isEqualTo("error");
         }
     }
 
+    @Test
+    public void testInvoke() throws Throwable {
+        final NoopTracer tracer = NoopTracerFactory.create();
+        final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
+        final MethodInvocation invocation = mock(MethodInvocation.class);
+        when(invocation.proceed()).thenReturn("foo");
+        when(invocation.getThis()).thenReturn(this);
+        when(invocation.getMethod()).thenReturn(this.getClass().getMethod("testInvoke"));
 
+        interceptor.invoke(invocation);
+    }
+
+    @Test
+    public void testInvokeNull() throws Throwable {
+        final NoopTracer tracer = NoopTracerFactory.create();
+        final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
+        final MethodInvocation invocation = mock(MethodInvocation.class);
+        when(invocation.proceed()).thenReturn(null);
+
+        interceptor.invoke(invocation);
+    }
+
+    @Test
+    public void testCreateChildSpan() throws Throwable {
+        final Tracer tracer = mock(Tracer.class);
+        final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
+
+        when(tracer.buildSpan(any())).thenReturn(NoopSpanBuilder.INSTANCE);
+        when(tracer.activeSpan()).thenReturn(mock(Span.class));
+
+        final Span span = interceptor.createChildSpan("foo");
+        assertThat(span).isEqualTo(NoopSpan.INSTANCE);
+    }
 
 
 }
-
