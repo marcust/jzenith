@@ -49,7 +49,7 @@ public class Transport {
      */
     public static final Transport JDK = new Transport();
 
-    private static final String SO_REUSEPORT = "SO_REUSEPORT";
+    static final String SO_REUSEPORT = "SO_REUSEPORT";
 
     /**
      * The native transport, it may be {@code null} or failed.
@@ -184,7 +184,7 @@ public class Transport {
             if (options.getMulticastNetworkInterface() != null) {
                 try {
                     channel.config().setNetworkInterface(NetworkInterface.getByName(options.getMulticastNetworkInterface()));
-                } catch (SocketException e) {
+                } catch (ChannelException|SocketException e) {
                     throw new IllegalArgumentException("Could not find network interface with name " + options.getMulticastNetworkInterface());
                 }
             }

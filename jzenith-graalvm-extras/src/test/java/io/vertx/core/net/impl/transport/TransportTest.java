@@ -17,6 +17,8 @@ package io.vertx.core.net.impl.transport;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelException;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -26,7 +28,11 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
+
+import java.lang.reflect.InvocationTargetException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -40,6 +46,7 @@ public class TransportTest {
     @Test
     public void testVoidTest() {
         final Transport transport = Transport.JDK;
+        Transport.nativeTransport();
 
         assertThat(transport.isAvailable()).isTrue();
         assertThat(transport.channelOption("foo")).isNull();
@@ -47,9 +54,37 @@ public class TransportTest {
         assertThat(transport.serverChannelType(false)).isEqualTo(NioServerSocketChannel.class);
         assertThat(transport.datagramChannel()).isInstanceOf(NioDatagramChannel.class);
 
-        transport.configure(new NioDatagramChannel(), new DatagramSocketOptions());
-        transport.configure(new NetServerOptions(), new ServerBootstrap());
-        transport.configure(new HttpClientOptions(), new Bootstrap());
+        final DatagramSocketOptions datagramSocketOptions = new DatagramSocketOptions();
+        datagramSocketOptions.setSendBufferSize(5);
+        datagramSocketOptions.setReceiveBufferSize(5);
+        datagramSocketOptions.setTrafficClass(2);
+        datagramSocketOptions.setMulticastTimeToLive(5);
+        datagramSocketOptions.setMulticastNetworkInterface("localhost");
+
+        try {
+            transport.configure(new NioDatagramChannel(), datagramSocketOptions);
+        } catch (IllegalArgumentException e) {
+            // ignore
+        }
+        datagramSocketOptions.setMulticastNetworkInterface(null);
+        transport.configure(new NioDatagramChannel(), datagramSocketOptions);
+
+        final NetServerOptions netServerOptions = new NetServerOptions();
+        netServerOptions.setSendBufferSize(5);
+        netServerOptions.setReceiveBufferSize(5);
+        netServerOptions.setTrafficClass(2);
+        netServerOptions.setSoLinger(5);
+        netServerOptions.setAcceptBacklog(5);
+        transport.configure(netServerOptions, new ServerBootstrap());
+
+        final HttpClientOptions httpClientOptions = new HttpClientOptions();
+        httpClientOptions.setSendBufferSize(5);
+        httpClientOptions.setReceiveBufferSize(5);
+        httpClientOptions.setTrafficClass(2);
+        httpClientOptions.setSoLinger(5);
+        httpClientOptions.setLocalAddress("localhost");
+        transport.configure(httpClientOptions, new Bootstrap());
+
         final SocketAddress address = mock(SocketAddress.class);
         when(address.host()).thenReturn("localhost");
         transport.convert(address, true);
@@ -57,9 +92,40 @@ public class TransportTest {
 
         transport.eventLoopGroup(5, Thread::new, 5);
         transport.datagramChannel(InternetProtocolFamily.IPv4);
-        //transport.datagramChannel(InternetProtocolFamily.IPv6);
 
+        try {
+            transport.datagramChannel(InternetProtocolFamily.IPv6);
+        } catch (Exception e) {
+            // ignore, does not work on Travis
+        }
         assertThat(transport.unavailabilityCause()).isNull();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentException1() {
+        final SocketAddress address = mock(SocketAddress.class);
+        when(address.path()).thenReturn("/foo");
+
+        Transport.JDK.convert(address, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentException2() {
+        Transport.JDK.channelType(true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentException3() {
+        Transport.JDK.serverChannelType(true);
+    }
+
+    @Test
+    public void testChannelOptions() {
+        final Transport transport = Mockito.spy(Transport.JDK);
+        when(transport.channelOption(ArgumentMatchers.eq(Transport.SO_REUSEPORT))).thenReturn(ChannelOption.valueOf(Transport.SO_REUSEPORT));
+
+        final NetServerOptions netServerOptions = new NetServerOptions();
+        transport.configure(netServerOptions, new ServerBootstrap());
     }
 
 }

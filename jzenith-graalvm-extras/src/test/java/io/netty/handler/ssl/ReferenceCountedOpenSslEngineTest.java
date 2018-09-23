@@ -18,6 +18,9 @@ package io.netty.handler.ssl;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Dummy test to increase the code coverage
@@ -58,6 +61,8 @@ public class ReferenceCountedOpenSslEngineTest {
         engine.setEnabledProtocols(new String[0]);
         engine.release();
         engine.release(1);
+        engine.unwrap(mock(ByteBuffer.class), new ByteBuffer[0], 0, 0);
+        engine.wrap(new ByteBuffer[0], 0, 0, mock(ByteBuffer.class));
 
     }
 

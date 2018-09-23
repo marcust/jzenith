@@ -15,7 +15,6 @@
  */
 package org.jzenith.redis;
 
-import com.google.inject.Provider;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
