@@ -34,6 +34,6 @@ public abstract class AbstractPlugin {
         return ImmutableMap.of();
     }
 
-    protected abstract CompletableFuture<String> start(Injector deploymentOptions);
+    protected abstract CompletableFuture<String> start(Injector injector);
 
 }

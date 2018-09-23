@@ -15,9 +15,15 @@
  */
 package org.jzenith.core;
 
+import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Vertx;
 import org.junit.Test;
+import org.jzenith.core.util.CompletableHandler;
 import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +43,12 @@ public class JZenithTest {
         application
                 .run();
         application.stop();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMissingPlugins() {
+        JZenith.application()
+                .withPlugins();
     }
 
     @Test
@@ -80,6 +92,12 @@ public class JZenithTest {
         application.stop();
 
         assertThat(GlobalTracer.isRegistered()).isTrue();
+    }
+
+    @Test
+    public void testMethodCoverage() {
+        JZenith.application()
+                .withModules(mock(Module.class));
     }
 
     private AbstractPlugin mockPlugin(CompletableFuture<String> completableFuture) {

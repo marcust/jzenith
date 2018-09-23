@@ -104,7 +104,7 @@ public class JZenith {
         return this;
     }
 
-    public void run() {
+    public JZenith run() {
         final Stopwatch stopwatch = Stopwatch.createStarted();
         if (log.isDebugEnabled()) {
             log.debug("jZenith starting up");
@@ -134,6 +134,8 @@ public class JZenith {
         }
 
         log.debug("jZenith startup complete after {}", stopwatch);
+
+        return this;
     }
 
     public Injector createInjectorForTesting() {
