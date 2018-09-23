@@ -28,6 +28,7 @@ import org.jzenith.rest.model.Page;
 import org.nustaq.serialization.FSTConfiguration;
 
 import javax.inject.Inject;
+import java.util.Comparator;
 import java.util.UUID;
 
 public class UserDaoImpl extends RedisDao<User> implements UserDao {
@@ -61,7 +62,7 @@ public class UserDaoImpl extends RedisDao<User> implements UserDao {
     public Single<Page<User>> listUsers(@NonNull Integer offset, @NonNull Integer limit) {
         return Single.zip(
                 count(),
-                list().skip(offset).take(limit).toList(),
+                list().skip(offset).take(limit).sorted(Comparator.comparing(User::getName)).toList(),
                 (count, values) -> new Page<>(offset, limit, count, values));
     }
 

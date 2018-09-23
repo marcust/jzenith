@@ -244,8 +244,8 @@ public abstract class AbstractUserResourceIT {
         assertThat(response.getTotalElements()).isEqualTo(2);
         assertThat(response.getElements()).isNotNull();
         assertThat(response.getElements().size()).isEqualTo(2);
-        //assertThat(response.getElements().get(0).getId()).isEqualTo(USER_UUID);
-        //assertThat(response.getElements().get(0).getName()).isEqualTo(USER_NAME);
+        assertThat(response.getElements().get(0).getId()).isEqualTo(USER_UUID);
+        assertThat(response.getElements().get(0).getName()).isEqualTo(USER_NAME);
     }
 
     @Test
