@@ -62,11 +62,6 @@ public class JdbcClient {
         return prepareInsert(query).complete();
     }
 
-    public UpdateBuilder prepareDelete(@NonNull Query query) {
-        return database.update(query.getSQL())
-                .parameters(query.getBindValues());
-    }
-
     public Single<Integer> executeForRowCount(@NonNull Query query) {
         return prepareUpdate(query)
                 .counts()

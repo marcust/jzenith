@@ -85,4 +85,11 @@ public class JdbcClientTest extends AbstractJdbcPluginTest {
         assertThat(rows).isNotNull();
     }
 
+    @Test
+    public void testDelete() {
+        final Query query = dslContext.query("insert into testing (data) values ('test insert')");
+
+        client.executeInsert(query).blockingGet();
+    }
+
 }
