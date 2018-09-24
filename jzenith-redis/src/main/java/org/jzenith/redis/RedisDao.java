@@ -15,6 +15,7 @@
  */
 package org.jzenith.redis;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -81,13 +82,19 @@ public abstract class RedisDao<T> {
         return type.getName() + ":" + key;
     }
 
-    @SuppressWarnings("unchecked")
-    private Optional<T> deserialize(Buffer buffer) {
+    @VisibleForTesting
+    Optional<T> deserialize(Buffer buffer) {
         if (buffer == null) {
             return Optional.empty();
         }
 
         final io.vertx.core.buffer.Buffer delegate = buffer.getDelegate();
+        return deserialize(delegate);
+    }
+
+    @VisibleForTesting
+    @SuppressWarnings("unchecked")
+    Optional<T> deserialize(io.vertx.core.buffer.Buffer delegate) {
         final byte[] array;
         if (delegate.getByteBuf().hasArray()) {
             array = delegate.getByteBuf().array();

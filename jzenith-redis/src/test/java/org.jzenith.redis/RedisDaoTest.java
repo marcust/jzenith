@@ -17,7 +17,9 @@ package org.jzenith.redis;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
+import io.netty.buffer.ByteBuf;
 import io.reactivex.Single;
+import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.redis.RedisClient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,12 +27,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
+import org.jzenith.core.util.TestUtil;
 import org.nustaq.serialization.FSTConfiguration;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RedisDaoTest extends AbstractRedisPluginTest {
 
@@ -126,5 +136,26 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
         final Entity entity = dao.get("key").blockingGet();
 
         assertThat(entity.getAValue()).isEqualTo("value");
+    }
+
+    @Test
+    public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
+        TestUtil.testPublicMethodsHaveNonNullParameters(dao);
+    }
+
+    @Test
+    public void testDeserializeNullArg() {
+        assertThat(dao.deserialize((Buffer) null).isPresent()).isFalse();
+    }
+
+    @Test
+    public void testDeserializeEmptyBuffer() {
+        io.vertx.core.buffer.Buffer buffer = mock(io.vertx.core.buffer.Buffer.class);
+        ByteBuf nettyBuffer = mock(ByteBuf.class);
+        when(buffer.getByteBuf()).thenReturn(nettyBuffer);
+        when(nettyBuffer.hasArray()).thenReturn(Boolean.FALSE);
+        when(buffer.getBytes()).thenReturn(new byte[0]);
+
+        assertThat(dao.deserialize(buffer).isPresent()).isFalse();
     }
 }

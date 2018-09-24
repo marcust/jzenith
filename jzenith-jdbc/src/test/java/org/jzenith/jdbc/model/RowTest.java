@@ -17,6 +17,7 @@ package org.jzenith.jdbc.model;
 
 import org.jooq.Field;
 import org.junit.Test;
+import org.jzenith.core.util.TestUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -84,23 +85,7 @@ public class RowTest {
     public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
         final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
 
-        final Method[] declaredMethods = row.getClass().getDeclaredMethods();
-        for (final Method method : declaredMethods) {
-            if ((method.getModifiers() & Modifier.PUBLIC) != 0) {
-                final Object[] parameters = new Object[method.getParameterCount()];
-                if (parameters.length == 0) {
-                    continue;
-                }
-                try {
-                    method.invoke(row, parameters);
-                    fail("Method " + method.getName() + " should have thrown a Lombok NPE");
-                } catch (InvocationTargetException e) {
-                    assertThat(e.getCause()).isInstanceOf(NullPointerException.class);
-                    assertThat(e.getCause().getMessage()).contains("marked @NonNull");
-                }
-
-            }
-        }
+        TestUtil.testPublicMethodsHaveNonNullParameters(row);
     }
 
     @Test

@@ -15,15 +15,11 @@
  */
 package org.jzenith.core;
 
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Vertx;
 import org.junit.Test;
-import org.jzenith.core.util.CompletableHandler;
+import org.jzenith.core.util.TestUtil;
 import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +39,11 @@ public class JZenithTest {
         application
                 .run();
         application.stop();
+    }
+
+    @Test
+    public void testPublicMethodsNonNull() throws IllegalAccessException {
+        TestUtil.testPublicMethodsHaveNonNullParameters(JZenith.application());
     }
 
     @Test(expected = IllegalArgumentException.class)

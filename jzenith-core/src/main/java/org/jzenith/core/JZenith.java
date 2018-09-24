@@ -187,7 +187,7 @@ public class JZenith {
     }
 
     @SafeVarargs
-    public final JZenith withModules(Module... modules) {
+    public final JZenith withModules(@NonNull Module... modules) {
         this.modules.addAll(Arrays.asList(modules));
 
         return this;

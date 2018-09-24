@@ -95,7 +95,13 @@
             <version>1.8.22</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.jzenith</groupId>
+            <artifactId>jzenith-core</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
