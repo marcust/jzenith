@@ -24,11 +24,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
+import org.jzenith.core.JZenithException;
+import org.testcontainers.shaded.io.netty.util.IllegalReferenceCountException;
 
 import javax.inject.Inject;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
 
@@ -85,6 +91,22 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
     }
 
     @Test
+    public void testClientForSingleRowNoRow() {
+        final Query query = dslContext.query("select 1 where false");
+
+        final Row row = client.executeForSingleRow(query).blockingGet();
+
+        assertThat(row).isNull();
+    }
+
+    @Test(expected = JZenithException.class)
+    public void testClientForSingleRowMultipleRows() {
+        final Query query = dslContext.query("select * from pg_indexes");
+
+        client.executeForSingleRow(query).blockingGet();
+    }
+
+    @Test
     public void testStreamOffsetLimit() {
         final Query query = dslContext.selectOne()
                 .offset(1)
@@ -110,4 +132,45 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
         assertThat(rows).isNotNull();
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testStreamLimitWrongValue() {
+        final Query query = dslContext.selectOne()
+                .offset(0)
+                .limit(2);
+
+        final Observable<Row> row = client.stream(query, 0, 3);
+
+        row.toList().blockingGet();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testStreamOffsetLimitBothWrongValue() {
+        final Query query = dslContext.selectOne()
+                .offset(1)
+                .limit(2);
+
+        final Observable<Row> row = client.stream(query, 2, 3);
+
+        row.toList().blockingGet();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testStreamOffsetLimitWrongValue() {
+        final Query query = dslContext.selectOne()
+                .offset(1)
+                .limit(2);
+
+        final Observable<Row> row = client.stream(query, 1, 3);
+
+        row.toList().blockingGet();
+    }
+
+    @Test(expected = JZenithException.class)
+    public void testNativeQueryErrorHandling() throws SQLException {
+        final PostgresqlClient clientMock = mock(PostgresqlClient.class);
+        when(clientMock.parseNativeQuery(any())).thenCallRealMethod();
+        when(clientMock.toNativeQuery(any())).thenThrow(new SQLException("error"));
+
+        clientMock.parseNativeQuery(dslContext.selectOne());
+    }
 }

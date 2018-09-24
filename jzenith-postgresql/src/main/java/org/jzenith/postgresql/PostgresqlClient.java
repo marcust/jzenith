@@ -15,6 +15,7 @@
  */
 package org.jzenith.postgresql;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
 import io.reactiverse.pgclient.impl.ArrayTuple;
 import io.reactiverse.reactivex.pgclient.*;
@@ -23,6 +24,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import lombok.NonNull;
 import org.jooq.Query;
+import org.jzenith.core.JZenithException;
 import org.postgresql.core.NativeQuery;
 import org.postgresql.core.Parser;
 
@@ -41,18 +43,24 @@ public class PostgresqlClient {
     }
 
     public Single<PgRowSet> execute(@NonNull Query query) {
-        try {
-            final NativeQuery nativeQuery = parseNativeQuery(query);
+        return Single.just(query)
+                .map(this::parseNativeQuery)
+                .flatMap(nativeQuery -> pgPool.rxPreparedQuery(nativeQuery.nativeSql, bindValuesToTuple(query)));
+    }
 
-            return pgPool.rxPreparedQuery(nativeQuery.nativeSql, bindValuesToTuple(query));
+    @VisibleForTesting
+    NativeQuery parseNativeQuery(@NonNull Query query) {
+        try {
+            final List<NativeQuery> nativeQueries = toNativeQuery(query);
+            return Iterables.getOnlyElement(nativeQueries);
         } catch (SQLException e) {
-            return Single.error(e);
+            throw new JZenithException(e);
         }
     }
 
-    private NativeQuery parseNativeQuery(@NonNull Query query) throws SQLException {
-        final List<NativeQuery> nativeQueries = Parser.parseJdbcSql(query.getSQL(), true, true, false, false);
-        return Iterables.getOnlyElement(nativeQueries);
+    @VisibleForTesting
+    List<NativeQuery> toNativeQuery(@NonNull Query query) throws SQLException {
+        return Parser.parseJdbcSql(query.getSQL(), true, true, false, false);
     }
 
     public Single<Integer> executeForRowCount(@NonNull Query query) {
@@ -64,7 +72,7 @@ public class PostgresqlClient {
         return execute(query)
                 .flatMapMaybe(pgRowSet -> {
                     if (pgRowSet.size() > 1) {
-                        return Maybe.error(new RuntimeException("Expected one result for query '" + query.getSQL() + "' but got " + pgRowSet.size()));
+                        return Maybe.error(new JZenithException("Expected one result for query '" + query.getSQL() + "' but got " + pgRowSet.size()));
                     }
 
                     final PgIterator iterator = pgRowSet.iterator();
@@ -77,23 +85,17 @@ public class PostgresqlClient {
     }
 
     public Observable<Row> stream(@NonNull Query query, @NonNull Integer offset, @NonNull Integer limit) {
-        try {
-            final NativeQuery nativeQuery = parseNativeQuery(query);
-
-            final List<Object> bindValues = retypeBindValues(query, offset, limit);
-
-            return pgPool.rxGetConnection()
+        return Observable.just(query)
+                .map(this::parseNativeQuery)
+                .flatMap(nativeQuery -> pgPool.rxGetConnection()
                     .flatMapObservable(conn -> conn
                             .rxPrepare(nativeQuery.nativeSql)
                             .flatMapObservable(pq -> {
-                                PgStream<Row> stream = pq.createStream(limit, new Tuple(new ArrayTuple(bindValues)));
+                                PgStream<Row> stream = pq.createStream(limit, new Tuple(new ArrayTuple(retypeBindValues(query, offset, limit))));
                                 return stream.toObservable();
                             })
-                            .doAfterTerminate(conn::close));
-
-        } catch (SQLException e) {
-            return Observable.error(e);
-        }
+                            .doAfterTerminate(conn::close))
+        );
     }
 
     /**
@@ -120,7 +122,7 @@ public class PostgresqlClient {
                 if (limit.equals(secondLastBindValue)) {
                     bindValues.set(secondLastElementIndex, (long) limit);
                 } else {
-                    throw new IllegalThreadStateException("Expecting offset to be second last bind value, but it is " + secondLastBindValue);
+                    throw new IllegalStateException("Expecting offset to be second last bind value, but it is " + secondLastBindValue);
                 }
             }
         } else {
