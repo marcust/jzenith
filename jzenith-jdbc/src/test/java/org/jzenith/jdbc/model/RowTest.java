@@ -17,12 +17,15 @@ package org.jzenith.jdbc.model;
 
 import org.jooq.Field;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -77,5 +80,55 @@ public class RowTest {
         assertThat(value).isEqualTo("5");
     }
 
+    @Test
+    public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
+        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
 
+        final Method[] declaredMethods = row.getClass().getDeclaredMethods();
+        for (final Method method : declaredMethods) {
+            if ((method.getModifiers() & Modifier.PUBLIC) != 0) {
+                final Object[] parameters = new Object[method.getParameterCount()];
+                if (parameters.length == 0) {
+                    continue;
+                }
+                try {
+                    method.invoke(row, parameters);
+                    fail("Method " + method.getName() + " should have thrown a Lombok NPE");
+                } catch (InvocationTargetException e) {
+                    assertThat(e.getCause()).isInstanceOf(NullPointerException.class);
+                    assertThat(e.getCause().getMessage()).contains("marked @NonNull");
+                }
+
+            }
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSecondParameter() {
+        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
+
+        try {
+            final Field<Long> mock = mock(Field.class);
+            when(mock.getName()).thenReturn("string");
+            when(mock.getType()).thenReturn(Long.class);
+
+            row.get(mock, null);
+            fail("Method should have thrown a Lombok NPE");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).contains("marked @NonNull");
+        }
+    }
+
+    @Test
+    public void testSecondParameterGetColumn() {
+        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
+
+        try {
+            row.getColumn("foo", null);
+            fail("Method should have thrown a Lombok NPE");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).contains("marked @NonNull");
+        }
+    }
 }

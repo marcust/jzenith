@@ -60,7 +60,7 @@ public class Row {
         return getColumn(field.getName(), field.getType());
     }
 
-    public <T,U> U get(@NonNull Field<T> field, final Function<T,U> converter) {
+    public <T,U> U get(@NonNull Field<T> field, @NonNull final Function<T,U> converter) {
         return converter.apply(get(field));
     }
 }
