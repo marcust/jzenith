@@ -27,7 +27,6 @@ import org.jzenith.core.health.HealthState;
 import java.util.List;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class HealthCheckResponse {
