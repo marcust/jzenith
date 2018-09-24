@@ -17,6 +17,7 @@ package org.jzenith.rest.swagger;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import io.reactivex.Single;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
@@ -53,19 +54,18 @@ public class SingleModelConverter extends ModelResolver {
         }
 
         final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        if (actualTypeArguments.length > 0) {
-            final Type actualTypeArgument = actualTypeArguments[0];
 
-            final AnnotatedType newAnnotatedType = new AnnotatedType(actualTypeArgument);
-            final JavaType actualJavaType = _mapper.constructType(actualTypeArgument);
-            if (ReflectionUtils.isSystemType(actualJavaType)) {
-                return continueChain(annotatedType, context, chain);
-            }
-            newAnnotatedType.setSkipSchemaName(false);
-            return super.resolve(newAnnotatedType, context, chain);
+        Preconditions.checkState(actualTypeArguments.length > 0, "Single should always have a type argument");
+
+        final Type actualTypeArgument = actualTypeArguments[0];
+
+        final AnnotatedType newAnnotatedType = new AnnotatedType(actualTypeArgument);
+        final JavaType actualJavaType = _mapper.constructType(actualTypeArgument);
+        if (ReflectionUtils.isSystemType(actualJavaType)) {
+            return continueChain(annotatedType, context, chain);
         }
-
-        return continueChain(annotatedType, context, chain);
+        newAnnotatedType.setSkipSchemaName(false);
+        return super.resolve(newAnnotatedType, context, chain);
     }
 
     private Schema continueChain(final @NonNull AnnotatedType type, final @NonNull ModelConverterContext context, final @NonNull Iterator<ModelConverter> chain) {
