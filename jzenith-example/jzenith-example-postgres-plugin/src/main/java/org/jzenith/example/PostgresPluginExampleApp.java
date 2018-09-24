@@ -32,8 +32,10 @@ import org.slf4j.LoggerFactory;
 
 public class PostgresPluginExampleApp {
 
+    private static JZenith application;
+
     public static void main(String... args) {
-        configureApplication(args).run();
+        application = configureApplication(args).run();
     }
 
     public static JZenith configureApplication(String... args) {
@@ -49,6 +51,10 @@ public class PostgresPluginExampleApp {
                 .withConfiguration("postgresql.database", "test")
                 .withConfiguration("postgresql.username", "test")
                 .withConfiguration("postgresql.password", "test");
+    }
+
+    public static void stop() {
+        application.stop();
     }
 
 }

@@ -40,8 +40,10 @@ import java.sql.SQLException;
  */
 public class MySqlJdbcExampleApp {
 
+    private static JZenith application;
+
     public static void main(String... args) throws SQLException {
-        configureApplication(args).run();
+        application = configureApplication(args).run();
     }
 
     public static JZenith configureApplication(String... args) throws SQLException {
@@ -67,5 +69,9 @@ public class MySqlJdbcExampleApp {
         dataSource.setUseSSL(false);
         dataSource.setAllowPublicKeyRetrieval(true);
         return dataSource;
+    }
+
+    public static void stop() {
+        application.stop();
     }
 }

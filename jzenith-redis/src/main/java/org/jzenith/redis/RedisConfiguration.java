@@ -22,7 +22,7 @@ public interface RedisConfiguration {
     @ConfigDefault("6379")
     int getPort();
 
-    @ConfigDefault("127.0.0.1")
+    @ConfigDefault("localhost")
     String getHost();
 
     @ConfigDefault("UTF-8")

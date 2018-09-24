@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.rest.health;
+package org.jzenith.example;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.jzenith.core.health.HealthCheckResult;
-import org.jzenith.core.health.HealthState;
+import org.junit.Test;
 
-import java.util.List;
+import java.sql.SQLException;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class HealthCheckResponse {
+public class ExampleAppTestIT {
 
-    @NonNull
-    private HealthState globalState;
-
-    @NonNull
-    private List<HealthCheckResult> results;
+    @Test
+    public void test() throws SQLException {
+        MySqlJdbcExampleApp.main();
+        MySqlJdbcExampleApp.stop();
+    }
 
 }

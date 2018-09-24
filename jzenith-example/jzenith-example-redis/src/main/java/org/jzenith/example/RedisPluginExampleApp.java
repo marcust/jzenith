@@ -32,8 +32,10 @@ import org.slf4j.LoggerFactory;
 
 public class RedisPluginExampleApp {
 
+    private static JZenith application;
+
     public static void main(String... args) {
-        configureApplication(args).run();
+        application = configureApplication(args).run();
     }
 
     public static JZenith configureApplication(String... args) {
@@ -46,6 +48,10 @@ public class RedisPluginExampleApp {
                 )
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule())
                 .withConfiguration("redis.port", 6378);
+    }
+
+    public static void stop() {
+        application.stop();
     }
 
 }

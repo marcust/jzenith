@@ -16,9 +16,11 @@
 package org.jzenith.rest;
 
 import com.google.common.collect.ImmutableList;
+import io.vertx.core.http.HttpServerRequest;
 import org.jzenith.core.JZenithException;
 import org.jzenith.rest.model.Page;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -27,6 +29,9 @@ import java.util.UUID;
 
 @Path("/")
 public class TestResource {
+
+    @Inject
+    private HttpServerRequest request;
 
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/error")

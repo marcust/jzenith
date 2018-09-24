@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.rest.health;
+package org.jzenith.example;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.jzenith.core.health.HealthCheckResult;
-import org.jzenith.core.health.HealthState;
+import org.junit.Test;
 
-import java.util.List;
+public class ExampleAppTestIT {
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class HealthCheckResponse {
-
-    @NonNull
-    private HealthState globalState;
-
-    @NonNull
-    private List<HealthCheckResult> results;
+    @Test
+    public void test() {
+        RedisPluginExampleApp.main();
+        RedisPluginExampleApp.stop();
+    }
 
 }
