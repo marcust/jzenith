@@ -40,8 +40,13 @@ import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
+import io.vertx.micrometer.MetricsDomain;
+import io.vertx.micrometer.MicrometerMetricsOptions;
+import io.vertx.micrometer.VertxPrometheusOptions;
+import io.vertx.micrometer.backends.BackendRegistries;
 import lombok.NonNull;
 import one.util.streamex.StreamEx;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
@@ -58,6 +63,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class JZenith {
@@ -112,8 +118,10 @@ public class JZenith {
         if (tracer != null && !GlobalTracer.isRegistered()) {
             GlobalTracer.register(tracer);
         }
+        vertx = initVertx();
+        initMeterRegistry();
 
-        vertx = Vertx.vertx();
+
         final Injector injector = createInjector(vertx);
         StreamEx.of(vertx.verticleFactories())
                 .select(GuiceVerticleFactory.class)
@@ -138,6 +146,21 @@ public class JZenith {
         return this;
     }
 
+    private Vertx initVertx() {
+        final VertxPrometheusOptions prometheusOptions = new VertxPrometheusOptions()
+                .setEnabled(true);
+        final MicrometerMetricsOptions metricsOptions = new MicrometerMetricsOptions()
+                .setEnabled(true)
+                .setDisabledMetricsCategories(Set.of(MetricsDomain.HTTP_SERVER))
+                .setPrometheusOptions(prometheusOptions);
+
+        return Vertx.vertx(
+                new VertxOptions().setMetricsOptions(
+                        metricsOptions
+                )
+        );
+    }
+
     public Injector createInjectorForTesting() {
         return createInjector(Vertx.vertx());
     }
@@ -151,7 +174,7 @@ public class JZenith {
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
-                        bind(MeterRegistry.class).toInstance(makeMeterRegistry());
+                        bind(MeterRegistry.class).toInstance(BackendRegistries.getDefaultNow());
                         bind(CoreConfiguration.class).toInstance(configuration);
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(vertx);
@@ -173,17 +196,15 @@ public class JZenith {
         return Guice.createInjector(allModules);
     }
 
-    private MeterRegistry makeMeterRegistry() {
-        final PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+    private void initMeterRegistry() {
+        final MeterRegistry registry = BackendRegistries.getDefaultNow();
+
         new ClassLoaderMetrics().bindTo(registry);
         new JvmMemoryMetrics().bindTo(registry);
         new JvmGcMetrics().bindTo(registry);
         new ProcessorMetrics().bindTo(registry);
         new JvmThreadMetrics().bindTo(registry);
         new JvmOptionMetrics().bindTo(registry);
-
-        return registry;
-
     }
 
     @SafeVarargs
@@ -193,7 +214,7 @@ public class JZenith {
         return this;
     }
 
-    public JZenith withConfiguration(@NonNull  String name, @NonNull Object value) {
+    public JZenith withConfiguration(@NonNull String name, @NonNull Object value) {
         this.extraConfiguration.put(name, value);
 
         return this;
