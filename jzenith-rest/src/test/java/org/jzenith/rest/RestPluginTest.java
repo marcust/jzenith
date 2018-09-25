@@ -103,25 +103,6 @@ public class RestPluginTest {
     }
 
     @Test
-    public void testPrometheusResource() {
-        final JZenith application = makeApplication();
-        application.run();
-
-        final String response = given()
-                .when()
-                .get("/metrics/prometheus")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        assertThat(response).isNotBlank();
-
-        application.stop();
-    }
-
-    @Test
     public void testErrorHandlingMappingDynamic() {
         final JZenith application = JZenith.application();
         application

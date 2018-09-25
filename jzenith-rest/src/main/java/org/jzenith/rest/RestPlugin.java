@@ -46,8 +46,6 @@ import org.jzenith.rest.exception.ConstantMessageThrowableMapping;
 import org.jzenith.rest.exception.ThrowableMapping;
 import org.jzenith.rest.exception.ValidationThrowableMapping;
 import org.jzenith.rest.health.HealthCheckResource;
-import org.jzenith.rest.metrics.MetricsFeature;
-import org.jzenith.rest.metrics.PrometheusResource;
 
 import javax.validation.ValidationException;
 import javax.ws.rs.container.DynamicFeature;
@@ -61,7 +59,7 @@ import java.util.concurrent.CompletableFuture;
 public class RestPlugin extends AbstractPlugin {
 
     private static final ImmutableList<Module> MODULES = ImmutableList.of(new RestBinder());
-    private static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class, HealthCheckResource.class);
+    private static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(CustomOpenApiResource.class, HealthCheckResource.class);
 
     private final List<Class<?>> resources;
     private final Map<Class<? extends Throwable>, ThrowableMapping<?>> exceptionMappings = Maps.newHashMap();
@@ -139,8 +137,6 @@ public class RestPlugin extends AbstractPlugin {
         final VertxResteasyDeployment deployment = new VertxResteasyDeployment();
         deployment.start();
         final ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
-
-        providerFactory.getServerDynamicFeatures().add(new MetricsFeature(injector.getInstance(MeterRegistry.class)));
 
         if (GlobalTracer.isRegistered()) {
             final DynamicFeature tracing = new ServerTracingDynamicFeature.Builder(GlobalTracer.get())

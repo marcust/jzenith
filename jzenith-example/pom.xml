@@ -38,6 +38,11 @@
             <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.jzenith</groupId>
+            <artifactId>jzenith-graalvm-extras</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>io.opentracing.contrib</groupId>
             <artifactId>span-reporter-slf4j</artifactId>
             <version>0.1.0</version>

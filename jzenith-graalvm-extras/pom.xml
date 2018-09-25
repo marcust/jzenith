@@ -51,6 +51,16 @@
             <artifactId>jmdns</artifactId>
             <version>3.4.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.17.1</version>
+        </dependency>
 
         <!-- Compile Time tools -->
         <dependency>

@@ -15,7 +15,6 @@
  */
 package org.jzenith.core.model;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import io.vertx.core.Vertx;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +27,5 @@ public class InitResult {
     @NonNull
     private final Vertx vertx;
 
-    @NonNull
-    private final MeterRegistry meterRegistry;
 
 }

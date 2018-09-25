@@ -21,7 +21,6 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
@@ -30,27 +29,14 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
-import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import io.reactivex.Completable;
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
-import io.vertx.micrometer.MetricsDomain;
-import io.vertx.micrometer.MicrometerMetricsOptions;
 import io.vertx.micrometer.VertxPrometheusOptions;
-import io.vertx.micrometer.backends.BackendRegistries;
 import io.vertx.reactivex.RxHelper;
 import lombok.NonNull;
 import one.util.streamex.StreamEx;
@@ -60,9 +46,7 @@ import org.jzenith.core.configuration.ExtraConfiguration;
 import org.jzenith.core.guice.CloseableListener;
 import org.jzenith.core.guice.LifeCycleObjectRepository;
 import org.jzenith.core.health.HealthCheck;
-import org.jzenith.core.metrics.JvmOptionMetrics;
 import org.jzenith.core.model.InitResult;
-import org.jzenith.core.tracing.OpenTracingInterceptor;
 import org.jzenith.core.util.CompletableFutureHandler;
 
 import java.lang.management.ManagementFactory;
@@ -72,7 +56,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -130,7 +113,6 @@ public class JZenith {
         }
 
         final InitResult initResult = initVertx();
-        setupMeterRegistry();
 
         final Injector injector = createInjector(initResult);
         setVerticleFactoryInjector(initResult.getVertx(), injector);
@@ -170,29 +152,18 @@ public class JZenith {
     private InitResult initVertx() {
         final VertxPrometheusOptions prometheusOptions = new VertxPrometheusOptions()
                 .setEnabled(true);
-        final MicrometerMetricsOptions metricsOptions = new MicrometerMetricsOptions()
-                .setEnabled(true)
-                .setDisabledMetricsCategories(ImmutableSet.of(MetricsDomain.HTTP_SERVER))
-                .setPrometheusOptions(prometheusOptions);
 
         final Vertx vertx = Vertx.vertx(
-                new VertxOptions().setMetricsOptions(
-                        metricsOptions
-                ).setPreferNativeTransport(true)
+                new VertxOptions()
+                .setPreferNativeTransport(true)
         );
 
-        if (!vertx.isNativeTransportEnabled()) {
-            log.warn("Native transport could not be enabled");
-        }
-
-        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(vertx, metricsOptions).getMeterRegistry();
-        checkState(meterRegistry != null, "Meter registry should have been initialized");
 
         RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(vertx));
         RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(vertx));
         RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(vertx));
 
-        return new InitResult(vertx, meterRegistry);
+        return new InitResult(vertx);
     }
 
     public Injector createInjectorForTesting() {
@@ -209,7 +180,6 @@ public class JZenith {
                     @Override
                     protected void configure() {
                         install(new JacksonModule());
-                        bind(MeterRegistry.class).toInstance(initResult.getMeterRegistry());
                         bind(CoreConfiguration.class).toInstance(configuration);
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(initResult.getVertx());
@@ -217,11 +187,6 @@ public class JZenith {
                         bindListener(Matchers.any(), new CloseableListener(repository));
 
                         if (tracer != null) {
-                            final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
-
-                            Stream.of(Single.class, Observable.class, Completable.class, Maybe.class)
-                                    .forEach(clz ->
-                                            bindInterceptor(Matchers.any(), Matchers.returns(Matchers.subclassesOf(clz)), interceptor));
                             bind(Tracer.class).toInstance(tracer);
                         }
 
@@ -232,23 +197,7 @@ public class JZenith {
                 .addAll(modules)
                 .build();
 
-        final Injector injector = Guice.createInjector(allModules);
-        return injector;
-    }
-
-    private void setupMeterRegistry() {
-        final MeterRegistry registry = BackendRegistries.getDefaultNow();
-
-        new ClassLoaderMetrics().bindTo(registry);
-        new JvmMemoryMetrics().bindTo(registry);
-        new JvmGcMetrics().bindTo(registry);
-        new ProcessorMetrics().bindTo(registry);
-        new JvmThreadMetrics().bindTo(registry);
-        try {
-            new JvmOptionMetrics().bindTo(registry);
-        } catch (IllegalArgumentException e) {
-            log.debug("Not running on HotSpot");
-        }
+        return Guice.createInjector(allModules);
     }
 
     @SafeVarargs
