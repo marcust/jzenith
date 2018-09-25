@@ -19,6 +19,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Splitter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jzenith.core.CoreConfiguration;
@@ -130,41 +131,35 @@ public class ConfigurationProvider<T> implements Provider<T> {
         }
 
         @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Wrong positive on unclosed stream")
+        @SneakyThrows
         private String propertyConfiguration(String configurationBaseNameLower, String propertyName) {
-            try {
-                try (final InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties")) {
-                    if (specificStream != null) {
-                        final String value = loadPropertyFrom(specificStream, propertyName);
-                        if (value != null) {
-                            return value;
-                        }
+            try (final InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties")) {
+                if (specificStream != null) {
+                    final String value = loadPropertyFrom(specificStream, propertyName);
+                    if (value != null) {
+                        return value;
                     }
                 }
+            }
 
-                try (final InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties")) {
-                    if (globalStream != null) {
-                        return loadPropertyFrom(globalStream, propertyName);
-                    }
+            try (final InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties")) {
+                if (globalStream != null) {
+                    return loadPropertyFrom(globalStream, propertyName);
                 }
-            } catch (IOException e) {
-                throw new JZenithException(e);
             }
 
             return null;
         }
 
+        @SneakyThrows
         private String loadPropertyFrom(InputStream inputStream, String propertyName) {
             final Properties p = new Properties();
-            try {
-                p.load(inputStream);
+            p.load(inputStream);
 
-                if (p.containsKey(propertyName)) {
-                    return p.getProperty(propertyName);
-                }
-
-            } catch (IOException e) {
-                throw new JZenithException(e);
+            if (p.containsKey(propertyName)) {
+                return p.getProperty(propertyName);
             }
+
             return null;
         }
 

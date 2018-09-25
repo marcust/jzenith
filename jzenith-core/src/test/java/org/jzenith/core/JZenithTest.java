@@ -70,7 +70,7 @@ public class JZenithTest {
 
     @Test(expected = JZenithException.class)
     public void testStartupAndShutdownError() {
-        final AbstractPlugin plugin = mockPlugin(CompletableFuture.failedFuture(new RuntimeException("Something went wrong")));
+        final AbstractPlugin plugin = mockPlugin(CompletableFuture.failedFuture(new JZenithException("Something went wrong")));
 
         final JZenith application = JZenith.application();
         try {

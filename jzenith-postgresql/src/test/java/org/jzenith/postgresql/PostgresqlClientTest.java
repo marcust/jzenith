@@ -165,7 +165,7 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
         row.toList().blockingGet();
     }
 
-    @Test(expected = JZenithException.class)
+    @Test(expected = SQLException.class)
     public void testNativeQueryErrorHandling() throws SQLException {
         final PostgresqlClient clientMock = mock(PostgresqlClient.class);
         when(clientMock.parseNativeQuery(any())).thenCallRealMethod();

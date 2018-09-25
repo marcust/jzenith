@@ -23,6 +23,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.jooq.Query;
 import org.jzenith.core.JZenithException;
 import org.postgresql.core.NativeQuery;
@@ -49,13 +50,10 @@ public class PostgresqlClient {
     }
 
     @VisibleForTesting
+    @SneakyThrows
     NativeQuery parseNativeQuery(@NonNull Query query) {
-        try {
-            final List<NativeQuery> nativeQueries = toNativeQuery(query);
-            return Iterables.getOnlyElement(nativeQueries);
-        } catch (SQLException e) {
-            throw new JZenithException(e);
-        }
+        final List<NativeQuery> nativeQueries = toNativeQuery(query);
+        return Iterables.getOnlyElement(nativeQueries);
     }
 
     @VisibleForTesting
@@ -88,14 +86,14 @@ public class PostgresqlClient {
         return Observable.just(query)
                 .map(this::parseNativeQuery)
                 .flatMap(nativeQuery -> pgPool.rxGetConnection()
-                    .flatMapObservable(conn -> conn
-                            .rxPrepare(nativeQuery.nativeSql)
-                            .flatMapObservable(pq -> {
-                                PgStream<Row> stream = pq.createStream(limit, new Tuple(new ArrayTuple(retypeBindValues(query, offset, limit))));
-                                return stream.toObservable();
-                            })
-                            .doAfterTerminate(conn::close))
-        );
+                        .flatMapObservable(conn -> conn
+                                .rxPrepare(nativeQuery.nativeSql)
+                                .flatMapObservable(pq -> {
+                                    PgStream<Row> stream = pq.createStream(limit, new Tuple(new ArrayTuple(retypeBindValues(query, offset, limit))));
+                                    return stream.toObservable();
+                                })
+                                .doAfterTerminate(conn::close))
+                );
     }
 
     /**
