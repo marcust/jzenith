@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
+import org.jzenith.core.util.TestUtil;
 import org.jzenith.jdbc.model.Row;
 
 import javax.inject.Inject;
@@ -90,6 +91,11 @@ public class JdbcClientTest extends AbstractJdbcPluginTest {
         final Query query = dslContext.query("insert into testing (data) values ('test insert')");
 
         client.executeInsert(query).blockingGet();
+    }
+
+    @Test
+    public void testNullParameters() throws IllegalAccessException {
+        TestUtil.testPublicMethodsHaveNonNullParameters(client);
     }
 
 }

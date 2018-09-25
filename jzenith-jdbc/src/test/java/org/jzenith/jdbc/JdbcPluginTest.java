@@ -18,7 +18,10 @@ package org.jzenith.jdbc;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+
+import static org.mockito.Mockito.mock;
 
 public class JdbcPluginTest extends AbstractJdbcPluginTest {
 
@@ -28,5 +31,17 @@ public class JdbcPluginTest extends AbstractJdbcPluginTest {
         application.run();
         application.stop();
     }
+
+    @Test(expected = NullPointerException.class)
+    public void testNullParameters() throws SQLException {
+        JdbcPlugin.create(null, JdbcDatabaseType.POSTGRES);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNullParameters2() throws SQLException {
+        JdbcPlugin.create(mock(DataSource.class), null);
+    }
+
+
 
 }
