@@ -18,8 +18,6 @@ package org.jzenith.core.util;
 import com.google.common.base.Defaults;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import one.util.streamex.StreamEx;
@@ -39,21 +37,6 @@ import static org.mockito.Mockito.spy;
 
 @UtilityClass
 public class TestUtil {
-
-    public static List<Class<?>> listAllApiClasses() {
-        try (ScanResult scanResult =
-                     new ClassGraph()
-                             .verbose()
-                             .enableClassInfo()
-                             .whitelistPackages("org.jzenith")
-                             .scan()) {
-            return scanResult.getAllClasses().stream()
-                    .filter(classInfo -> Modifier.isPublic(classInfo.getModifiers()) ||
-                            Modifier.isProtected(classInfo.getModifiers()))
-                    .map(classInfo -> classInfo.loadClass())
-                    .collect(ImmutableList.toImmutableList());
-        }
-    }
 
     public static void testPublicMethodsHaveNonNullParameters(final Object object) {
         testPublicMethodsHaveNonNullParameters(object.getClass(), object);
