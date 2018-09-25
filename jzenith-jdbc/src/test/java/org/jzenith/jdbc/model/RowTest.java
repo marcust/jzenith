@@ -19,9 +19,6 @@ import org.jooq.Field;
 import org.junit.Test;
 import org.jzenith.core.util.TestUtil;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.UUID;
 
@@ -116,4 +113,5 @@ public class RowTest {
             assertThat(e.getMessage()).contains("marked @NonNull");
         }
     }
+
 }

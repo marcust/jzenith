@@ -16,16 +16,13 @@
 package org.jzenith.core.util;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.CharSource;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class EnvironmentVariableExpander {

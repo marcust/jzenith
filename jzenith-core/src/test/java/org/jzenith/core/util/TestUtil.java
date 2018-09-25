@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import one.util.streamex.StreamEx;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -51,10 +52,6 @@ public class TestUtil {
         final Iterable<Method> declaredMethods = listTestableMethods(clz);
 
         for (final Method method : declaredMethods) {
-            if (isIgnored(method)) {
-                continue;
-            }
-
             final List<Object[]> parameterPermutations = makeParameterPermutations(method);
 
             for (final Object[] parameters : parameterPermutations) {
@@ -77,17 +74,23 @@ public class TestUtil {
         }
     }
 
+    private static boolean isNotIgnored(Method method) {
+        return !isIgnored(method);
+    }
+
     private static boolean isIgnored(Method method) {
-        return !(method.getName().contains("CGLIB") || "equals".equals(method.getName()));
+        return method.getName().contains("CGLIB") || "equals".equals(method.getName());
     }
 
     public static List<Method> listTestableMethods(Class<?> clz) {
         return StreamEx.of(Iterables.concat(Arrays.asList(clz.getDeclaredMethods()),
                 Arrays.asList(clz.getMethods())).iterator())
-                    .filter(method -> Modifier.isPublic(method.getModifiers()))
-                    .distinct()
-                    .filter(TestUtil::isIgnored)
-                    .collect(ImmutableList.toImmutableList());
+                .filter(method -> Modifier.isPublic(method.getModifiers()))
+                .distinct()
+                .filter(TestUtil::isNotIgnored)
+                .filter(method -> method.getParameterCount() > 0)
+                .filter(method -> method.getDeclaringClass() == clz)
+                .collect(ImmutableList.toImmutableList());
     }
 
     public static List<Object[]> makeParameterPermutations(Method method) {
@@ -99,18 +102,16 @@ public class TestUtil {
 
         final ImmutableList.Builder<Object[]> builder = ImmutableList.builder();
         for (int i = 0; i < parameterCount; i++) {
-            for (int j = 0; j < parameterCount; j++) {
-                final Object[] parameters = new Object[parameterCount];
-                for (int k = 0; k < i; k++) {
-                    parameters[k] = makeNonNullParameter(method, k);
-                }
-                for (int l = i; l < parameterCount; l++) {
-                    parameters[l] = makeNullParameter(method, l);
-                }
+            final Object[] parameters = new Object[parameterCount];
 
-                if (hasNullParameter(parameters)) {
-                    builder.add(parameters);
-                }
+            for (int k = 0; k < parameterCount; k++) {
+                parameters[k] = makeNonNullParameter(method, k);
+            }
+
+            parameters[i] = makeNullParameter(method, i);
+
+            if (hasNullParameter(parameters)) {
+                builder.add(parameters);
             }
         }
 
@@ -145,6 +146,9 @@ public class TestUtil {
         }
         if (type == Class.class) {
             return Class.class;
+        }
+        if (type.isArray()) {
+            return Array.newInstance(type.getComponentType(), 0);
         }
 
         return mock(type);
