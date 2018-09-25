@@ -107,7 +107,7 @@
                     <transformers>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>org.jzenith.example.RedisPluginExampleApp</mainClass>
+                            <mainClass>org.jzenith.example.PostgresJdbcExampleApp</mainClass>
                         </transformer>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
