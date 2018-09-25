@@ -40,8 +40,8 @@ public class EnvironmentVariableExpanderTest {
     public void testUndefinedVariable() {
         final String variableName = "UNDEFINED";
         final String undefinedVariable = "before ${" + variableName + "} after";
-        thrown.expect( RuntimeException.class );
-        thrown.expectMessage( variableName );
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage(variableName);
         EnvironmentVariableExpander.expand(undefinedVariable);
     }
 
@@ -49,12 +49,12 @@ public class EnvironmentVariableExpanderTest {
     public void testDefinedVariable() {
         final String variableValue = "a value";
         final String variableName = "TEST_VARIABLE_NAME";
-        final ImmutableMap<String,String> environment = ImmutableMap.of( variableName, variableValue );
-        final EnvironmentVariableExpander expander = new EnvironmentVariableExpander( environment::get );
+        final ImmutableMap<String, String> environment = ImmutableMap.of(variableName, variableValue);
+        final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
 
         final String expression = "prefix ${" + variableName + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables( expression ).contains( variableValue ) );
-        assertFalse("Should not contain the variable anymore", expander.expandVariables( expression ).contains( variableName ) );
+        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(variableValue));
+        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
     }
 
     @Test
@@ -64,16 +64,16 @@ public class EnvironmentVariableExpanderTest {
         final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(Collections.<String, String>emptyMap()::get);
 
         final String expression = "prefix ${" + variableName + ":" + defaultValue + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables( expression ).contains( defaultValue ) );
-        assertFalse("Should not contain the variable anymore", expander.expandVariables( expression ).contains( variableName ) );
+        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(defaultValue));
+        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
     }
 
     @Test
     public void testNullDefaultValueVariable() {
         final String variableName = "TEST_VARIABLE_NAME";
         final String expression = "prefix ${" + variableName + ":} postfix";
-        thrown.expect( RuntimeException.class );
-        thrown.expectMessage( variableName );
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage(variableName);
         EnvironmentVariableExpander.expand(expression);
     }
 
@@ -83,24 +83,36 @@ public class EnvironmentVariableExpanderTest {
         final String nestedVariableName = "NESTED_VARIABLE_NAME";
         final String variableValue = "${" + nestedVariableName + "}";
         final String variableName = "TEST_VARIABLE_NAME";
-        final ImmutableMap<String,String> environment = ImmutableMap.of( variableName, variableValue, nestedVariableName, nestedVariableValue);
-        final EnvironmentVariableExpander expander = new EnvironmentVariableExpander( environment::get );
+        final ImmutableMap<String, String> environment = ImmutableMap.of(variableName, variableValue, nestedVariableName, nestedVariableValue);
+        final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
 
         final String expression = "prefix ${" + variableName + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables( expression ).contains( nestedVariableValue ) );
-        assertFalse("Should not contain the nested variable name", expander.expandVariables( expression ).contains( nestedVariableName ) );
-        assertFalse("Should not contain the variable anymore", expander.expandVariables( expression ).contains( variableName ) );
+        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(nestedVariableValue));
+        assertFalse("Should not contain the nested variable name", expander.expandVariables(expression).contains(nestedVariableName));
+        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
     }
 
     @Test
     public void testSpecialCharacters() {
         final String variableValue = "a value with a reference $7";
         final String variableName = "TEST_VARIABLE_NAME";
-        final ImmutableMap<String,String> environment = ImmutableMap.of( variableName, variableValue );
-        final EnvironmentVariableExpander expander = new EnvironmentVariableExpander( environment::get );
+        final ImmutableMap<String, String> environment = ImmutableMap.of(variableName, variableValue);
+        final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
 
         final String expression = "prefix ${" + variableName + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables( expression ).contains( variableValue ) );
-        assertFalse("Should not contain the variable anymore", expander.expandVariables( expression ).contains( variableName ) );
+        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(variableValue));
+        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
     }
+
+    @Test
+    public void testDefaultValue() {
+        final String variableName = "TEST_VARIABLE_NAME:DEFAULT";
+        final ImmutableMap<String, String> environment = ImmutableMap.of();
+        final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
+
+        final String expression = "prefix ${" + variableName + "} postfix";
+        assertTrue("Should contain the value now", expander.expandVariables(expression).contains("DEFAULT"));
+        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
+    }
+
 }

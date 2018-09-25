@@ -17,6 +17,7 @@ package org.jzenith.core.configuration;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
 
@@ -28,7 +29,9 @@ public class ConfigurationTest {
 
     interface TestConfiguration {
         int getInt();
+
         String getString();
+
         UUID getUuid();
 
         @ConfigDefault("default")
@@ -43,6 +46,17 @@ public class ConfigurationTest {
         int getIntForInteger();
 
         long getLongForLong();
+
+        String getFailNoValue();
+
+        @ConfigDefault("${FOO:BAR}")
+        String getWithEnvironmentDefault();
+
+        @ConfigDefault("\\${LITERAL}")
+        String getEscapedVariable();
+
+        @ConfigDefault("foo")
+        Thread getUnhandledType();
     }
 
     private static class TestModule extends AbstractModule {
@@ -76,6 +90,52 @@ public class ConfigurationTest {
         assertThat(instance.getGlobalPropertiesValue()).isEqualTo("globalPropertiesValue");
         assertThat(instance.getIntForInteger()).isEqualTo(4);
         assertThat(instance.getLongForLong()).isEqualTo(6);
+    }
+
+    @Test
+    public void testEnvironmentVariables() {
+        final Injector injector = JZenith.application()
+                .withModules(new TestModule()).createInjectorForTesting();
+
+        final TestConfiguration instance = injector.getInstance(TestConfiguration.class);
+
+        assertThat(instance.getWithEnvironmentDefault()).isEqualTo("BAR");
+        assertThat(instance.getEscapedVariable()).isEqualTo("${LITERAL}");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testFailNoValue() {
+        final Injector injector = JZenith.application()
+                .withModules(new TestModule()).createInjectorForTesting();
+
+        final TestConfiguration instance = injector.getInstance(TestConfiguration.class);
+
+        instance.getFailNoValue();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testCommandLineError() {
+        final Injector injector = JZenith.application("--testCommandLine")
+                .withModules(new TestModule()).createInjectorForTesting();
+
+        final TestConfiguration instance = injector.getInstance(TestConfiguration.class);
+
+        instance.getCommandLine();
+    }
+
+    @Test(expected = NotImplementedException.class)
+    public void testUnhandledType() {
+        final Injector injector = JZenith.application()
+                .withModules(new TestModule()).createInjectorForTesting();
+
+        final TestConfiguration instance = injector.getInstance(TestConfiguration.class);
+
+        instance.getUnhandledType();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testFirstNonNullFail() {
+        ConfigurationProvider.firstNonNull(() -> null);
     }
 
 }

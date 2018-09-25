@@ -15,6 +15,7 @@
  */
 package org.jzenith.core.configuration;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Splitter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -23,12 +24,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jzenith.core.CoreConfiguration;
-import org.jzenith.core.JZenithException;
 import org.jzenith.core.util.EnvironmentVariableExpander;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -61,6 +60,19 @@ public class ConfigurationProvider<T> implements Provider<T> {
                 new ConfigurationInvocationHandler(configurationBaseNameUpper, coreConfiguration, extraConfiguration)));
     }
 
+    @SafeVarargs
+    @VisibleForTesting
+    static Object firstNonNull(Supplier<Object>... suppliers) {
+        for (final Supplier<Object> supplier : suppliers) {
+            final Object s = supplier.get();
+            if (s != null) {
+                return s;
+            }
+        }
+
+        throw new IllegalStateException("Non of the provided suppliers supplied a value");
+    }
+
     private static class ConfigurationInvocationHandler implements InvocationHandler {
 
         private final String configurationBaseNameUpper;
@@ -90,7 +102,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
                     () -> logValue(defaultConfiguration(method), configurationPropertyName, method.getName(), "default annotation"));
 
             final Class<?> returnType = method.getReturnType();
-            if (value.getClass() == returnType) {
+            if (value.getClass() == returnType && returnType != String.class) {
                 return value;
             }
 
@@ -180,18 +192,6 @@ public class ConfigurationProvider<T> implements Provider<T> {
             return null;
         }
 
-        @SafeVarargs
-        private static Object firstNonNull(Supplier<Object>... suppliers) {
-            for (final Supplier<Object> supplier : suppliers) {
-                final Object s = supplier.get();
-                if (s != null) {
-                    return s;
-                }
-            }
-
-            throw new IllegalStateException("Non of the provided suppliers supplied a value");
-        }
-
         private static Object handleVariableExpansion(@NonNull String stringValue, @NonNull Class<?> returnType) {
             final String expandedValue;
             if (stringValue.startsWith("$")) {
@@ -208,6 +208,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
             if (returnType == String.class) {
                 return expandedValue;
             }
+
             throw new NotImplementedException("No support for configuration of type " + returnType.getName());
         }
 

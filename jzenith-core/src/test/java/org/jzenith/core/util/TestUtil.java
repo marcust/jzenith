@@ -17,8 +17,12 @@ package org.jzenith.core.util;
 
 import com.google.common.base.Defaults;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import one.util.streamex.StreamEx;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,44 +30,84 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 @UtilityClass
 public class TestUtil {
 
-    public static void testPublicMethodsHaveNonNullParameters(final Object object) throws IllegalAccessException {
-        final Method[] declaredMethods = object.getClass().getDeclaredMethods();
+    public static List<Class<?>> listAllApiClasses() {
+        try (ScanResult scanResult =
+                     new ClassGraph()
+                             .verbose()
+                             .enableClassInfo()
+                             .whitelistPackages("org.jzenith")
+                             .scan()) {
+            return scanResult.getAllClasses().stream()
+                    .filter(classInfo -> Modifier.isPublic(classInfo.getModifiers()) ||
+                            Modifier.isProtected(classInfo.getModifiers()))
+                    .map(classInfo -> classInfo.loadClass())
+                    .collect(ImmutableList.toImmutableList());
+        }
+    }
+
+    public static void testPublicMethodsHaveNonNullParameters(final Object object) {
+        testPublicMethodsHaveNonNullParameters(object.getClass(), object);
+    }
+
+    public static void testPublicMethodsHaveNonNullParameters(final Class<?> clz) {
+        testPublicMethodsHaveNonNullParameters(clz, spy(clz));
+    }
+
+    @SneakyThrows
+    public static void testPublicMethodsHaveNonNullParameters(final Class<?> clz, final Object object) {
+        final Iterable<Method> declaredMethods = listTestableMethods(clz);
+
         for (final Method method : declaredMethods) {
-            if ((method.getModifiers() & Modifier.PUBLIC) != 0) {
-                if (method.getName().contains("CGLIB") || "equals".equals(method.getName())) {
-                    continue;
-                }
+            if (isIgnored(method)) {
+                continue;
+            }
 
-                final List<Object[]> parameterPermutations = makeParameterPermutations(method);
+            final List<Object[]> parameterPermutations = makeParameterPermutations(method);
 
-                for (final Object[] parameters : parameterPermutations) {
+            for (final Object[] parameters : parameterPermutations) {
 
-                    try {
+                try {
+                    if (Modifier.isStatic(method.getModifiers())) {
+                        method.invoke(clz, parameters);
+                    } else {
                         method.invoke(object, parameters);
-                        fail("Method " + method.getName() + "(" + Arrays.asList(method.getParameterTypes()) + ") should have thrown a Lombok NPE");
-                    } catch (InvocationTargetException e) {
-                        assertThat(e.getCause()).isInstanceOf(NullPointerException.class);
-                        assertThat(e.getCause().getMessage())
-                                .as("Method %s %s throws a NPE without message", method.getName(), Arrays.asList(method.getParameterTypes()).toString())
-                                .isNotNull();
-                        assertThat(e.getCause().getMessage()).contains("marked @NonNull");
                     }
+                    fail("Method " + method.getName() + "(" + Arrays.asList(method.getParameterTypes()) + ") should have thrown a Lombok NPE");
+                } catch (InvocationTargetException e) {
+                    assertThat(e.getCause()).isInstanceOf(NullPointerException.class);
+                    assertThat(e.getCause().getMessage())
+                            .as("Method %s %s throws a NPE without message", method.getName(), Arrays.asList(method.getParameterTypes()).toString())
+                            .isNotNull();
+                    assertThat(e.getCause().getMessage()).contains("marked @NonNull");
                 }
             }
         }
     }
 
-    private static List<Object[]> makeParameterPermutations(Method method) {
+    private static boolean isIgnored(Method method) {
+        return !(method.getName().contains("CGLIB") || "equals".equals(method.getName()));
+    }
+
+    public static List<Method> listTestableMethods(Class<?> clz) {
+        return StreamEx.of(Iterables.concat(Arrays.asList(clz.getDeclaredMethods()),
+                Arrays.asList(clz.getMethods())).iterator())
+                    .filter(method -> Modifier.isPublic(method.getModifiers()))
+                    .distinct()
+                    .filter(TestUtil::isIgnored)
+                    .collect(ImmutableList.toImmutableList());
+    }
+
+    public static List<Object[]> makeParameterPermutations(Method method) {
         final int parameterCount = method.getParameterCount();
 
         if (parameterCount == 0) {
@@ -112,6 +156,12 @@ public class TestUtil {
         }
         if (type == String.class) {
             return "foo";
+        }
+        if (type.isEnum()) {
+            return type.getEnumConstants()[0];
+        }
+        if (type == Class.class) {
+            return Class.class;
         }
 
         return mock(type);

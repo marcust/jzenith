@@ -49,10 +49,6 @@ public class EnvironmentVariableExpander {
         return INSTANCE.expandVariables(input);
     }
 
-    public static CharSource expand(final CharSource input) throws IOException {
-        return CharSource.wrap(input.readLines().stream().map(EnvironmentVariableExpander::expand).collect(Collectors.joining("\n")));
-    }
-
     @VisibleForTesting
     String expandVariables(@Nullable final String input) {
         if (input == null) {
@@ -65,8 +61,8 @@ public class EnvironmentVariableExpander {
             final String variableName = m.group(1);
             final String defaultValue = m.group(2);
             final String variableValue = Optional
-                .ofNullable(expandVariables(variableAccessor.apply(variableName)))
-                .orElse(defaultValue);
+                    .ofNullable(expandVariables(variableAccessor.apply(variableName)))
+                    .orElse(defaultValue);
 
             if (variableValue == null) {
                 throw new IllegalStateException("Can not get value for variable " + variableName + " from current environment");

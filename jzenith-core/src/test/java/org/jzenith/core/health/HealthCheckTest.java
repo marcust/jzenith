@@ -29,6 +29,7 @@ import io.reactivex.internal.schedulers.NewThreadScheduler;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
+import org.jzenith.core.util.TestUtil;
 
 import java.time.Duration;
 import java.util.Set;
@@ -117,6 +118,11 @@ public class HealthCheckTest {
         assertThat(result.isDown()).isTrue();
         assertThat(result.getMessage()).isEqualTo("TimeoutException");
         assertThat(result.getState()).isEqualTo(HealthState.DOWN);
+    }
+
+    @Test
+    public void testHealthCheckResult() throws IllegalAccessException {
+        TestUtil.testPublicMethodsHaveNonNullParameters(HealthCheckResult.class);
     }
 
 
