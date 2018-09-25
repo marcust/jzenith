@@ -145,7 +145,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
         @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Wrong positive on unclosed stream")
         @SneakyThrows
         private String propertyConfiguration(String configurationBaseNameLower, String propertyName) {
-            try (final InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties")) {
+            try (InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties")) {
                 if (specificStream != null) {
                     final String value = loadPropertyFrom(specificStream, propertyName);
                     if (value != null) {
@@ -154,7 +154,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
                 }
             }
 
-            try (final InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties")) {
+            try (InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties")) {
                 if (globalStream != null) {
                     return loadPropertyFrom(globalStream, propertyName);
                 }
