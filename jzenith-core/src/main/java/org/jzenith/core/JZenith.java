@@ -29,6 +29,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.spi.BindingTargetVisitor;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
@@ -39,6 +40,10 @@ import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.logging.LoggerFactory;
@@ -65,6 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 public class JZenith {
 
@@ -162,7 +168,7 @@ public class JZenith {
     }
 
     public Injector createInjectorForTesting() {
-        return createInjector(Vertx.vertx());
+        return createInjector(initVertx());
     }
 
     private Injector createInjector(Vertx vertx) {
@@ -182,7 +188,11 @@ public class JZenith {
                         bindListener(Matchers.any(), new CloseableListener(repository));
 
                         if (tracer != null) {
-                            bindInterceptor(Matchers.any(), Matchers.any(), new OpenTracingInterceptor(tracer));
+                            final OpenTracingInterceptor interceptor = new OpenTracingInterceptor(tracer);
+
+                            Stream.of(Single.class, Observable.class, Completable.class, Maybe.class)
+                                    .forEach(clz ->
+                                             bindInterceptor(Matchers.any(), Matchers.returns(Matchers.subclassesOf(clz)), interceptor));
                             bind(Tracer.class).toInstance(tracer);
                         }
 
@@ -193,7 +203,8 @@ public class JZenith {
                 .addAll(modules)
                 .build();
 
-        return Guice.createInjector(allModules);
+        final Injector injector = Guice.createInjector(allModules);
+        return injector;
     }
 
     private void initMeterRegistry() {
