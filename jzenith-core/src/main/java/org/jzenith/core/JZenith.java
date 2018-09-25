@@ -180,7 +180,7 @@ public class JZenith {
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
-                        bind(MeterRegistry.class).toInstance(BackendRegistries.getDefaultNow());
+                        bind(MeterRegistry.class).toProvider(BackendRegistries::getDefaultNow);
                         bind(CoreConfiguration.class).toInstance(configuration);
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(vertx);
