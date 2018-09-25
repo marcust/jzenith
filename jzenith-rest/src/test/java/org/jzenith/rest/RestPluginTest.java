@@ -16,6 +16,9 @@
 package org.jzenith.rest;
 
 import com.google.inject.TypeLiteral;
+import io.opentracing.Tracer;
+import io.opentracing.mock.MockTracer;
+import io.opentracing.noop.NoopTracer;
 import io.opentracing.noop.NoopTracerFactory;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
@@ -29,6 +32,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class RestPluginTest {
 
@@ -37,6 +41,24 @@ public class RestPluginTest {
         final JZenith application = makeApplication();
         application.run();
         application.stop();
+    }
+
+    @Test(expected = JZenithException.class)
+    public void testStartupFailure() {
+        final JZenith application = makeApplication();
+
+        try {
+            application.run();
+
+            final JZenith secondApplication = makeApplication();
+            try {
+                secondApplication.run();
+            } finally {
+                secondApplication.stop();
+            }
+        } finally {
+            application.stop();
+        }
     }
 
     @Test
@@ -147,7 +169,7 @@ public class RestPluginTest {
     public void testPage() {
         final JZenith application = JZenith.application();
         application
-                .withTracer(NoopTracerFactory.create())
+                .withTracer(new MockTracer())
                 .withPlugins(RestPlugin.withResources(TestResource.class))
                 .run();
 

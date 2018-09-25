@@ -152,7 +152,6 @@ public class TestUtil {
         }
 
         return mock(type);
-
     }
 
     private static Class<?> getParameterType(Method method, int position) {

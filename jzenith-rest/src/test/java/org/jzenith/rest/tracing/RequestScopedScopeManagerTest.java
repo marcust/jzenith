@@ -29,13 +29,30 @@ public class RequestScopedScopeManagerTest {
         final RequestScopedScopeManager manager = new RequestScopedScopeManager();
 
         final Span mockSpan = mock(Span.class);
-        final Scope active = manager.activate(mockSpan, false);
+        final Scope active = manager.activate(mockSpan, true);
 
         final RequestScopedScope scope = manager.getScope();
         assertThat(scope).isEqualTo(manager.active());
         assertThat(active).isEqualTo(scope);
 
         assertThat(scope.span()).isEqualTo(mockSpan);
+        scope.close();
+    }
+
+    @Test
+    public void testScopeManagerWrongScope() {
+        final RequestScopedScopeManager manager = new RequestScopedScopeManager();
+
+        final Span mockSpan = mock(Span.class);
+        final Scope active = manager.activate(mockSpan, true);
+
+        final RequestScopedScope scope = manager.getScope();
+        assertThat(scope).isEqualTo(manager.active());
+        assertThat(active).isEqualTo(scope);
+
+        assertThat(scope.span()).isEqualTo(mockSpan);
+
+        manager.activate(mockSpan, false);
         scope.close();
     }
 
