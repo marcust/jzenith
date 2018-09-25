@@ -47,7 +47,7 @@ public class CloseableListener implements ProvisionListener {
     }
 
     private boolean shouldManage(ProvisionInvocation<?> provisionInvocation) {
-        return provisionInvocation.getBinding().acceptScopingVisitor(new BindingScopingVisitor<>() {
+        return provisionInvocation.getBinding().acceptScopingVisitor(new BindingScopingVisitor<Boolean>() {
 
             @Override
             public Boolean visitEagerSingleton() {
