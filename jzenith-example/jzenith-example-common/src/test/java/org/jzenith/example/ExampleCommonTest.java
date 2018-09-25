@@ -15,6 +15,7 @@
  */
 package org.jzenith.example;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import io.opentracing.noop.NoopTracerFactory;
@@ -153,7 +154,7 @@ public class ExampleCommonTest {
     @Test
     public void testUserResourceList() {
         when(userDao.listUsers(any(), any()))
-                .thenReturn(Single.just(new Page<>(0, 1, 2, List.of(new User(UUID.randomUUID(), "name")))));
+                .thenReturn(Single.just(new Page<>(0, 1, 2, ImmutableList.of(new User(UUID.randomUUID(), "name")))));
 
         final Page<UserResponse> listResponse = userResource.listUsers(0, 1).blockingGet();
 

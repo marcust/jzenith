@@ -18,6 +18,7 @@ package org.jzenith.jdbc.model;
 import org.jooq.Field;
 import org.junit.Test;
 import org.jzenith.core.util.TestUtil;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class RowTest {
 
     @Test
     public void testGetColumn() {
-        final Row row = Row.fromMap(Map.of("string", "value"));
+        final Row row = Row.fromMap(ImmutableMap.of("string", "value"));
 
         final String value = row.getColumn("string", String.class);
 
@@ -40,7 +41,7 @@ public class RowTest {
 
     @Test
     public void testGetString() {
-        final Row row = Row.fromMap(Map.of("string", "value"));
+        final Row row = Row.fromMap(ImmutableMap.of("string", "value"));
 
         final String value = row.getString("string");
 
@@ -49,7 +50,7 @@ public class RowTest {
 
     @Test
     public void testGetUUID() {
-        final Row row = Row.fromMap(Map.of("uuid", UUID.randomUUID()));
+        final Row row = Row.fromMap(ImmutableMap.of("uuid", UUID.randomUUID()));
 
         final UUID value = row.getUUID("uuid");
 
@@ -58,7 +59,7 @@ public class RowTest {
 
     @Test
     public void testGetOnlyLong() {
-        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
+        final Row row = Row.fromMap(ImmutableMap.of("string", Long.valueOf(5)));
 
         final Long value = row.getOnlyLong();
 
@@ -68,7 +69,7 @@ public class RowTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetField() {
-        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
+        final Row row = Row.fromMap(ImmutableMap.of("string", Long.valueOf(5)));
         final Field<Long> mock = mock(Field.class);
         when(mock.getName()).thenReturn("string");
         when(mock.getType()).thenReturn(Long.class);
@@ -80,7 +81,7 @@ public class RowTest {
 
     @Test
     public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
-        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
+        final Row row = Row.fromMap(ImmutableMap.of("string", Long.valueOf(5)));
 
         TestUtil.testPublicMethodsHaveNonNullParameters(row);
     }
@@ -88,7 +89,7 @@ public class RowTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testSecondParameter() {
-        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
+        final Row row = Row.fromMap(ImmutableMap.of("string", Long.valueOf(5)));
 
         try {
             final Field<Long> mock = mock(Field.class);
@@ -104,7 +105,7 @@ public class RowTest {
 
     @Test
     public void testSecondParameterGetColumn() {
-        final Row row = Row.fromMap(Map.of("string", Long.valueOf(5)));
+        final Row row = Row.fromMap(ImmutableMap.of("string", Long.valueOf(5)));
 
         try {
             row.getColumn("foo", null);

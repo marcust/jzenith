@@ -16,6 +16,7 @@
 package org.jzenith.core.tracing;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
@@ -29,7 +30,6 @@ import lombok.NonNull;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class OpenTracingInterceptor implements MethodInterceptor {
@@ -76,7 +76,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnSuccess(event -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(ImmutableMap.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
 
@@ -89,7 +89,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnComplete(() -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(ImmutableMap.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
     }
@@ -101,7 +101,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnComplete(() -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(ImmutableMap.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
     }
@@ -114,7 +114,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
                 .doOnSuccess(event -> currentScope.get().close())
                 .doOnError(ex -> {
                     Tags.ERROR.set(span, true);
-                    span.log(Map.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
+                    span.log(ImmutableMap.of(Fields.EVENT, ERROR, Fields.ERROR_OBJECT, ex, Fields.MESSAGE, ex.getMessage()));
                     currentScope.get().close();
                 });
     }

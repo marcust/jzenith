@@ -21,6 +21,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
@@ -65,7 +66,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -154,7 +154,7 @@ public class JZenith {
                 .setEnabled(true);
         final MicrometerMetricsOptions metricsOptions = new MicrometerMetricsOptions()
                 .setEnabled(true)
-                .setDisabledMetricsCategories(Set.of(MetricsDomain.HTTP_SERVER))
+                .setDisabledMetricsCategories(ImmutableSet.of(MetricsDomain.HTTP_SERVER))
                 .setPrometheusOptions(prometheusOptions);
 
         return Vertx.vertx(

@@ -16,6 +16,7 @@
 package org.jzenith.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 import io.reactivex.Single;
 import io.swagger.v3.core.converter.AnnotatedType;
@@ -29,12 +30,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Set.of;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 
 public class SingleModelConverterTest {
@@ -131,7 +130,7 @@ public class SingleModelConverterTest {
         type.setSchemaProperty(true);
 
         final SingleModelConverter converter = new SingleModelConverter(new ObjectMapper());
-        converter.resolve(type, mock(ModelConverterContext.class), Set.<ModelConverter>of(converter).iterator());
+        converter.resolve(type, mock(ModelConverterContext.class), ImmutableSet.<ModelConverter>of(converter).iterator());
     }
 }
 

@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
+import org.jzenith.core.JZenithException;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.health.HealthCheckResult;
 
@@ -55,7 +56,7 @@ public class JdbcHealthCheckTest extends AbstractJdbcPluginTest {
         final HealthCheck healthCheck = StreamEx.of(healthChecks)
                 .select(HealthCheck.class)
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new JZenithException("Did not find health check"));
 
         final HealthCheckResult healthCheckResult = healthCheck.execute().blockingGet();
 
