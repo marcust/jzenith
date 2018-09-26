@@ -28,6 +28,7 @@ import org.jzenith.core.util.EnvironmentVariableExpander;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -142,7 +143,8 @@ public class ConfigurationProvider<T> implements Provider<T> {
             return annotation.value();
         }
 
-        @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Wrong positive on unclosed stream")
+        @SuppressFBWarnings(value = {"OBL_UNSATISFIED_OBLIGATION", "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"},
+                justification = "Wrong positive on unclosed stream and Spotbugs Issue #756")
         @SneakyThrows
         private String propertyConfiguration(String configurationBaseNameLower, String propertyName) {
             try (InputStream specificStream = this.getClass().getResourceAsStream("/" + configurationBaseNameLower + ".properties")) {
@@ -154,6 +156,13 @@ public class ConfigurationProvider<T> implements Provider<T> {
                 }
             }
 
+            return globalPropertyConfiguration(propertyName);
+        }
+
+        @SuppressFBWarnings(value = {"NP_LOAD_OF_KNOWN_NULL_VALUE", "OBL_UNSATISFIED_OBLIGATION",
+                "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"},
+                justification = "Wrong positive on unclosed stream and Spotbugs Issue #756")
+        private String globalPropertyConfiguration(String propertyName) throws IOException {
             try (InputStream globalStream = this.getClass().getResourceAsStream("/jzenith.properties")) {
                 if (globalStream != null) {
                     return loadPropertyFrom(globalStream, propertyName);
