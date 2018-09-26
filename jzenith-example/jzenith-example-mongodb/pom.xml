@@ -9,9 +9,9 @@
     </parent>
 
     <groupId>org.jzenith</groupId>
-    <artifactId>jzenith-example-redis</artifactId>
+    <artifactId>jzenith-example-mongodb</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>Example - Redis</name>
+    <name>Example - Mongodb</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>org.jzenith</groupId>
-            <artifactId>jzenith-redis</artifactId>
+            <artifactId>jzenith-mongodb</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
 
@@ -100,7 +100,7 @@
                     <transformers>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>org.jzenith.example.RedisPluginExampleApp</mainClass>
+                            <mainClass>org.jzenith.example.MongodbPluginExampleApp</mainClass>
                         </transformer>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
@@ -123,15 +123,17 @@
                 <configuration>
                     <images>
                         <image>
-                            <alias>redis</alias>
-                            <name>redis:4</name>
+                            <alias>mongo</alias>
+                            <name>mongo:4</name>
                             <run>
                                 <wait>
-                                    <log>Ready to accept connections</log>
                                     <time>20000</time>
+                                    <tcp>
+                                        <ports>27017</ports>
+                                    </tcp>
                                 </wait>
                                 <ports>
-                                    <port>6378:6379</port>
+                                    <port>27018:27017</port>
                                 </ports>
                             </run>
                         </image>

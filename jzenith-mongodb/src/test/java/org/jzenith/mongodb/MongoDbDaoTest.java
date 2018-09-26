@@ -13,45 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.redis;
+package org.jzenith.mongodb;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-import io.netty.buffer.ByteBuf;
-import io.vertx.reactivex.core.buffer.Buffer;
-import io.vertx.reactivex.redis.RedisClient;
+import io.vertx.core.json.JsonObject;
+import io.vertx.reactivex.ext.mongo.MongoClient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.util.TestUtil;
-import org.nustaq.serialization.FSTConfiguration;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public class RedisDaoTest extends AbstractRedisPluginTest {
+public class MongoDbDaoTest extends AbstractMongoDbPluginTest {
 
     private JZenith application;
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     static class Entity implements Serializable {
+        String aKey;
         String aValue;
     }
 
-    static class EntityDao extends RedisDao<Entity> {
+    static class EntityDao extends MongoDbDao<Entity> {
 
         @Inject
-        protected EntityDao(FSTConfiguration configuration, RedisClient client) {
-            super(configuration, client, Entity.class);
+        protected EntityDao(MongoClient client) {
+            super(client, Entity.class, Entity::getAKey);
         }
     }
 
@@ -66,10 +65,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     private EntityDao dao;
 
     @Inject
-    private RedisClient client;
-
-    @Inject
-    private FSTConfiguration serializer;
+    private MongoClient client;
 
     @Before
     public void initClient() {
@@ -80,36 +76,44 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
 
     @After
     public void closeApplication() {
+        client.rxDropCollection("entity").blockingGet();
         if (application != null) {
             application.stop();
         }
     }
 
     @Test
-    public void testStore() {
-        dao.set("key", new Entity("value")).blockingGet();
+    public void testInsert() {
+        dao.insert(new Entity("key", "value")).blockingGet();
 
-        final Entity entity = client.rxGetBinary(Entity.class.getName() + ":key")
-                .map(buffer -> (Entity) serializer.asObject(buffer.getDelegate().getBytes()))
+        final Entity entity = client.rxFindOne("entity", new JsonObject().put(MongoDbDao.ID_FIELD, "key"), null)
+                .filter(Objects::nonNull)
+                .map(dao::mapToType)
                 .blockingGet();
 
         assertThat(entity.getAValue()).isEqualTo("value");
+        assertThat(entity.getAKey()).isEqualTo("key");
     }
 
     @Test
     public void testDelete() {
-        testStore();
+        testInsert();
 
-        final Long deleted = dao.delete("key").blockingGet();
+        dao.delete("key").blockingGet();
 
-        assertThat(deleted).isEqualTo(1);
+        final Entity entity = client.rxFindOne("entity", new JsonObject().put(MongoDbDao.ID_FIELD, "key"), new JsonObject())
+                .filter(Objects::nonNull)
+                .map(dao::mapToType)
+                .blockingGet();
+
+        assertThat(entity).isNull();
     }
 
     @Test
     public void testList() {
-        testStore();
+        testInsert();
 
-        final List<Entity> entities = dao.list().toList().blockingGet();
+        final List<Entity> entities = dao.list(0, 10).toList().blockingGet();
 
         assertThat(entities).hasSize(1);
         assertThat(entities.get(0).getAValue()).isEqualTo("value");
@@ -117,7 +121,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
 
     @Test
     public void testCount() {
-        testStore();
+        testInsert();
 
         final Long count = dao.count().blockingGet();
 
@@ -126,7 +130,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
 
     @Test
     public void testGet() {
-        testStore();
+        testInsert();
 
         final Entity entity = dao.get("key").blockingGet();
 
@@ -134,23 +138,22 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     }
 
     @Test
+    public void testUpdate() {
+        testInsert();
+
+        dao.update(new Entity("key", "newValue")).blockingGet();
+
+        final Entity entity = client.rxFindOne("entity", new JsonObject().put(MongoDbDao.ID_FIELD, "key"), null)
+                .filter(Objects::nonNull)
+                .map(dao::mapToType)
+                .blockingGet();
+
+        assertThat(entity.getAValue()).isEqualTo("newValue");
+    }
+
+    @Test
     public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
         TestUtil.testApiMethodsHaveNonNullParameters(dao);
     }
 
-    @Test
-    public void testDeserializeNullArg() {
-        assertThat(dao.deserialize((Buffer) null).isPresent()).isFalse();
-    }
-
-    @Test
-    public void testDeserializeEmptyBuffer() {
-        io.vertx.core.buffer.Buffer buffer = mock(io.vertx.core.buffer.Buffer.class);
-        ByteBuf nettyBuffer = mock(ByteBuf.class);
-        when(buffer.getByteBuf()).thenReturn(nettyBuffer);
-        when(nettyBuffer.hasArray()).thenReturn(Boolean.FALSE);
-        when(buffer.getBytes()).thenReturn(new byte[0]);
-
-        assertThat(dao.deserialize(buffer).isPresent()).isFalse();
-    }
 }

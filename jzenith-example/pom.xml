@@ -29,6 +29,7 @@
         <module>jzenith-example-postgres</module>
         <module>jzenith-example-postgres-plugin</module>
         <module>jzenith-example-redis</module>
+        <module>jzenith-example-mongodb</module>
     </modules>
 
     <dependencies>

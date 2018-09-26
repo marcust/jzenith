@@ -9,10 +9,10 @@
     </parent>
 
     <groupId>org.jzenith</groupId>
-    <artifactId>jzenith-redis</artifactId>
+    <artifactId>jzenith-mongodb</artifactId>
     <version>0.1-SNAPSHOT</version>
 
-    <name>jZenith Redis Plugin</name>
+    <name>jZenith MongoDB Plugin</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,22 +23,12 @@
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-core</artifactId>
             <version>0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-redis-client</artifactId>
+            <artifactId>vertx-mongo-client</artifactId>
             <version>${vertx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.ruedigermoeller</groupId>
-            <artifactId>fst</artifactId>
-            <version>2.57</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Compile Time tools -->
@@ -86,7 +76,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>${bytebuddy.version}</version>
+            <version>1.8.22</version>
             <scope>test</scope>
         </dependency>
 

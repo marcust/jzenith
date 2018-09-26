@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.example.service.model;
+package org.jzenith.example.persistence;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.google.inject.AbstractModule;
+import org.jzenith.example.persistence.impl.UserDaoImpl;
 
-import java.io.Serializable;
-import java.util.UUID;
+public class PersistenceLayerModule extends AbstractModule {
 
-@Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class User implements Serializable {
-
-    private UUID id;
-    private String name;
-
+    @Override
+    protected void configure() {
+        bind(UserDao.class).to(UserDaoImpl.class).asEagerSingleton();
+    }
 }

@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.example.service.model;
+package org.jzenith.mongodb;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.jzenith.core.configuration.ConfigDefault;
 
-import java.io.Serializable;
-import java.util.UUID;
+public interface MongoDbConfiguration {
 
-@Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class User implements Serializable {
+    @ConfigDefault("database")
+    String getDatabaseName();
 
-    private UUID id;
-    private String name;
+    String getConnectString();
 
 }
