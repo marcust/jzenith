@@ -176,6 +176,7 @@ public class ExampleCommonTest {
 
     @Test
     public void testUserResourceDelete() {
+        when(userDao.getById(any())).thenReturn(Maybe.just(new User(UUID.randomUUID(), "name")));
         when(userDao.deleteById(any())).thenReturn(Single.just(Deleted.YES));
 
         final Response deleteResponse = userResource.deleteUser(UUID.randomUUID()).blockingGet();

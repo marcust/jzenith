@@ -23,6 +23,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class HealthCheckResult {
 
     @NonNull

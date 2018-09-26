@@ -21,6 +21,7 @@ import com.google.common.collect.Iterables;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import one.util.streamex.StreamEx;
+import org.apache.commons.lang3.ClassUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -39,16 +40,16 @@ import static org.mockito.Mockito.spy;
 @UtilityClass
 public class TestUtil {
 
-    public static void testPublicMethodsHaveNonNullParameters(final Object object) {
-        testPublicMethodsHaveNonNullParameters(object.getClass(), object);
+    public static void testApiMethodsHaveNonNullParameters(final Object object) {
+        testApiMethodsHaveNonNullParameters(object.getClass(), object);
     }
 
-    public static void testPublicMethodsHaveNonNullParameters(final Class<?> clz) {
-        testPublicMethodsHaveNonNullParameters(clz, spy(clz));
+    public static void testApiMethodsHaveNonNullParameters(final Class<?> clz) {
+        testApiMethodsHaveNonNullParameters(clz, spy(clz));
     }
 
     @SneakyThrows
-    public static void testPublicMethodsHaveNonNullParameters(final Class<?> clz, final Object object) {
+    public static void testApiMethodsHaveNonNullParameters(final Class<?> clz, final Object object) {
         final Iterable<Method> declaredMethods = listTestableMethods(clz);
 
         for (final Method method : declaredMethods) {
@@ -57,6 +58,8 @@ public class TestUtil {
             for (final Object[] parameters : parameterPermutations) {
 
                 try {
+                    method.setAccessible(true);
+
                     if (Modifier.isStatic(method.getModifiers())) {
                         method.invoke(clz, parameters);
                     } else {
@@ -85,7 +88,7 @@ public class TestUtil {
     public static List<Method> listTestableMethods(Class<?> clz) {
         return StreamEx.of(Iterables.concat(Arrays.asList(clz.getDeclaredMethods()),
                 Arrays.asList(clz.getMethods())).iterator())
-                .filter(method -> Modifier.isPublic(method.getModifiers()))
+                .filter(method -> Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers()))
                 .distinct()
                 .filter(TestUtil::isNotIgnored)
                 .filter(method -> method.getParameterCount() > 0)
@@ -149,6 +152,9 @@ public class TestUtil {
         }
         if (type.isArray()) {
             return Array.newInstance(type.getComponentType(), 0);
+        }
+        if (ClassUtils.isPrimitiveWrapper(type)) {
+            return Defaults.defaultValue(ClassUtils.wrapperToPrimitive(type));
         }
 
         return mock(type);

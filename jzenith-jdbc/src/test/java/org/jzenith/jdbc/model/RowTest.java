@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.jzenith.core.util.TestUtil;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,7 +82,7 @@ public class RowTest {
     public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
         final Row row = Row.fromMap(ImmutableMap.of("string", Long.valueOf(5)));
 
-        TestUtil.testPublicMethodsHaveNonNullParameters(row);
+        TestUtil.testApiMethodsHaveNonNullParameters(row);
     }
 
     @Test

@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.example.service.model;
+package org.jzenith.mongodb;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.junit.Test;
+import org.jzenith.core.JZenith;
+import org.jzenith.mongodb.AbstractMongoDbPluginTest;
 
-import java.io.Serializable;
-import java.util.UUID;
+public class MongoDbPluginTest extends AbstractMongoDbPluginTest {
 
-@Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class User implements Serializable {
+    @Test
+    public void testStartupShutdown() {
+        final JZenith application = makeApplication();
+        application.run();
+        application.stop();
+    }
 
-    private UUID id;
-    private String name;
 
 }

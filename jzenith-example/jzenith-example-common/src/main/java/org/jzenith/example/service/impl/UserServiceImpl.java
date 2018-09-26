@@ -64,7 +64,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Completable deleteById(UUID id) {
-        return userDao.deleteById(id)
+        return getById(id)
+                .flatMap(user -> userDao.deleteById(id))
                 .filter(Deleted::isDeleted)
                 .switchIfEmpty(Single.error(new NoSuchUserException(id)))
                 .toCompletable();

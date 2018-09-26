@@ -21,8 +21,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.multibindings.Multibinder;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.internal.observers.FutureSingleObserver;
 import io.reactivex.internal.schedulers.NewThreadScheduler;
@@ -122,7 +120,7 @@ public class HealthCheckTest {
 
     @Test
     public void testHealthCheckResult() throws IllegalAccessException {
-        TestUtil.testPublicMethodsHaveNonNullParameters(HealthCheckResult.class);
+        TestUtil.testApiMethodsHaveNonNullParameters(HealthCheckResult.class);
     }
 
 

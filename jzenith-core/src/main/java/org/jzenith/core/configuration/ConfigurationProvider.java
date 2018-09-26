@@ -17,7 +17,6 @@ package org.jzenith.core.configuration;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Splitter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -51,7 +50,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
 
     public ConfigurationProvider(Class<T> configurationClass) {
         this.configurationClass = configurationClass;
-        this.configurationBaseNameUpper = Splitter.on('_').split(CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, configurationClass.getSimpleName())).iterator().next();
+        this.configurationBaseNameUpper = CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, configurationClass.getSimpleName()).replace("_CONFIGURATION", "");
     }
 
     @Override
@@ -93,7 +92,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
             final String configurationName = method.getName().replace("get", "");
             final String environmentVariableName = configurationBaseNameUpper + "_" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, configurationName);
             final String configurationNameCommandLine = "--" + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, environmentVariableName);
-            final String configurationPropertyName = configurationBaseNameUpper.toLowerCase() + "." + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, configurationName).replace('_', '.');
+            final String configurationPropertyName = (configurationBaseNameUpper.toLowerCase() + "." + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, configurationName)).replace('_', '.');
 
             final Object value = firstNonNull(
                     () -> logValue(extraConfigurationValue(configurationPropertyName), configurationPropertyName, configurationPropertyName, "code"),
