@@ -2,6 +2,7 @@
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=org.jzenith%3Aroot-pom&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.jzenith%3Aroot-pom)
 [![Coverage Status](https://coveralls.io/repos/github/marcust/jzenith/badge.svg?branch=master)](https://coveralls.io/github/marcust/jzenith?branch=master)
 [![codecov](https://codecov.io/gh/marcust/jzenith/branch/master/graph/badge.svg)](https://codecov.io/gh/marcust/jzenith)
+[![Known Vulnerabilities](https://snyk.io/test/github/marcust/jzenith/badge.svg?targetFile=jzenith-example%2Fjzenith-example-postgres%2Fpom.xml)](https://snyk.io/test/github/marcust/jzenith?targetFile=jzenith-example%2Fjzenith-example-postgres%2Fpom.xml)
 
 **Disclaimer**: *This is basically me tinkering with tech and keeping
 myself busy while I'm looking for a new challenge to take on. I don't
