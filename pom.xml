@@ -17,7 +17,7 @@
     <licenses>
         <license>
             <name>Apache License Version 2.0</name>
-            <url> http://www.apache.org/licenses/LICENSE-2.0</url>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -76,7 +76,7 @@
                             <configuration>
                                 <rules>
                                     <requireMavenVersion>
-                                        <version>3.1.1</version>
+                                        <version>3.3.9</version>
                                     </requireMavenVersion>
                                 </rules>
                             </configuration>
@@ -168,7 +168,8 @@
                     <artifactId>maven-pmd-plugin</artifactId>
                     <version>3.10.0</version>
                     <configuration>
-                        <failOnViolation>true</failOnViolation> <!-- this is actually true by default, but can be disabled -->
+                        <failOnViolation>true
+                        </failOnViolation> <!-- this is actually true by default, but can be disabled -->
                         <printFailingErrors>true</printFailingErrors>
                     </configuration>
                     <executions>
@@ -228,6 +229,11 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>3.5.0.1254</version>
                 </plugin>
             </plugins>
         </pluginManagement>
