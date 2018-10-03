@@ -3,6 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/marcust/jzenith/badge.svg?branch=master)](https://coveralls.io/github/marcust/jzenith?branch=master)
 [![codecov](https://codecov.io/gh/marcust/jzenith/branch/master/graph/badge.svg)](https://codecov.io/gh/marcust/jzenith)
 [![Known Vulnerabilities](https://snyk.io/test/github/marcust/jzenith/badge.svg?targetFile=jzenith-example%2Fjzenith-example-postgres%2Fpom.xml)](https://snyk.io/test/github/marcust/jzenith?targetFile=jzenith-example%2Fjzenith-example-postgres%2Fpom.xml)
+[![Gitter chat](https://badges.gitter.im/jzenithorg/gitter.png)](https://gitter.im/jzenithorg/Lobby)
 
 **Disclaimer**: *This is basically me tinkering with tech and keeping
 myself busy while I'm looking for a new challenge to take on. I don't
