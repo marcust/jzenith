@@ -26,8 +26,10 @@ import io.opentracing.Tracer;
 import io.opentracing.contrib.jaxrs2.server.ServerTracingDynamicFeature;
 import io.opentracing.rxjava2.TracingRxJava2Utils;
 import io.opentracing.util.GlobalTracer;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.resteasy.plugins.guice.GuiceResourceFactory;
@@ -36,6 +38,7 @@ import org.jboss.resteasy.plugins.server.vertx.VertxResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
+import org.jzenith.core.util.CompletableHandler;
 import org.jzenith.rest.docs.CustomOpenApiResource;
 import org.jzenith.rest.exception.ConstantMessageExceptionMapping;
 import org.jzenith.rest.exception.ExceptionMapping;
@@ -87,24 +90,32 @@ public class RestPlugin extends AbstractPlugin {
 
         final GuiceVertxRequestHandler handler = initResteasy(injector);
 
-        final CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
         final RestConfiguration restConfiguration = injector.getInstance(RestConfiguration.class);
         final Vertx vertx = injector.getInstance(Vertx.class);
-        vertx.createHttpServer()
-                .requestHandler(handler)
-                .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
-                    if (ar.succeeded()) {
-                        final HttpServer server = ar.result();
-                        log.debug("jZenith Server started on port {}", server.actualPort());
-                        completableFuture.complete("Done");
-                    } else {
-                        completableFuture.completeExceptionally(ar.cause());
+
+        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
+        vertx.deployVerticle(() -> new AbstractVerticle() {
+                    @Override
+                    public void start(Future<Void> startFuture) {
+                        vertx.createHttpServer()
+                                .requestHandler(handler)
+                                .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
+                                    if (ar.succeeded()) {
+                                        startFuture.complete(null);
+                                    } else {
+                                        startFuture.fail(ar.cause());
+                                    }
+                                });
                     }
-                });
+                }, new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors()),
+                completableHandler.handler());
 
-
-        return completableFuture;
+        return completableHandler.thenApply(aVoid -> {
+            log.debug("jZenith Rest Plugin started (listening to {}:{})",
+                    restConfiguration.getHost(), restConfiguration.getPort());
+            return "Done";
+        });
     }
 
     private void initRxJavaTracing() {

@@ -163,11 +163,15 @@ public class JZenith {
                 .setDisabledMetricsCategories(ImmutableSet.of(MetricsDomain.HTTP_SERVER))
                 .setPrometheusOptions(prometheusOptions);
 
-        return Vertx.vertx(
+        final Vertx vertx = Vertx.vertx(
                 new VertxOptions().setMetricsOptions(
                         metricsOptions
                 ).setPreferNativeTransport(true)
         );
+
+        BackendRegistries.setupBackend(vertx, metricsOptions);
+
+        return vertx;
     }
 
     public Injector createInjectorForTesting() {
