@@ -42,7 +42,7 @@ public class JZenithTest {
     }
 
     @Test
-    public void testPublicMethodsNonNull() throws IllegalAccessException {
+    public void testPublicMethodsNonNull() {
         TestUtil.testApiMethodsHaveNonNullParameters(JZenith.application());
     }
 

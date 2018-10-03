@@ -79,7 +79,7 @@ public class RowTest {
     }
 
     @Test
-    public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
+    public void testPublicMethodsHaveNonNullParameters() {
         final Row row = Row.fromMap(ImmutableMap.of("string", Long.valueOf(5)));
 
         TestUtil.testApiMethodsHaveNonNullParameters(row);

@@ -134,7 +134,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     }
 
     @Test
-    public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
+    public void testPublicMethodsHaveNonNullParameters() {
         TestUtil.testApiMethodsHaveNonNullParameters(dao);
     }
 

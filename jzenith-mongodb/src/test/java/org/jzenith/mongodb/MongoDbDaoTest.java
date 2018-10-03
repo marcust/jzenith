@@ -152,7 +152,7 @@ public class MongoDbDaoTest extends AbstractMongoDbPluginTest {
     }
 
     @Test
-    public void testPublicMethodsHaveNonNullParameters() throws IllegalAccessException {
+    public void testPublicMethodsHaveNonNullParameters() {
         TestUtil.testApiMethodsHaveNonNullParameters(dao);
     }
 

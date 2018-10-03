@@ -94,7 +94,7 @@ public class JdbcClientTest extends AbstractJdbcPluginTest {
     }
 
     @Test
-    public void testNullParameters() throws IllegalAccessException {
+    public void testNullParameters() {
         TestUtil.testApiMethodsHaveNonNullParameters(client);
     }
 
