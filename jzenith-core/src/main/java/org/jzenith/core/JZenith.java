@@ -62,11 +62,13 @@ import org.jzenith.core.metrics.JvmOptionMetrics;
 import org.jzenith.core.tracing.OpenTracingInterceptor;
 import org.jzenith.core.util.CompletableHandler;
 
+import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class JZenith {
@@ -144,7 +146,8 @@ public class JZenith {
             throw new JZenithException(e);
         }
 
-        log.debug("jZenith startup complete after {}", stopwatch);
+        log.debug("jZenith startup complete after {}ms (JVM has been up for {}ms)",
+                stopwatch.elapsed(TimeUnit.MILLISECONDS), ManagementFactory.getRuntimeMXBean().getUptime());
 
         return this;
     }
@@ -189,7 +192,7 @@ public class JZenith {
 
                             Stream.of(Single.class, Observable.class, Completable.class, Maybe.class)
                                     .forEach(clz ->
-                                             bindInterceptor(Matchers.any(), Matchers.returns(Matchers.subclassesOf(clz)), interceptor));
+                                            bindInterceptor(Matchers.any(), Matchers.returns(Matchers.subclassesOf(clz)), interceptor));
                             bind(Tracer.class).toInstance(tracer);
                         }
 
@@ -212,7 +215,11 @@ public class JZenith {
         new JvmGcMetrics().bindTo(registry);
         new ProcessorMetrics().bindTo(registry);
         new JvmThreadMetrics().bindTo(registry);
-        new JvmOptionMetrics().bindTo(registry);
+        try {
+            new JvmOptionMetrics().bindTo(registry);
+        } catch (IllegalArgumentException e) {
+            log.debug("Not running on HotSpot");
+        }
     }
 
     @SafeVarargs
