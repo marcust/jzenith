@@ -124,6 +124,9 @@ public class JZenith {
             GlobalTracer.register(tracer);
         }
         vertx = initVertx();
+        if (!vertx.isNativeTransportEnabled()) {
+            throw new IllegalStateException("Native transport could not be enabled");
+        }
         initMeterRegistry();
 
 
@@ -163,7 +166,7 @@ public class JZenith {
         return Vertx.vertx(
                 new VertxOptions().setMetricsOptions(
                         metricsOptions
-                )
+                ).setPreferNativeTransport(true)
         );
     }
 
