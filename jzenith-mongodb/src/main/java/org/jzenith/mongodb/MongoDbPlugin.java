@@ -51,7 +51,7 @@ public class MongoDbPlugin extends AbstractPlugin {
     }
 
     @Override
-    protected CompletableFuture<String> start(Injector injector) {
+    protected CompletableFuture<String> start(@NonNull Injector injector) {
         if (log.isDebugEnabled()) {
             log.debug("jZenith MongoDB is starting");
         }

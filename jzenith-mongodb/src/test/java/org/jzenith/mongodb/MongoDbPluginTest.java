@@ -17,6 +17,7 @@ package org.jzenith.mongodb;
 
 import org.junit.Test;
 import org.jzenith.core.JZenith;
+import org.jzenith.core.util.TestUtil;
 import org.jzenith.mongodb.AbstractMongoDbPluginTest;
 
 public class MongoDbPluginTest extends AbstractMongoDbPluginTest {
@@ -26,6 +27,11 @@ public class MongoDbPluginTest extends AbstractMongoDbPluginTest {
         final JZenith application = makeApplication();
         application.run();
         application.stop();
+    }
+
+    @Test
+    public void testApiIsNonNull() {
+        TestUtil.testApiMethodsHaveNonNullParameters(MongoDbPlugin.create("mongodb://foo"));
     }
 
 
