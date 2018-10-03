@@ -96,7 +96,7 @@ public class RestPlugin extends AbstractPlugin {
                 .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
                     if (ar.succeeded()) {
                         final HttpServer server = ar.result();
-                        log.info("jZenith Server started on port " + server.actualPort());
+                        log.debug("jZenith Server started on port {}", server.actualPort());
                         completableFuture.complete("Done");
                     } else {
                         completableFuture.completeExceptionally(ar.cause());
