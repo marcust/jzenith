@@ -119,8 +119,17 @@ public class HealthCheckTest {
     }
 
     @Test
-    public void testHealthCheckResult() throws IllegalAccessException {
+    public void testHealthCheckResult() {
         TestUtil.testApiMethodsHaveNonNullParameters(HealthCheckResult.class);
+    }
+
+    @Test
+    public void testHealthCheckResultToString() {
+        final HealthCheckResult result = HealthCheckResult.create(true, "test");
+        assertThat(result.toString()).isEqualTo("HealthCheckResult(healtCheckName=test, state=UP, message=null)");
+
+        final HealthCheckResult errorResult = HealthCheckResult.create(new JZenithException("exception message"), "error");
+        assertThat(errorResult.toString()).isEqualTo("HealthCheckResult(healtCheckName=error, state=DOWN, message=exception message)");
     }
 
 
