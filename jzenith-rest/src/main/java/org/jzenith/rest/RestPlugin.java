@@ -30,6 +30,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerOptions;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.resteasy.plugins.guice.GuiceResourceFactory;
@@ -95,10 +96,15 @@ public class RestPlugin extends AbstractPlugin {
         final Vertx vertx = injector.getInstance(Vertx.class);
 
         final CompletableHandler<String> completableHandler = new CompletableHandler<>();
+        final HttpServerOptions options = new HttpServerOptions()
+                .setTcpFastOpen(true)
+                .setTcpNoDelay(true)
+                .setTcpQuickAck(true);
+
         vertx.deployVerticle(() -> new AbstractVerticle() {
                     @Override
                     public void start(Future<Void> startFuture) {
-                        vertx.createHttpServer()
+                        vertx.createHttpServer(options)
                                 .requestHandler(handler)
                                 .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
                                     if (ar.succeeded()) {
