@@ -60,7 +60,7 @@ import org.jzenith.core.guice.LifeCycleObjectRepository;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.metrics.JvmOptionMetrics;
 import org.jzenith.core.tracing.OpenTracingInterceptor;
-import org.jzenith.core.util.CompletableHandler;
+import org.jzenith.core.util.CompletableFutureHandler;
 
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -260,12 +260,12 @@ public class JZenith {
     }
 
     public void stop() {
-        final CompletableHandler<Void> completableHandler = new CompletableHandler<>();
+        final CompletableFutureHandler<Void> completableFutureHandler = new CompletableFutureHandler<>();
         if (vertx != null) {
-            vertx.close(completableHandler.handler());
+            vertx.close(completableFutureHandler.handler());
 
             try {
-                completableHandler.get();
+                completableFutureHandler.get();
             } catch (Exception e) {
                 Throwables.throwIfUnchecked(e);
                 throw new JZenithException(e);

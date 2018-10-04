@@ -24,23 +24,23 @@ import java.util.concurrent.ExecutionException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class CompletableHandlerTest {
+public class CompletableFutureHandlerTest {
 
     @Test
     public void testResult() throws ExecutionException, InterruptedException {
-        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
-        completableHandler.handler().handle(Future.succeededFuture("test"));
+        final CompletableFutureHandler<String> completableFutureHandler = new CompletableFutureHandler<>();
+        completableFutureHandler.handler().handle(Future.succeededFuture("test"));
 
-        assertThat(completableHandler.get()).isEqualTo("test");
+        assertThat(completableFutureHandler.get()).isEqualTo("test");
     }
 
     @Test
     public void testError() throws InterruptedException {
-        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
-        completableHandler.handler().handle(Future.failedFuture(new JZenithException("error")));
+        final CompletableFutureHandler<String> completableFutureHandler = new CompletableFutureHandler<>();
+        completableFutureHandler.handler().handle(Future.failedFuture(new JZenithException("error")));
 
         try {
-            completableHandler.get();
+            completableFutureHandler.get();
             fail("Should not get here");
         } catch (ExecutionException e) {
             assertThat(e.getCause()).isInstanceOf(JZenithException.class);

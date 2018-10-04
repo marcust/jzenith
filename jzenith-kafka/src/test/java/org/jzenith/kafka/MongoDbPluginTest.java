@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.core.util;
+package org.jzenith.mongodb;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import org.junit.Test;
+import org.jzenith.core.JZenith;
+import org.jzenith.core.util.TestUtil;
+import org.jzenith.mongodb.AbstractMongoDbPluginTest;
 
-import java.util.concurrent.CompletableFuture;
+public class MongoDbPluginTest extends AbstractMongoDbPluginTest {
 
-public class CompletableHandler<T> extends CompletableFuture<T> {
+    @Test
+    public void testStartupShutdown() {
+        final JZenith application = makeApplication();
+        application.run();
+        application.stop();
+    }
 
-    public Handler<AsyncResult<T>> handler() {
-        return event -> {
-            if (event.failed()) {
-                completeExceptionally(event.cause());
-            } else {
-                complete(event.result());
-            }
-        };
+    @Test
+    public void testApiIsNonNull() {
+        TestUtil.testApiMethodsHaveNonNullParameters(MongoDbPlugin.create("mongodb://foo"));
     }
 
 
