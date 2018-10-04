@@ -15,12 +15,14 @@
  */
 package org.jzenith.jdbc;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
+import org.testcontainers.shaded.org.apache.commons.lang.ObjectUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public class JdbcPluginTest extends AbstractJdbcPluginTest {
@@ -32,16 +34,14 @@ public class JdbcPluginTest extends AbstractJdbcPluginTest {
         application.stop();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testNullParameters() throws SQLException {
-        JdbcPlugin.create(null, JdbcDatabaseType.POSTGRES);
+    @Test
+    public void testNullParameters() {
+        assertThrows(NullPointerException.class, () -> JdbcPlugin.create(null, JdbcDatabaseType.POSTGRES));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testNullParameters2() throws SQLException {
-        JdbcPlugin.create(mock(DataSource.class), null);
+    @Test
+    public void testNullParameters2() {
+        assertThrows(NullPointerException.class, () -> JdbcPlugin.create(mock(DataSource.class), null));
     }
-
-
 
 }

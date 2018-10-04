@@ -17,7 +17,7 @@ package org.jzenith.core.util;
 
 import com.englishtown.vertx.guice.GuiceVerticleLoader;
 import io.vertx.core.DeploymentOptions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

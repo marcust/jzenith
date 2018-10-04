@@ -18,9 +18,9 @@ package org.jzenith.jdbc;
 import io.reactivex.Observable;
 import org.jooq.DSLContext;
 import org.jooq.Query;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.util.TestUtil;
 import org.jzenith.jdbc.model.Row;
@@ -41,14 +41,14 @@ public class JdbcClientTest extends AbstractJdbcPluginTest {
     @Inject
     private DSLContext dslContext;
 
-    @Before
+    @BeforeEach
     public void initClient() throws SQLException {
         application = makeApplication();
         application.run();
         application.createInjectorForTesting().injectMembers(this);
     }
 
-    @After
+    @AfterEach
     public void closeApplication() {
         if (application != null) {
             application.stop();

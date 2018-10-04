@@ -17,6 +17,7 @@ package org.jzenith.core.configuration;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Splitter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -33,6 +34,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.Supplier;
 
@@ -40,6 +42,7 @@ import java.util.function.Supplier;
 @SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class ConfigurationProvider<T> implements Provider<T> {
 
+    private static final Splitter LIST_SPLITTER = Splitter.on(',').trimResults().omitEmptyStrings();
     private final Class<T> configurationClass;
     private final String configurationBaseNameUpper;
 
@@ -216,6 +219,9 @@ public class ConfigurationProvider<T> implements Provider<T> {
             }
             if (returnType == String.class) {
                 return expandedValue;
+            }
+            if (List.class.isAssignableFrom(returnType)) {
+                return LIST_SPLITTER.splitToList(expandedValue);
             }
 
             throw new NotImplementedException("No support for configuration of type " + returnType.getName());

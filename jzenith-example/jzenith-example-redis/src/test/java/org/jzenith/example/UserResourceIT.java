@@ -18,10 +18,10 @@ package org.jzenith.example;
 import com.google.common.collect.ImmutableSet;
 import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.redis.RedisClient;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.service.model.User;
 import org.nustaq.serialization.FSTConfiguration;
@@ -45,21 +45,21 @@ public class UserResourceIT extends AbstractUserResourceIT {
     @Inject
     private RedisClient client;
 
-    @BeforeClass
+    @BeforeAll
     public static void startup() throws Exception {
         jZenith = RedisPluginExampleApp.configureApplication();
         injector = jZenith.createInjectorForTesting();
         jZenith.run();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() {
         if (jZenith != null) {
             jZenith.stop();
         }
     }
 
-    @Before
+    @BeforeEach
     public void initalizeData() throws Exception {
         super.setup();
 
@@ -67,7 +67,7 @@ public class UserResourceIT extends AbstractUserResourceIT {
                 Buffer.newInstance(io.vertx.core.buffer.Buffer.buffer(serializer.asByteArray(user)))).subscribe());
     }
 
-    @After
+    @AfterEach
     public void clear() {
         client.rxFlushall().subscribe();
     }

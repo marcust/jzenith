@@ -17,7 +17,7 @@ package org.jzenith.rest.tracing;
 
 import io.opentracing.Scope;
 import io.opentracing.Span;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

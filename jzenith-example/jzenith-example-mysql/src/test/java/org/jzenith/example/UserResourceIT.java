@@ -19,8 +19,8 @@ import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.ext.mysql.MySqlDataTypeFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.jzenith.core.JZenith;
 
 import java.sql.Connection;
@@ -29,14 +29,14 @@ public class UserResourceIT extends AbstractDatabaseUserResourceIT {
 
     private static JZenith jZenith;
 
-    @BeforeClass
+    @BeforeAll
     public static void startup() throws Exception {
         jZenith = MySqlJdbcExampleApp.configureApplication();
         AbstractUserResourceIT.injector = jZenith.createInjectorForTesting();
         jZenith.run();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() {
         if (jZenith != null) {
             jZenith.stop();

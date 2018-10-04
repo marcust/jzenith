@@ -16,9 +16,9 @@
 package org.jzenith.jdbc;
 
 import one.util.streamex.StreamEx;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
 import org.jzenith.core.health.HealthCheck;
@@ -37,14 +37,14 @@ public class JdbcHealthCheckTest extends AbstractJdbcPluginTest {
     @Inject
     private Set<HealthCheck> healthChecks;
 
-    @Before
+    @BeforeEach
     public void initClient() throws SQLException {
         application = makeApplication();
         application.run();
         application.createInjectorForTesting().injectMembers(this);
     }
 
-    @After
+    @AfterEach
     public void closeApplication() {
         if (application != null) {
             application.stop();

@@ -1,3 +1,18 @@
+/**
+ * Copyright © 2018 Marcus Thiesen (marcus@thiesen.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jzenith.kafka.consumer;
 
 import com.google.common.collect.ImmutableList;
@@ -12,13 +27,13 @@ import java.util.Map;
 public class DispatcherResult {
 
     private final Map<TopicPartition, OffsetAndMetadata> commitData;
-    private final List<Exception> exceptions;
+    private final List<Throwable> throwables;
     private final String originalPayload;
 
-    public DispatcherResult(Map<TopicPartition, OffsetAndMetadata> commitData, String originalPayload, List<Exception> exceptions) {
+    public DispatcherResult(Map<TopicPartition, OffsetAndMetadata> commitData, String originalPayload, List<Throwable> throwables) {
         this.commitData = ImmutableMap.copyOf(commitData);
         this.originalPayload = originalPayload;
-        this.exceptions = ImmutableList.copyOf(exceptions);
+        this.throwables = ImmutableList.copyOf(throwables);
     }
 
     public static DispatcherResult create(KafkaConsumerRecord<String, String> record, List<HandlerResult> handlerResultList) {
@@ -26,14 +41,14 @@ public class DispatcherResult {
                 new TopicPartition(record.topic(), record.partition()),
                 new OffsetAndMetadata(record.offset(), null));
 
-        final List<Exception> exceptions = handlerResultList.stream()
-                .filter(HandlerResult::hasException)
+        final List<Throwable> throwables = handlerResultList.stream()
+                .filter(HandlerResult::hasThrowable)
                 .map(HandlerResult::getThrowable)
                 .collect(ImmutableList.toImmutableList());
 
         return new DispatcherResult(commitData,
                 record.value(),
-                exceptions);
+                throwables);
     }
 
     public Map<TopicPartition, OffsetAndMetadata> getCommitData() {
@@ -45,6 +60,6 @@ public class DispatcherResult {
     }
 
     public boolean isSuccessful() {
-        return exceptions.isEmpty();
+        return throwables.isEmpty();
     }
 }

@@ -19,11 +19,11 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractDatabaseUserResourceIT extends AbstractUserResourceIT {
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         super.setup();
 

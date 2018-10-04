@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.mongodb;
+package org.jzenith.kafka;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.util.TestUtil;
-import org.jzenith.mongodb.AbstractMongoDbPluginTest;
+import org.jzenith.kafka.consumer.KafkaConsumerPlugin;
 
-public class MongoDbPluginTest extends AbstractMongoDbPluginTest {
+public class KafkaPluginTest extends AbstractKafkaPluginTest {
 
     @Test
     public void testStartupShutdown() {
@@ -31,7 +31,7 @@ public class MongoDbPluginTest extends AbstractMongoDbPluginTest {
 
     @Test
     public void testApiIsNonNull() {
-        TestUtil.testApiMethodsHaveNonNullParameters(MongoDbPlugin.create("mongodb://foo"));
+        TestUtil.testApiMethodsHaveNonNullParameters(KafkaConsumerPlugin.withTopicHandler("test", new TestTopicHandler()));
     }
 
 

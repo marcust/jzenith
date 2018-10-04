@@ -16,7 +16,7 @@
 package org.jzenith.core.util;
 
 import io.vertx.core.Future;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenithException;
 
 import java.util.concurrent.ExecutionException;

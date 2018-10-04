@@ -15,7 +15,7 @@
  */
 package org.jzenith.rest.exception;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.rest.model.ErrorResponse;
 
 import javax.ws.rs.NotFoundException;

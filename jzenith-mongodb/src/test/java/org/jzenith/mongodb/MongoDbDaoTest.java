@@ -22,9 +22,9 @@ import io.vertx.reactivex.ext.mongo.MongoClient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.util.TestUtil;
 
@@ -67,14 +67,14 @@ public class MongoDbDaoTest extends AbstractMongoDbPluginTest {
     @Inject
     private MongoClient client;
 
-    @Before
+    @BeforeEach
     public void initClient() {
         application = makeApplication(new EntityModule());
         application.run();
         application.createInjectorForTesting().injectMembers(this);
     }
 
-    @After
+    @AfterEach
     public void closeApplication() {
         client.rxDropCollection("entity").blockingGet();
         if (application != null) {

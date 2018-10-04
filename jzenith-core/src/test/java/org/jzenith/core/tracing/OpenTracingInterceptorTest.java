@@ -26,7 +26,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import org.aopalliance.intercept.MethodInvocation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenithException;
 import org.mockito.Mock;
 import org.mockito.Mockito;
