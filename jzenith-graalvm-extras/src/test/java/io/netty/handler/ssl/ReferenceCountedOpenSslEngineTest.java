@@ -15,9 +15,8 @@
  */
 package io.netty.handler.ssl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
 import static org.mockito.Mockito.mock;

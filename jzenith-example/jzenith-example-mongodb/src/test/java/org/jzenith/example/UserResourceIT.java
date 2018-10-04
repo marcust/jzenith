@@ -16,14 +16,12 @@
 package org.jzenith.example;
 
 import com.google.common.collect.ImmutableSet;
-import io.swagger.v3.core.util.Json;
 import io.vertx.core.json.JsonObject;
-import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.ext.mongo.MongoClient;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.service.model.User;
 import org.jzenith.mongodb.MongoDbDao;
@@ -44,21 +42,21 @@ public class UserResourceIT extends AbstractUserResourceIT {
     @Inject
     private MongoClient client;
 
-    @BeforeClass
+    @BeforeAll
     public static void startup() throws Exception {
         jZenith = MongodbPluginExampleApp.configureApplication();
         injector = jZenith.createInjectorForTesting();
         jZenith.run();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() {
         if (jZenith != null) {
             jZenith.stop();
         }
     }
 
-    @Before
+    @BeforeEach
     public void initalizeData() throws Exception {
         super.setup();
 
@@ -66,7 +64,7 @@ public class UserResourceIT extends AbstractUserResourceIT {
                 JsonObject.mapFrom(user).put(MongoDbDao.ID_FIELD, user.getId().toString())).blockingGet());
     }
 
-    @After
+    @AfterEach
     public void clear() {
         client.rxDropCollection("user").blockingGet();
     }

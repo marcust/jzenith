@@ -18,13 +18,14 @@ package org.jzenith.core;
 import com.google.inject.Module;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.util.TestUtil;
 import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -46,10 +47,9 @@ public class JZenithTest {
         TestUtil.testApiMethodsHaveNonNullParameters(JZenith.application());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMissingPlugins() {
-        JZenith.application()
-                .withPlugins();
+        assertThrows(IllegalArgumentException.class, JZenith.application()::withPlugins);
     }
 
     @Test
@@ -68,20 +68,22 @@ public class JZenithTest {
         verify(plugin, times(1)).getExtraConfiguration();
     }
 
-    @Test(expected = JZenithException.class)
+    @Test
     public void testStartupAndShutdownError() {
-        final CompletableFuture<String> future = new CompletableFuture<>();
-        future.completeExceptionally(new JZenithException("Something went wrong"));
-        final AbstractPlugin plugin = mockPlugin(future);
+        assertThrows(JZenithException.class, () -> {
+            final CompletableFuture<String> future = new CompletableFuture<>();
+            future.completeExceptionally(new JZenithException("Something went wrong"));
+            final AbstractPlugin plugin = mockPlugin(future);
 
-        final JZenith application = JZenith.application();
-        try {
-            application
-                    .withPlugins(plugin)
-                    .run();
-        } finally {
-            application.stop();
-        }
+            final JZenith application = JZenith.application();
+            try {
+                application
+                        .withPlugins(plugin)
+                        .run();
+            } finally {
+                application.stop();
+            }
+        });
     }
 
     @Test

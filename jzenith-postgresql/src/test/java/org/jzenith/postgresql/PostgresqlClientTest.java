@@ -20,18 +20,18 @@ import io.reactiverse.reactivex.pgclient.Row;
 import io.reactivex.Observable;
 import org.jooq.DSLContext;
 import org.jooq.Query;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
-import org.testcontainers.shaded.io.netty.util.IllegalReferenceCountException;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,14 +46,14 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
     @Inject
     private DSLContext dslContext;
 
-    @Before
+    @BeforeEach
     public void initClient() {
         application = makeApplication();
         application.run();
         application.createInjectorForTesting().injectMembers(this);
     }
 
-    @After
+    @AfterEach
     public void closeApplication() {
         if (application != null) {
             application.stop();
@@ -99,11 +99,15 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
         assertThat(row).isNull();
     }
 
-    @Test(expected = JZenithException.class)
+    @Test
     public void testClientForSingleRowMultipleRows() {
-        final Query query = dslContext.query("select * from pg_indexes");
+        assertThrows(JZenithException.class, () -> {
 
-        client.executeForSingleRow(query).blockingGet();
+            final Query query = dslContext.query("select * from pg_indexes");
+
+            client.executeForSingleRow(query).blockingGet();
+
+        });
     }
 
     @Test
@@ -132,12 +136,15 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
         assertThat(rows).isNotNull();
     }
 
-    @Test(expected = SQLException.class)
-    public void testNativeQueryErrorHandling() throws SQLException {
-        final PostgresqlClient clientMock = mock(PostgresqlClient.class);
-        when(clientMock.parseNativeQuery(any())).thenCallRealMethod();
-        when(clientMock.toNativeQuery(any())).thenThrow(new SQLException("error"));
+    @Test
+    public void testNativeQueryErrorHandling() {
+        assertThrows(SQLException.class, () -> {
 
-        clientMock.parseNativeQuery(dslContext.selectOne());
+            final PostgresqlClient clientMock = mock(PostgresqlClient.class);
+            when(clientMock.parseNativeQuery(any())).thenCallRealMethod();
+            when(clientMock.toNativeQuery(any())).thenThrow(new SQLException("error"));
+
+            clientMock.parseNativeQuery(dslContext.selectOne());
+        });
     }
 }

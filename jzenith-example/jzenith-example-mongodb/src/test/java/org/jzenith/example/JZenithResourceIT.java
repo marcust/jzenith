@@ -15,21 +15,21 @@
  */
 package org.jzenith.example;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.jzenith.core.JZenith;
 
 public class JZenithResourceIT extends AbstractJZenithResourcesTest {
 
     private static JZenith jZenith;
 
-    @BeforeClass
+    @BeforeAll
     public static void startup() throws Exception {
         jZenith = MongodbPluginExampleApp.configureApplication();
         jZenith.run();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() {
         if (jZenith != null) {
             jZenith.stop();

@@ -22,11 +22,9 @@ import io.opentracing.noop.NoopTracerFactory;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.vertx.core.Vertx;
-import org.awaitility.Duration;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
 import org.jzenith.example.mapper.MapperModule;
@@ -41,12 +39,9 @@ import org.jzenith.example.resources.response.UserResponse;
 import org.jzenith.example.service.ServiceLayerModule;
 import org.jzenith.example.service.model.User;
 import org.jzenith.rest.model.Page;
-import org.mockito.verification.VerificationMode;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
-
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -97,13 +92,13 @@ public class ExampleCommonTest {
                 .withModules(new ServiceLayerModule(), new MockModule(), new MapperModule());
     }
 
-    @Before
+    @BeforeEach
     public void configureApplication() {
         this.application = makeApplication();
         this.application.createInjectorForTesting().injectMembers(this);
     }
 
-    @After
+    @AfterEach
     public void resetMock() {
         reset(userDao);
     }

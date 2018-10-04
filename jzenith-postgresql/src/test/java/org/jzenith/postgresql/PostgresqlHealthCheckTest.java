@@ -16,16 +16,15 @@
 package org.jzenith.postgresql;
 
 import one.util.streamex.StreamEx;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.health.HealthCheckResult;
 
 import javax.inject.Inject;
-
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,14 +36,14 @@ public class PostgresqlHealthCheckTest extends AbstractPostgresqlPluginTest {
     @Inject
     private Set<HealthCheck> healthChecks;
 
-    @Before
+    @BeforeEach
     public void initClient() {
         application = makeApplication();
         application.run();
         application.createInjectorForTesting().injectMembers(this);
     }
 
-    @After
+    @AfterEach
     public void closeApplication() {
         if (application != null) {
             application.stop();

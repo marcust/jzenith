@@ -20,7 +20,7 @@ import io.opentracing.Tracer;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.noop.NoopTracer;
 import io.opentracing.noop.NoopTracerFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
 import org.jzenith.core.health.HealthState;
@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public class RestPluginTest {
@@ -43,22 +44,25 @@ public class RestPluginTest {
         application.stop();
     }
 
-    @Test(expected = JZenithException.class)
+    @Test
     public void testStartupFailure() {
-        final JZenith application = makeApplication();
+        assertThrows(JZenithException.class, () -> {
 
-        try {
-            application.run();
+            final JZenith application = makeApplication();
 
-            final JZenith secondApplication = makeApplication();
             try {
-                secondApplication.run();
+                application.run();
+
+                final JZenith secondApplication = makeApplication();
+                try {
+                    secondApplication.run();
+                } finally {
+                    secondApplication.stop();
+                }
             } finally {
-                secondApplication.stop();
+                application.stop();
             }
-        } finally {
-            application.stop();
-        }
+        });
     }
 
     @Test

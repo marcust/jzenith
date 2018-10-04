@@ -15,7 +15,7 @@
  */
 package org.jzenith.mongodb;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.util.TestUtil;
 import org.jzenith.mongodb.AbstractMongoDbPluginTest;

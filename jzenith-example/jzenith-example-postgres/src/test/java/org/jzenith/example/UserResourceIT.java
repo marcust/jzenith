@@ -19,29 +19,26 @@ import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.jzenith.core.JZenith;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class UserResourceIT extends AbstractDatabaseUserResourceIT {
 
     private static JZenith jZenith;
 
-    @BeforeClass
+    @BeforeAll
     public static void startup() throws Exception {
         jZenith = PostgresJdbcExampleApp.configureApplication();
         injector = jZenith.createInjectorForTesting();
         jZenith.run();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdown() {
         if (jZenith != null) {
             jZenith.stop();

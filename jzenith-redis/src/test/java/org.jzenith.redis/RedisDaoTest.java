@@ -22,9 +22,9 @@ import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.redis.RedisClient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.util.TestUtil;
 import org.nustaq.serialization.FSTConfiguration;
@@ -33,7 +33,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,14 +70,14 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     @Inject
     private FSTConfiguration serializer;
 
-    @Before
+    @BeforeEach
     public void initClient() {
         application = makeApplication(new EntityModule());
         application.run();
         application.createInjectorForTesting().injectMembers(this);
     }
 
-    @After
+    @AfterEach
     public void closeApplication() {
         if (application != null) {
             application.stop();

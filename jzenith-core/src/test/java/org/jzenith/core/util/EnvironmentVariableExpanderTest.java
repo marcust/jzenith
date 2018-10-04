@@ -16,33 +16,27 @@
 package org.jzenith.core.util;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.jzenith.core.util.EnvironmentVariableExpander;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class EnvironmentVariableExpanderTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testPlainString() {
         final String plainString = "nothing to expand here";
-        assertEquals("Should be untouched", plainString, EnvironmentVariableExpander.expand(plainString));
+        assertThat(plainString).describedAs("Should be untouched").isEqualTo(EnvironmentVariableExpander.expand(plainString));
     }
 
     @Test
     public void testUndefinedVariable() {
         final String variableName = "UNDEFINED";
         final String undefinedVariable = "before ${" + variableName + "} after";
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage(variableName);
-        EnvironmentVariableExpander.expand(undefinedVariable);
+        assertThrows(RuntimeException.class, () -> EnvironmentVariableExpander.expand(undefinedVariable), variableName);
     }
 
     @Test
@@ -53,8 +47,8 @@ public class EnvironmentVariableExpanderTest {
         final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
 
         final String expression = "prefix ${" + variableName + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(variableValue));
-        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
+        assertThat(expander.expandVariables(expression)).describedAs("Should contain the value now").contains(variableValue);
+        assertThat(expander.expandVariables(expression)).describedAs("Should not contain the variable anymore").doesNotContain(variableName);
     }
 
     @Test
@@ -64,17 +58,15 @@ public class EnvironmentVariableExpanderTest {
         final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(Collections.<String, String>emptyMap()::get);
 
         final String expression = "prefix ${" + variableName + ":" + defaultValue + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(defaultValue));
-        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
+        assertThat(expander.expandVariables(expression)).describedAs("Should contain the value now").contains(defaultValue);
+        assertThat(expander.expandVariables(expression)).describedAs("Should not contain the variable anymore").doesNotContain(variableName);
     }
 
     @Test
     public void testNullDefaultValueVariable() {
         final String variableName = "TEST_VARIABLE_NAME";
         final String expression = "prefix ${" + variableName + ":} postfix";
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage(variableName);
-        EnvironmentVariableExpander.expand(expression);
+        assertThrows(RuntimeException.class, () -> EnvironmentVariableExpander.expand(expression), variableName);
     }
 
     @Test
@@ -87,9 +79,9 @@ public class EnvironmentVariableExpanderTest {
         final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
 
         final String expression = "prefix ${" + variableName + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(nestedVariableValue));
-        assertFalse("Should not contain the nested variable name", expander.expandVariables(expression).contains(nestedVariableName));
-        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
+        assertThat(expander.expandVariables(expression)).describedAs("Should contain the value now").contains(nestedVariableValue);
+        assertThat(expander.expandVariables(expression)).describedAs("Should not contain the nested variable name").doesNotContain(nestedVariableName);
+        assertThat(expander.expandVariables(expression)).describedAs("Should not contain the variable anymore").doesNotContain(variableName);
     }
 
     @Test
@@ -100,8 +92,8 @@ public class EnvironmentVariableExpanderTest {
         final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
 
         final String expression = "prefix ${" + variableName + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables(expression).contains(variableValue));
-        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
+        assertThat(expander.expandVariables(expression)).describedAs("Should contain the value now").contains(variableValue);
+        assertThat(expander.expandVariables(expression)).describedAs("Should not contain the variable anymore").doesNotContain(variableName);
     }
 
     @Test
@@ -111,8 +103,8 @@ public class EnvironmentVariableExpanderTest {
         final EnvironmentVariableExpander expander = new EnvironmentVariableExpander(environment::get);
 
         final String expression = "prefix ${" + variableName + "} postfix";
-        assertTrue("Should contain the value now", expander.expandVariables(expression).contains("DEFAULT"));
-        assertFalse("Should not contain the variable anymore", expander.expandVariables(expression).contains(variableName));
+        assertThat(expander.expandVariables(expression)).describedAs("Should contain the value now").contains("DEFAULT");
+        assertThat(expander.expandVariables(expression)).describedAs("Should not contain the variable anymore").doesNotContain(variableName);
     }
 
 }

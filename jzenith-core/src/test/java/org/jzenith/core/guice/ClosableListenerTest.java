@@ -20,7 +20,7 @@ import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.spi.BindingScopingVisitor;
 import com.google.inject.spi.ProvisionListener;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 

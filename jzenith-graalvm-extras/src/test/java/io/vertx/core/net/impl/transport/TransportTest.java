@@ -27,7 +27,7 @@ import io.vertx.core.datagram.DatagramSocketOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 import java.lang.reflect.InvocationTargetException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -101,22 +102,24 @@ public class TransportTest {
         assertThat(transport.unavailabilityCause()).isNull();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalArgumentException1() {
-        final SocketAddress address = mock(SocketAddress.class);
-        when(address.path()).thenReturn("/foo");
+        assertThrows(IllegalArgumentException.class, () -> {
+            final SocketAddress address = mock(SocketAddress.class);
+            when(address.path()).thenReturn("/foo");
 
-        Transport.JDK.convert(address, true);
+            Transport.JDK.convert(address, true);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalArgumentException2() {
-        Transport.JDK.channelType(true);
+        assertThrows(IllegalArgumentException.class, () -> Transport.JDK.channelType(true));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalArgumentException3() {
-        Transport.JDK.serverChannelType(true);
+        assertThrows(IllegalArgumentException.class, () -> Transport.JDK.serverChannelType(true));
     }
 
     @Test

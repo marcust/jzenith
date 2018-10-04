@@ -22,7 +22,7 @@ import io.reactivex.Single;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.rest.model.Page;
 import org.jzenith.rest.swagger.SingleModelConverter;
 

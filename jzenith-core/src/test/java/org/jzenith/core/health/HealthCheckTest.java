@@ -24,7 +24,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.internal.observers.FutureSingleObserver;
 import io.reactivex.internal.schedulers.NewThreadScheduler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
 import org.jzenith.core.util.TestUtil;

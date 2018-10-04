@@ -19,7 +19,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import io.opentracing.noop.NoopTracerFactory;
 import io.reactivex.Single;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
 import org.jzenith.core.JZenithException;
 import org.jzenith.core.health.HealthCheck;

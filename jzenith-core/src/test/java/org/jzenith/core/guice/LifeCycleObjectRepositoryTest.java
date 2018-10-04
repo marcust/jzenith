@@ -15,11 +15,12 @@
  */
 package org.jzenith.core.guice;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenithException;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -38,15 +39,16 @@ public class LifeCycleObjectRepositoryTest {
         verify(closer, times(1)).close();
     }
 
-    @Test(expected = JZenithException.class)
-    public void testCloserException() throws Exception {
-        final LifeCycleObjectRepository repository = new LifeCycleObjectRepository();
-        final Closer closer = mock(Closer.class);
-        doThrow(new IOException("Foo")).when(closer).close();
+    @Test
+    public void testCloserException() {
+        assertThrows(JZenithException.class, () -> {
 
-        repository.register(closer);
-        repository.closeAll();
+            final LifeCycleObjectRepository repository = new LifeCycleObjectRepository();
+            final Closer closer = mock(Closer.class);
+            doThrow(new IOException("Foo")).when(closer).close();
 
-        verify(closer, times(1)).close();
+            repository.register(closer);
+            repository.closeAll();
+        });
     }
 }

@@ -19,8 +19,8 @@ import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.entity.ContentType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jzenith.example.persistence.UserDao;
 import org.jzenith.example.resources.request.CreateUserRequest;
 import org.jzenith.example.resources.request.UpdateUserRequest;
@@ -45,7 +45,7 @@ public abstract class AbstractUserResourceIT {
     @Inject
     private UserDao userDao;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         injector.injectMembers(this);
     }

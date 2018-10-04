@@ -16,7 +16,7 @@
 package org.jzenith.jdbc.model;
 
 import org.jooq.Field;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jzenith.core.util.TestUtil;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
