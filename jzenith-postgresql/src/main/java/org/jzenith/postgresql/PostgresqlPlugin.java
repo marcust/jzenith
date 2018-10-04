@@ -21,7 +21,7 @@ import com.google.inject.Module;
 import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 import org.jzenith.core.AbstractPlugin;
-import org.jzenith.core.util.CompletableHandler;
+import org.jzenith.core.util.CompletableFutureHandler;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -51,10 +51,10 @@ public class PostgresqlPlugin extends AbstractPlugin {
 
         final Vertx vertx = injector.getInstance(Vertx.class);
 
-        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
-        vertx.deployVerticle("java-guice:" + MigrationVerticle.class.getName(), forGuiceVerticleLoader(), completableHandler.handler());
+        final CompletableFutureHandler<String> completableFutureHandler = new CompletableFutureHandler<>();
+        vertx.deployVerticle("java-guice:" + MigrationVerticle.class.getName(), forGuiceVerticleLoader(), completableFutureHandler.handler());
 
-        return completableHandler;
+        return completableFutureHandler;
     }
 
 

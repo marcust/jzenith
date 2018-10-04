@@ -39,7 +39,7 @@ import org.jboss.resteasy.plugins.server.vertx.VertxResourceFactory;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
-import org.jzenith.core.util.CompletableHandler;
+import org.jzenith.core.util.CompletableFutureHandler;
 import org.jzenith.rest.docs.CustomOpenApiResource;
 import org.jzenith.rest.exception.ConstantMessageThrowableMapping;
 import org.jzenith.rest.exception.ThrowableMapping;
@@ -95,8 +95,8 @@ public class RestPlugin extends AbstractPlugin {
         final RestConfiguration restConfiguration = injector.getInstance(RestConfiguration.class);
         final Vertx vertx = injector.getInstance(Vertx.class);
 
-        final CompletableHandler<String> completableHandler = new CompletableHandler<>();
         System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
+        final CompletableFutureHandler<String> completableFutureHandler = new CompletableFutureHandler<>();
         final HttpServerOptions options = new HttpServerOptions()
                 .setTcpFastOpen(true)
                 .setTcpNoDelay(true)
@@ -116,9 +116,9 @@ public class RestPlugin extends AbstractPlugin {
                                 });
                     }
                 }, new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors()),
-                completableHandler.handler());
+                completableFutureHandler.handler());
 
-        return completableHandler.thenApply(aVoid -> {
+        return completableFutureHandler.thenApply(aVoid -> {
             log.debug("jZenith Rest Plugin started (listening to {}:{})",
                     restConfiguration.getHost(), restConfiguration.getPort());
             return "Done";
