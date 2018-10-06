@@ -42,6 +42,7 @@ import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.logging.LoggerFactory;
@@ -50,6 +51,7 @@ import io.vertx.micrometer.MetricsDomain;
 import io.vertx.micrometer.MicrometerMetricsOptions;
 import io.vertx.micrometer.VertxPrometheusOptions;
 import io.vertx.micrometer.backends.BackendRegistries;
+import io.vertx.reactivex.RxHelper;
 import lombok.NonNull;
 import one.util.streamex.StreamEx;
 import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
@@ -181,6 +183,10 @@ public class JZenith {
 
         final MeterRegistry meterRegistry = BackendRegistries.setupBackend(createdVertx, metricsOptions).getMeterRegistry();
         checkState(meterRegistry != null, "Meter registry should have been initialized");
+
+        RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
+        RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(createdVertx));
+        RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
 
         return createdVertx;
     }

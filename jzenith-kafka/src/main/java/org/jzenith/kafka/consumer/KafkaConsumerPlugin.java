@@ -82,10 +82,12 @@ public class KafkaConsumerPlugin extends AbstractPlugin {
     }
 
     private Disposable consumerChain(Vertx vertx, TopicHandlerDispatcher mapper, KafkaConsumer<String, String> consumer) {
+        final ContextScheduler scheduler = new ContextScheduler(vertx.getDelegate().createSharedWorkerExecutor("jzenith-kafka-executor"), false);
         return consumer.toObservable()
+                .observeOn(scheduler)
                 .flatMapSingle(mapper::handle)
                 .flatMapSingle(dispatcherResult -> handleResult(dispatcherResult, consumer))
-                .subscribeOn(new ContextScheduler(vertx.getDelegate().createSharedWorkerExecutor("kafka-executor"), false))
+                .subscribeOn(scheduler)
                 .subscribe();
     }
 
