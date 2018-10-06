@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.kafka;
+package org.jzenith.kafka.consumer;
 
-import com.google.inject.Module;
 import com.salesforce.kafka.test.KafkaTestUtils;
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import io.opentracing.noop.NoopTracerFactory;
 import io.reactivex.Single;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.jzenith.core.JZenith;
-import org.jzenith.kafka.consumer.HandlerResult;
-import org.jzenith.kafka.consumer.KafkaConsumerPlugin;
-import org.jzenith.kafka.consumer.TopicHandler;
 
-public abstract class AbstractKafkaPluginTest {
+public abstract class AbstractKafkaConsumerPluginTest {
 
     @RegisterExtension
     public static final SharedKafkaTestResource sharedKafkaTestResource = new SharedKafkaTestResource()
@@ -36,14 +31,21 @@ public abstract class AbstractKafkaPluginTest {
             // Disable topic auto-creation.
             .withBrokerProperty("auto.create.topics.enable", "false");
 
-    JZenith makeApplication(Module... modules) {
-        sharedKafkaTestResource.getKafkaTestUtils().createTopic("test", 1, (short) 1);
+    static KafkaTestUtils getKafkaTestUtils() {
+        return sharedKafkaTestResource.getKafkaTestUtils();
+    }
+
+    JZenith makeApplication(final String topicName) {
+        return makeApplication(topicName, new TestTopicHandler());
+    }
+
+    JZenith makeApplication(final String topicName, final TopicHandler<String> topicHandler) {
+        getKafkaTestUtils().createTopic(topicName, 1, (short) 1);
         final JZenith application = JZenith.application();
         return application
                 .withTracer(NoopTracerFactory.create())
-                .withPlugins(KafkaConsumerPlugin.withTopicHandler("test", new TestTopicHandler()))
-                .withConfiguration("kafka.consumer.bootstrap.servers", sharedKafkaTestResource.getKafkaConnectString())
-                .withModules(modules);
+                .withPlugins(KafkaConsumerPlugin.withTopicHandler(topicName, topicHandler))
+                .withConfiguration("kafka.consumer.bootstrap.servers", sharedKafkaTestResource.getKafkaConnectString());
     }
 
     static class TestTopicHandler implements TopicHandler<String> {
