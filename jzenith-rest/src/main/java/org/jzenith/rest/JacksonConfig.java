@@ -16,6 +16,7 @@
 package org.jzenith.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -32,7 +33,11 @@ public class JacksonConfig implements ContextResolver<ObjectMapper> {
         mapper.registerModule(new ParameterNamesModule())
                 .registerModule(new Jdk8Module())
                 .registerModule(new JavaTimeModule());
+
         mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+
+        mapper.getFactory().enable(JsonFactory.Feature.USE_THREAD_LOCAL_FOR_BUFFER_RECYCLING);
+
         objectMapper = mapper;
     }
 
