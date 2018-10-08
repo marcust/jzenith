@@ -15,6 +15,9 @@
  */
 package org.jzenith.rest.metrics;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
@@ -28,65 +31,79 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Request;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
 
 public class MetricsInterceptor implements ContainerRequestFilter, ContainerResponseFilter {
 
-    private static final String START_TIME_PROPERTY = "jzenith.startTime";
+    private static final String START_TIME_NANOS_PROPERTY = "jzenith.requestStartTime.nanos";
+    private static final LoadingCache<Integer, String> STATUS_CODE_STRINGS = CacheBuilder.newBuilder()
+            .build(new CacheLoader<Integer, String>() {
+                @Override
+                public String load(Integer key) {
+                    return key.toString();
+                }
+            });
+
+    private static final Duration TIMER_MINIMUM_EXPECTED_DURATION = Duration.ofMillis(5);
+    private static final Duration TIMER_MAXIMUM_EXPECTED_DURATION = Duration.ofSeconds(10);
+    private static final Duration[] SLA_BUCKETS = {
+            Duration.ofMillis(5),
+            Duration.ofMillis(10),
+            Duration.ofMillis(50),
+            Duration.ofMillis(100),
+            Duration.ofMillis(250),
+            Duration.ofMillis(500),
+            Duration.ofMillis(750),
+            Duration.ofMillis(1000),
+            Duration.ofMillis(2000),
+            Duration.ofMillis(3000),
+            Duration.ofMillis(4000),
+            Duration.ofMillis(7500),
+            Duration.ofMillis(10000)
+    };
 
     private final String resourceName;
     private final String methodName;
     private final MeterRegistry registry;
+    private final Tag resourceNameTag;
+    private final Tag methodNameTag;
 
     public MetricsInterceptor(@NonNull final MeterRegistry registry, @NonNull final ResourceInfo resourceInfo) {
         resourceName = resourceInfo.getResourceClass().getSimpleName();
         methodName = resourceInfo.getResourceMethod().getName();
         this.registry = registry;
+        resourceNameTag = Tag.of("resourceName", resourceName);
+        methodNameTag = Tag.of("methodName", methodName);
     }
 
     private Timer.Builder timer() {
         return Timer.builder("rest.request.duration")
                 .description("Request duration seconds")
-                .minimumExpectedValue(Duration.ofMillis(5))
-                .maximumExpectedValue(Duration.ofSeconds(10))
-                .sla(Duration.ofMillis(5),
-                        Duration.ofMillis(10),
-                        Duration.ofMillis(50),
-                        Duration.ofMillis(100),
-                        Duration.ofMillis(250),
-                        Duration.ofMillis(500),
-                        Duration.ofMillis(750),
-                        Duration.ofMillis(1000),
-                        Duration.ofMillis(2000),
-                        Duration.ofMillis(3000),
-                        Duration.ofMillis(4000),
-                        Duration.ofMillis(7500),
-                        Duration.ofMillis(10000));
+                .minimumExpectedValue(TIMER_MINIMUM_EXPECTED_DURATION)
+                .maximumExpectedValue(TIMER_MAXIMUM_EXPECTED_DURATION)
+                .sla(SLA_BUCKETS);
     }
-
 
     @Override
     public void filter(@NonNull ContainerRequestContext requestContext) throws IOException {
-        requestContext.setProperty(START_TIME_PROPERTY, System.currentTimeMillis());
+        requestContext.setProperty(START_TIME_NANOS_PROPERTY, System.nanoTime());
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
         final Request request = requestContext.getRequest();
-        final String statusString = String.valueOf(responseContext.getStatus());
+        final String statusString = STATUS_CODE_STRINGS.getUnchecked(responseContext.getStatus());
 
-        final List<Tag> tags = asList(Tag.of("resourceName", resourceName), Tag.of("methodName", methodName),
+        final List<Tag> tags = asList(resourceNameTag, methodNameTag,
                 Tag.of("method", request.getMethod()), Tag.of("status", statusString));
 
         registry.counter("rest.request.total", tags).increment();
 
-        final Long startTime = (Long) requestContext.getProperty(START_TIME_PROPERTY);
+        final Long startTimeNano = (Long) requestContext.getProperty(START_TIME_NANOS_PROPERTY);
 
-        timer().tags(tags).register(registry).record(Duration.of(System.currentTimeMillis() - startTime, ChronoUnit.MILLIS));
-
-
+        timer().tags(tags).register(registry).record(System.nanoTime() - startTimeNano, TimeUnit.NANOSECONDS);
     }
 }
