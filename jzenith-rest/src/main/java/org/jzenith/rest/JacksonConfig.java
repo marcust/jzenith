@@ -17,6 +17,9 @@ package org.jzenith.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import javax.ws.rs.ext.ContextResolver;
 
@@ -26,6 +29,9 @@ public class JacksonConfig implements ContextResolver<ObjectMapper> {
 
     public JacksonConfig() {
         final ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module())
+                .registerModule(new JavaTimeModule());
         mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
         objectMapper = mapper;
     }
