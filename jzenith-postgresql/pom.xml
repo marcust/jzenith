@@ -40,7 +40,7 @@
         <dependency>
             <groupId>io.reactiverse</groupId>
             <artifactId>reactive-pg-client</artifactId>
-            <version>0.10.5</version>
+            <version>0.10.6</version>
         </dependency>
 
         <!-- Compile Time tools -->
