@@ -121,7 +121,63 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>${docker.maven.plugin.version}</version>
                 <configuration>
+                    <verbose>true</verbose>
                     <images>
+                        <image>
+                            <alias>jzenith-example-redis</alias>
+                            <name>jzenith-example-redis-openjdk11:${project.version}</name>
+
+                            <build>
+                                <from>adoptopenjdk/openjdk11:latest</from>
+                                <ports>
+                                    <port>8080</port>
+                                </ports>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <assembly>
+                                    <inline>
+                                        <files>
+                                            <file>
+                                                <source>${project.build.directory}/jzenith-example-redis-${project.version}-fat.jar</source>
+                                            </file>
+                                        </files>
+                                    </inline>
+                                </assembly>
+                                <cmd>
+                                    <shell>java -jar /maven/jzenith-example-redis-${project.version}-fat.jar</shell>
+                                </cmd>
+                            </build>
+                        </image>
+                        <image>
+                            <alias>jzenith-example-redis</alias>
+                            <name>jzenith-example-redis-openjdk11-openj9:${project.version}</name>
+
+                            <build>
+                                <from>adoptopenjdk/openjdk11-openj9:latest</from>
+                                <ports>
+                                    <port>8080</port>
+                                </ports>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <assembly>
+                                    <inline>
+                                        <files>
+                                            <file>
+                                                <source>${project.build.directory}/jzenith-example-redis-${project.version}-fat.jar</source>
+                                            </file>
+                                        </files>
+                                    </inline>
+                                </assembly>
+                                <cmd>
+                                    <shell>java -jar /maven/jzenith-example-redis-${project.version}-fat.jar</shell>
+                                </cmd>
+                            </build>
+                        </image>
+
                         <image>
                             <alias>redis</alias>
                             <name>redis:4</name>
@@ -138,6 +194,13 @@
                     </images>
                 </configuration>
                 <executions>
+                    <execution>
+                        <id>docker-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>start</id>
                         <phase>pre-integration-test</phase>

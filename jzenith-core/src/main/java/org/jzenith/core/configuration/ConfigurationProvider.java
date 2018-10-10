@@ -73,7 +73,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
         throw new IllegalStateException("Non of the provided suppliers supplied a value");
     }
 
-    private static class ConfigurationInvocationHandler implements InvocationHandler {
+    static class ConfigurationInvocationHandler implements InvocationHandler {
 
         private final String configurationBaseNameUpper;
         private final CoreConfiguration coreConfiguration;
@@ -95,9 +95,9 @@ public class ConfigurationProvider<T> implements Provider<T> {
             final String configurationPropertyName = (configurationBaseNameUpper.toLowerCase() + "." + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, configurationName)).replace('_', '.');
 
             final Object value = firstNonNull(
-                    () -> logValue(extraConfigurationValue(configurationPropertyName), configurationPropertyName, configurationPropertyName, "code"),
                     () -> logValue(commandLineArgument(configurationNameCommandLine), configurationPropertyName, configurationNameCommandLine, "command line"),
                     () -> logValue(environmentConfiguration(environmentVariableName), configurationPropertyName, environmentVariableName, "environment"),
+                    () -> logValue(extraConfigurationValue(configurationPropertyName), configurationPropertyName, configurationPropertyName, "code"),
                     () -> logValue(propertyConfiguration(configurationBaseNameUpper.toLowerCase(), configurationPropertyName), configurationPropertyName, configurationPropertyName, "property file"),
                     () -> logValue(defaultConfiguration(method), configurationPropertyName, method.getName(), "default annotation"));
 
@@ -129,10 +129,6 @@ public class ConfigurationProvider<T> implements Provider<T> {
             return value;
         }
 
-        private Object extraConfigurationValue(String key) {
-            return extraConfiguration.getValue(key);
-        }
-
         private String defaultConfiguration(Method method) {
             final ConfigDefault annotation = method.getAnnotation(ConfigDefault.class);
             if (annotation == null) {
@@ -140,6 +136,10 @@ public class ConfigurationProvider<T> implements Provider<T> {
             }
 
             return annotation.value();
+        }
+
+        private Object extraConfigurationValue(String key) {
+            return extraConfiguration.getValue(key);
         }
 
         @SuppressFBWarnings(value = {"OBL_UNSATISFIED_OBLIGATION", "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"},
@@ -200,7 +200,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
             return null;
         }
 
-        private static Object handleVariableExpansion(@NonNull String stringValue, @NonNull Class<?> returnType) {
+        static Object handleVariableExpansion(@NonNull String stringValue, @NonNull Class<?> returnType) {
             final String expandedValue;
             if (stringValue.startsWith("$")) {
                 expandedValue = EnvironmentVariableExpander.expand(stringValue);
