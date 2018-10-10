@@ -96,6 +96,7 @@ public class RestPlugin extends AbstractPlugin {
         final Vertx vertx = injector.getInstance(Vertx.class);
 
         final CompletableHandler<String> completableHandler = new CompletableHandler<>();
+        System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
         final HttpServerOptions options = new HttpServerOptions()
                 .setTcpFastOpen(true)
                 .setTcpNoDelay(true)
