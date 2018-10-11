@@ -25,7 +25,7 @@ import org.jzenith.example.persistence.PersistenceLayerModule;
 import org.jzenith.example.resources.HelloWorldResource;
 import org.jzenith.example.resources.UserResource;
 import org.jzenith.example.service.ServiceLayerModule;
-import org.jzenith.example.service.exception.NoSuchUserException;
+import org.jzenith.example.service.exception.NoSuchUserThrowable;
 import org.jzenith.jdbc.JdbcDatabaseType;
 import org.jzenith.jdbc.JdbcPlugin;
 import org.jzenith.rest.RestPlugin;
@@ -53,7 +53,7 @@ public class MySqlJdbcExampleApp {
                 .withTracer(new TracerR(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("opentracing"), true), new RequestScopedScopeManager()))
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
-                                  .withMapping(NoSuchUserException.class, 404),
+                                  .withMapping(NoSuchUserThrowable.class, 404),
                         JdbcPlugin.create(dataSource, JdbcDatabaseType.MYSQL)
                 )
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule());

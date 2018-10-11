@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.rest.exception;
+package org.jzenith.example.service.exception;
 
-import javax.validation.ValidationException;
-import javax.ws.rs.core.Response;
+import io.vertx.core.impl.NoStackTraceThrowable;
 
-public class ValidationExceptionMapping extends ExceptionMapping<ValidationException> {
+import java.util.UUID;
 
-    public ValidationExceptionMapping() {
-        super(ValidationException.class, Response.Status.BAD_REQUEST.getStatusCode());
+public class NoSuchUserThrowable extends NoStackTraceThrowable {
+
+    public NoSuchUserThrowable(UUID uuid) {
+        super("No such user " + uuid);
     }
-
 }

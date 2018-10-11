@@ -22,7 +22,7 @@ import org.jzenith.example.persistence.UserDao;
 import org.jzenith.example.persistence.model.Deleted;
 import org.jzenith.example.persistence.model.Updated;
 import org.jzenith.example.service.UserService;
-import org.jzenith.example.service.exception.NoSuchUserException;
+import org.jzenith.example.service.exception.NoSuchUserThrowable;
 import org.jzenith.example.service.model.User;
 import org.jzenith.rest.model.Page;
 
@@ -46,14 +46,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Single<User> getById(@NonNull UUID id) {
         return userDao.getById(id)
-                .switchIfEmpty(Single.error(new NoSuchUserException(id)));
+                .switchIfEmpty(Single.error(new NoSuchUserThrowable(id)));
     }
 
     @Override
     public Single<User> updateById(@NonNull UUID id, @NonNull String name) {
         return userDao.updateNameById(id, name)
                 .filter(Updated::isUpdated)
-                .switchIfEmpty(Single.error(new NoSuchUserException(id)))
+                .switchIfEmpty(Single.error(new NoSuchUserThrowable(id)))
                 .flatMap(updated -> getById(id));
     }
 
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         return getById(id)
                 .flatMap(user -> userDao.deleteById(id))
                 .filter(Deleted::isDeleted)
-                .switchIfEmpty(Single.error(new NoSuchUserException(id)))
+                .switchIfEmpty(Single.error(new NoSuchUserThrowable(id)))
                 .toCompletable();
     }
 }

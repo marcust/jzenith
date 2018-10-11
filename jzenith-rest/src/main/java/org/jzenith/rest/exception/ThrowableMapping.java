@@ -28,7 +28,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 @Slf4j
 @AllArgsConstructor
-public class ExceptionMapping<T extends Exception> {
+public class ThrowableMapping<T extends Throwable> {
 
     @NonNull
     private final Class<T> exceptionType;

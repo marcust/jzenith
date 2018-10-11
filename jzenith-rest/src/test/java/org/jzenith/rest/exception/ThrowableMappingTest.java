@@ -24,11 +24,11 @@ import javax.ws.rs.core.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExceptionMappingTest {
+public class ThrowableMappingTest {
 
     @Test
     public void testIllegalArgumentException() {
-        final ExceptionMapping<IllegalArgumentException> mapping = new ExceptionMapping<>(IllegalArgumentException.class, 404);
+        final ThrowableMapping<IllegalArgumentException> mapping = new ThrowableMapping<>(IllegalArgumentException.class, 404);
 
         final Response response = mapping.toResponse(new IllegalArgumentException("Something is wrong"));
 
@@ -38,7 +38,7 @@ public class ExceptionMappingTest {
 
     @Test
     public void testWebApplicationException() {
-        final ExceptionMapping<WebApplicationException> mapping = new ExceptionMapping<>(WebApplicationException.class, 404);
+        final ThrowableMapping<WebApplicationException> mapping = new ThrowableMapping<>(WebApplicationException.class, 404);
 
         final Response response = mapping.toResponse(new NotFoundException());
 
@@ -48,7 +48,7 @@ public class ExceptionMappingTest {
 
     @Test
     public void testConstantExceptionMapping() {
-        final ExceptionMapping<WebApplicationException> mapping = new ConstantMessageExceptionMapping<>(WebApplicationException.class, 404, "test");
+        final ThrowableMapping<WebApplicationException> mapping = new ConstantMessageThrowableMapping<>(WebApplicationException.class, 404, "test");
 
         final Response response = mapping.toResponse(new NotFoundException());
 

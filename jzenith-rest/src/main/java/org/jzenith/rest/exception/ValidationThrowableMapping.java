@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.example.service.exception;
+package org.jzenith.rest.exception;
 
-import java.util.UUID;
+import javax.validation.ValidationException;
+import javax.ws.rs.core.Response;
 
-public class NoSuchUserException extends Exception {
+public class ValidationThrowableMapping extends ThrowableMapping<ValidationException> {
 
-    public NoSuchUserException(UUID uuid) {
-        super("No such user " + uuid);
+    public ValidationThrowableMapping() {
+        super(ValidationException.class, Response.Status.BAD_REQUEST.getStatusCode());
     }
+
 }

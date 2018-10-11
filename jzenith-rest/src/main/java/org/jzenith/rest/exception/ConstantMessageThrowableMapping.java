@@ -21,12 +21,12 @@ import org.jzenith.rest.model.ErrorResponse;
 
 import javax.ws.rs.core.Response;
 
-public class ConstantMessageExceptionMapping<T extends Exception> extends ExceptionMapping<T> {
+public class ConstantMessageThrowableMapping<T extends Throwable> extends ThrowableMapping<T> {
 
     private final Response errorResponse;
 
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "Lombok foobar")
-    public ConstantMessageExceptionMapping(@NonNull Class<T> exception, int statusCode, @NonNull String message) {
+    public ConstantMessageThrowableMapping(@NonNull Class<T> exception, int statusCode, @NonNull String message) {
         super(exception, statusCode);
         this.errorResponse = Response.status(statusCode).entity(new ErrorResponse(statusCode, message)).build();
     }

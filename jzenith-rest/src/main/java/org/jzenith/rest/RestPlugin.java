@@ -41,9 +41,9 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jzenith.core.AbstractPlugin;
 import org.jzenith.core.util.CompletableHandler;
 import org.jzenith.rest.docs.CustomOpenApiResource;
-import org.jzenith.rest.exception.ConstantMessageExceptionMapping;
-import org.jzenith.rest.exception.ExceptionMapping;
-import org.jzenith.rest.exception.ValidationExceptionMapping;
+import org.jzenith.rest.exception.ConstantMessageThrowableMapping;
+import org.jzenith.rest.exception.ThrowableMapping;
+import org.jzenith.rest.exception.ValidationThrowableMapping;
 import org.jzenith.rest.health.HealthCheckResource;
 import org.jzenith.rest.metrics.MetricsFeature;
 import org.jzenith.rest.metrics.PrometheusResource;
@@ -63,13 +63,13 @@ public class RestPlugin extends AbstractPlugin {
     private static final ImmutableList<Class<?>> DEFAULT_RESOURCES = ImmutableList.of(PrometheusResource.class, CustomOpenApiResource.class, HealthCheckResource.class);
 
     private final List<Class<?>> resources;
-    private final Map<Class<? extends Exception>, ExceptionMapping<?>> exceptionMappings = Maps.newHashMap();
+    private final Map<Class<? extends Throwable>, ThrowableMapping<?>> exceptionMappings = Maps.newHashMap();
 
     public RestPlugin(Collection<Class<?>> resources) {
         this.resources = ImmutableList.copyOf(Iterables.concat(resources, DEFAULT_RESOURCES));
 
-        exceptionMappings.put(Exception.class, new ConstantMessageExceptionMapping<>(Exception.class, 500, "Unknown error"));
-        exceptionMappings.put(ValidationException.class, new ValidationExceptionMapping());
+        exceptionMappings.put(Exception.class, new ConstantMessageThrowableMapping<>(Exception.class, 500, "Unknown error"));
+        exceptionMappings.put(ValidationException.class, new ValidationThrowableMapping());
     }
 
     public static RestPlugin withResources(Class<?>... resources) {
@@ -147,7 +147,7 @@ public class RestPlugin extends AbstractPlugin {
             providerFactory.getServerDynamicFeatures().add(tracing);
         }
 
-        exceptionMappings.forEach((clz, exceptionMapping) -> providerFactory.getExceptionMappers().put(clz, exceptionMapping.toExceptionHandler()));
+        exceptionMappings.forEach((clz, throwableMapping) -> providerFactory.getExceptionMappers().put(clz, throwableMapping.toExceptionHandler()));
 
         final VertxRegistry registry = deployment.getRegistry();
 
@@ -158,14 +158,14 @@ public class RestPlugin extends AbstractPlugin {
         return new GuiceVertxRequestHandler(vertx, deployment);
     }
 
-    public RestPlugin withMapping(@NonNull final Class<? extends Exception> exception, int statusCode) {
-        exceptionMappings.put(exception, new ExceptionMapping<>(exception, statusCode));
+    public RestPlugin withMapping(@NonNull final Class<? extends Throwable> throwable, int statusCode) {
+        exceptionMappings.put(throwable, new ThrowableMapping<>(throwable, statusCode));
 
         return this;
     }
 
-    public RestPlugin withMapping(@NonNull final Class<? extends Exception> exception, int statusCode, @NonNull String message) {
-        exceptionMappings.put(exception, new ConstantMessageExceptionMapping<>(exception, statusCode, message));
+    public RestPlugin withMapping(@NonNull final Class<? extends Throwable> throwable, int statusCode, @NonNull String message) {
+        exceptionMappings.put(throwable, new ConstantMessageThrowableMapping<>(throwable, statusCode, message));
 
         return this;
     }
