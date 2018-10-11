@@ -4,6 +4,8 @@
 [![codecov](https://codecov.io/gh/marcust/jzenith/branch/master/graph/badge.svg)](https://codecov.io/gh/marcust/jzenith)
 [![Known Vulnerabilities](https://snyk.io/test/github/marcust/jzenith/badge.svg?targetFile=jzenith-example%2Fjzenith-example-postgres%2Fpom.xml)](https://snyk.io/test/github/marcust/jzenith?targetFile=jzenith-example%2Fjzenith-example-postgres%2Fpom.xml)
 [![Gitter chat](https://badges.gitter.im/jzenithorg/gitter.png)](https://gitter.im/jzenithorg/Lobby)
+[![security status](https://www.meterian.com/badge/gh/marcust/jzenith/security)](https://www.meterian.com/report/gh/marcust/jzenith)
+[![stability status](https://www.meterian.com/badge/gh/marcust/jzenith/stability)](https://www.meterian.com/report/gh/marcust/jzenith)
 
 **Disclaimer**: *This is basically me tinkering with tech and keeping
 myself busy while I'm looking for a new challenge to take on. I don't
