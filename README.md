@@ -6,6 +6,7 @@
 [![Gitter chat](https://badges.gitter.im/jzenithorg/gitter.png)](https://gitter.im/jzenithorg/Lobby)
 [![security status](https://www.meterian.com/badge/gh/marcust/jzenith/security)](https://www.meterian.com/report/gh/marcust/jzenith)
 [![stability status](https://www.meterian.com/badge/gh/marcust/jzenith/stability)](https://www.meterian.com/report/gh/marcust/jzenith)
+[![DepShield Badge](https://depshield.sonatype.org/badges/marcust/jzenith/depshield.svg)](https://depshield.github.io)
 
 **Disclaimer**: *This is basically me tinkering with tech and keeping
 myself busy while I'm looking for a new challenge to take on. I don't
