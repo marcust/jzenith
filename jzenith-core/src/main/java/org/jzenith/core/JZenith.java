@@ -123,19 +123,25 @@ public class JZenith {
         if (tracer != null && !GlobalTracer.isRegistered()) {
             GlobalTracer.register(tracer);
         }
+
         vertx = initVertx();
         if (!vertx.isNativeTransportEnabled()) {
             throw new IllegalStateException("Native transport could not be enabled");
         }
-        initMeterRegistry();
-
+        setupMeterRegistry();
 
         final Injector injector = createInjector(vertx);
-        StreamEx.of(vertx.verticleFactories())
-                .select(GuiceVerticleFactory.class)
-                .findFirst()
-                .ifPresent(guiceVerticleFactory -> guiceVerticleFactory.setInjector(injector));
+        setVerticleFactoryInjector(injector);
 
+        startPlugins(injector);
+
+        log.debug("jZenith startup complete after {}ms (JVM has been up for {}ms)",
+                stopwatch.elapsed(TimeUnit.MILLISECONDS), ManagementFactory.getRuntimeMXBean().getUptime());
+
+        return this;
+    }
+
+    private void startPlugins(Injector injector) {
         final CompletableFuture[] deploymentResults = plugins.stream()
                 .map(plugin -> plugin.start(injector))
                 .toArray(CompletableFuture[]::new);
@@ -148,11 +154,13 @@ public class JZenith {
             Throwables.throwIfUnchecked(e);
             throw new JZenithException(e);
         }
+    }
 
-        log.debug("jZenith startup complete after {}ms (JVM has been up for {}ms)",
-                stopwatch.elapsed(TimeUnit.MILLISECONDS), ManagementFactory.getRuntimeMXBean().getUptime());
-
-        return this;
+    private void setVerticleFactoryInjector(Injector injector) {
+        StreamEx.of(vertx.verticleFactories())
+                .select(GuiceVerticleFactory.class)
+                .findFirst()
+                .ifPresent(guiceVerticleFactory -> guiceVerticleFactory.setInjector(injector));
     }
 
     private Vertx initVertx() {
@@ -169,7 +177,7 @@ public class JZenith {
                 ).setPreferNativeTransport(true)
         );
 
-        BackendRegistries.setupBackend(vertx, metricsOptions);
+        BackendRegistries.setupBackend(vertx, metricsOptions).getMeterRegistry();
 
         return vertx;
     }
@@ -187,7 +195,7 @@ public class JZenith {
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
-                        bind(MeterRegistry.class).toProvider(BackendRegistries::getDefaultNow);
+                        bind(MeterRegistry.class).toInstance(BackendRegistries.getDefaultNow());
                         bind(CoreConfiguration.class).toInstance(configuration);
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
                         bind(Vertx.class).toInstance(vertx);
@@ -214,7 +222,7 @@ public class JZenith {
         return injector;
     }
 
-    private void initMeterRegistry() {
+    private void setupMeterRegistry() {
         final MeterRegistry registry = BackendRegistries.getDefaultNow();
 
         new ClassLoaderMetrics().bindTo(registry);
