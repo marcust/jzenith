@@ -36,6 +36,8 @@ public class JacksonConfig implements ContextResolver<ObjectMapper> {
 
         mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
 
+        mapper.disableDefaultTyping();
+
         mapper.getFactory().enable(JsonFactory.Feature.USE_THREAD_LOCAL_FOR_BUFFER_RECYCLING);
         mapper.getFactory().disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
 
