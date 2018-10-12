@@ -71,6 +71,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public class JZenith {
 
     static {
@@ -177,7 +179,8 @@ public class JZenith {
                 ).setPreferNativeTransport(true)
         );
 
-        BackendRegistries.setupBackend(createdVertx, metricsOptions).getMeterRegistry();
+        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(createdVertx, metricsOptions).getMeterRegistry();
+        checkState(meterRegistry != null, "Meter registry should have been initialized");
 
         return createdVertx;
     }
