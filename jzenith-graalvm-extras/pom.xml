@@ -21,9 +21,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx.version}</version>
+            <groupId>org.jzenith</groupId>
+            <artifactId>jzenith-core</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
