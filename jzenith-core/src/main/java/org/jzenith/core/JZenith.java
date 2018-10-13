@@ -126,7 +126,7 @@ public class JZenith {
 
         vertx = initVertx();
         if (!vertx.isNativeTransportEnabled()) {
-            throw new IllegalStateException("Native transport could not be enabled");
+            log.warn("Native transport could not be enabled");
         }
         setupMeterRegistry();
 
