@@ -16,6 +16,7 @@
 package org.jzenith.example;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.opentracing.contrib.reporter.TracerR;
 import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
 import io.opentracing.noop.NoopTracerFactory;
@@ -59,6 +60,7 @@ public class MySqlJdbcExampleApp {
                 .withModules(new ServiceLayerModule(), new PersistenceLayerModule(), new MapperModule());
     }
 
+    @SuppressFBWarnings("HARD_CODE_PASSWORD")
     public static DataSource createDataSource() throws SQLException {
         final MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setPort(3307);

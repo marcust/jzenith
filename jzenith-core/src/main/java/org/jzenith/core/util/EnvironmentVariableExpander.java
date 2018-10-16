@@ -16,6 +16,7 @@
 package org.jzenith.core.util;
 
 import com.google.common.annotations.VisibleForTesting;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
@@ -25,11 +26,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
+@SuppressFBWarnings("SECRD")
 public class EnvironmentVariableExpander {
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\$\\{([\\w.-]+)(?:\\:([^\\}]+)?)?\\}");
 
     private static final EnvironmentVariableExpander INSTANCE = new EnvironmentVariableExpander();
-
-    private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\$\\{([\\w.-]+)(?:\\:([^\\}]+)?)?\\}");
 
     private final Function<String, String> variableAccessor;
 
