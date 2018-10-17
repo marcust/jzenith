@@ -19,7 +19,6 @@ import com.salesforce.kafka.test.KafkaTestUtils;
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import io.opentracing.noop.NoopTracerFactory;
 import io.reactivex.Single;
-import lombok.Data;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.jzenith.core.JZenith;
 import org.jzenith.kafka.model.AbstractMessage;
@@ -60,11 +59,17 @@ public abstract class AbstractKafkaConsumerPluginTest {
         }
     }
 
-    @Data
     static class TestMessage extends AbstractMessage {
 
         private String payload;
 
+        public String getPayload() {
+            return payload;
+        }
+
+        public void setPayload(String payload) {
+            this.payload = payload;
+        }
     }
 
 }

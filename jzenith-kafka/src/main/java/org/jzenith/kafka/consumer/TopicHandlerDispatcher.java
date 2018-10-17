@@ -15,7 +15,6 @@
  */
 package org.jzenith.kafka.consumer;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
@@ -23,11 +22,12 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import io.reactivex.Single;
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumerRecord;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jzenith.core.JZenithException;
 import org.jzenith.kafka.model.AbstractMessage;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -43,13 +43,12 @@ public class TopicHandlerDispatcher {
     }
 
     @SuppressWarnings("unchecked")
-    @SneakyThrows
     public Single<DispatcherResult> handle(KafkaConsumerRecord<String, String> record) {
         final String jsonText = record.value();
         final JsonNode jsonNode;
         try {
             jsonNode = objectMapper.readTree(jsonText);
-        } catch (JsonParseException e) {
+        } catch (IOException e) {
             log.warn("Could not parse message, message is skipped:\n{}", jsonText, e);
             return Single.just(DispatcherResult.skip(record));
         }
@@ -72,7 +71,12 @@ public class TopicHandlerDispatcher {
             return Single.just(DispatcherResult.skip(record));
         }
 
-        final AbstractMessage message = objectMapper.readValue(jsonText, messageClass);
+        final AbstractMessage message;
+        try {
+            message = objectMapper.readValue(jsonText, messageClass);
+        } catch (IOException e) {
+            throw new JZenithException(e);
+        }
 
         final List<Single<HandlerResult>> results = topicHandlers.get(record.topic())
                 .parallelStream()
