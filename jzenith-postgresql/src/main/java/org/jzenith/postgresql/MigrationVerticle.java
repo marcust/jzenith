@@ -38,10 +38,9 @@ public class MigrationVerticle extends AbstractVerticle {
             dataSource.setPassword(configuration.getPassword());
 
             // Create the Flyway instance
-            final Flyway flyway = new Flyway();
-
-            // Point it to the database
-            flyway.setDataSource(dataSource);
+            final Flyway flyway = Flyway.configure()
+                    .dataSource(dataSource)
+                    .load();
 
             // Start the migration
             future.complete(flyway.migrate());
