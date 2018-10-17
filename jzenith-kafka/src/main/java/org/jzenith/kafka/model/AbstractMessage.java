@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.kafka.consumer;
+package org.jzenith.kafka.model;
 
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class AbstractMessage {
 
-public class HandlerResultTest {
+    private MessageMeta meta = MessageMeta.create();
 
-    @Test
-    public void testSuccess() {
-        final HandlerResult messageHandled = HandlerResult.messageHandled();
-        assertThat(messageHandled.hasThrowable()).isFalse();
-    }
-
-    @Test
-    public void testSuccessThowsException() {
-        final HandlerResult messageHandled = HandlerResult.messageHandled();
-        assertThrows(IllegalStateException.class, () -> messageHandled.getThrowable());
+    @JsonInclude
+    public String getType() {
+        return getClass().getName();
     }
 
 }

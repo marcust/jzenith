@@ -204,6 +204,7 @@ public class JZenith {
                 .add(new AbstractModule() {
                     @Override
                     protected void configure() {
+                        install(new JacksonModule());
                         bind(MeterRegistry.class).toInstance(BackendRegistries.getDefaultNow());
                         bind(CoreConfiguration.class).toInstance(configuration);
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);

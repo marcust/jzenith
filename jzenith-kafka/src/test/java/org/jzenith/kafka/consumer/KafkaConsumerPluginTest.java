@@ -15,6 +15,7 @@
  */
 package org.jzenith.kafka.consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
 import io.reactivex.Single;
@@ -27,6 +28,7 @@ import kafka.common.OffsetMetadataAndError;
 import kafka.common.TopicAndPartition;
 import kafka.network.BlockingChannel;
 import kafka.utils.ZkUtils;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
@@ -83,8 +85,22 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
         });
         jZenith.run();
 
-        // Define the record we want to produce
-        final ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, 0, "key", "value");
+        produceRecord(jZenith, topicName);
+
+        testContext.awaitCompletion(1, TimeUnit.MINUTES);
+
+        final OffsetMetadataAndError offsetMetadataAndError = pullCurrentOffset(topicName, jZenith);
+
+        assertThat(offsetMetadataAndError.offset()).isEqualTo(0);
+    }
+
+    @SneakyThrows
+    private void produceRecord(JZenith jZenith, String topicName) throws InterruptedException, ExecutionException, TimeoutException {
+        final ObjectMapper objectMapper = jZenith.createInjectorForTesting().getInstance(ObjectMapper.class);
+        final TestMessage message = new TestMessage();
+        message.setPayload("Hello world");
+
+        final ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, 0, "key", objectMapper.writeValueAsString(message));
 
         // Create a new producer
         try (final KafkaProducer<String, String> producer =
@@ -96,12 +112,6 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
 
             future.get(1, TimeUnit.MINUTES);
         }
-
-        testContext.awaitCompletion(1, TimeUnit.MINUTES);
-
-        final OffsetMetadataAndError offsetMetadataAndError = pullCurrentOffset(topicName, jZenith);
-
-        assertThat(offsetMetadataAndError.offset()).isEqualTo(0);
     }
 
     @Test
@@ -117,18 +127,7 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
         jZenith.run();
 
         // Define the record we want to produce
-        final ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, 0, "key", "value");
-
-        // Create a new producer
-        try (final KafkaProducer<String, String> producer =
-                     getKafkaTestUtils().getKafkaProducer(StringSerializer.class, StringSerializer.class)) {
-
-            // Produce it & wait for it to complete.
-            final Future<RecordMetadata> future = producer.send(producerRecord);
-            producer.flush();
-
-            future.get(1, TimeUnit.MINUTES);
-        }
+        produceRecord(jZenith, topicName);
 
         testContext.awaitCompletion(1, TimeUnit.MINUTES);
         try {

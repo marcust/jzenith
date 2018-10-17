@@ -15,6 +15,7 @@
  */
 package org.jzenith.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -154,7 +155,7 @@ public class RestPlugin extends AbstractPlugin {
         resources.forEach(resourceClass ->
                 registry.addResourceFactory(new VertxResourceFactory(new GuiceResourceFactory(injector.getProvider(resourceClass), resourceClass))));
 
-        providerFactory.registerProviderInstance(new JacksonConfig());
+        providerFactory.registerProviderInstance(new JacksonContextResolver(injector.getInstance(ObjectMapper.class)));
         return new GuiceVertxRequestHandler(vertx, deployment);
     }
 

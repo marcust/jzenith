@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.kafka.consumer;
+package org.jzenith.rest;
 
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import javax.ws.rs.ext.ContextResolver;
 
-public class HandlerResultTest {
+public class JacksonContextResolver implements ContextResolver<ObjectMapper> {
 
-    @Test
-    public void testSuccess() {
-        final HandlerResult messageHandled = HandlerResult.messageHandled();
-        assertThat(messageHandled.hasThrowable()).isFalse();
+    private final ObjectMapper objectMapper;
+
+    public JacksonContextResolver(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
-    @Test
-    public void testSuccessThowsException() {
-        final HandlerResult messageHandled = HandlerResult.messageHandled();
-        assertThrows(IllegalStateException.class, () -> messageHandled.getThrowable());
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
+        return objectMapper;
     }
-
 }

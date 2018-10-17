@@ -19,8 +19,10 @@ import com.salesforce.kafka.test.KafkaTestUtils;
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import io.opentracing.noop.NoopTracerFactory;
 import io.reactivex.Single;
+import lombok.Data;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.jzenith.core.JZenith;
+import org.jzenith.kafka.model.AbstractMessage;
 
 public abstract class AbstractKafkaConsumerPluginTest {
 
@@ -39,7 +41,7 @@ public abstract class AbstractKafkaConsumerPluginTest {
         return makeApplication(topicName, new TestTopicHandler());
     }
 
-    JZenith makeApplication(final String topicName, final TopicHandler<String> topicHandler) {
+    JZenith makeApplication(final String topicName, final TopicHandler<AbstractMessage> topicHandler) {
         getKafkaTestUtils().createTopic(topicName, 1, (short) 1);
         final JZenith application = JZenith.application();
         return application
@@ -48,14 +50,21 @@ public abstract class AbstractKafkaConsumerPluginTest {
                 .withConfiguration("kafka.consumer.bootstrap.servers", sharedKafkaTestResource.getKafkaConnectString());
     }
 
-    static class TestTopicHandler implements TopicHandler<String> {
+    static class TestTopicHandler implements TopicHandler<AbstractMessage> {
         @Override
-        public Single<HandlerResult> handleMessage(Single<String> messages) {
+        public Single<HandlerResult> handleMessage(Single<AbstractMessage> messages) {
             return messages.map(message -> {
                 System.out.println(message);
                 return HandlerResult.messageHandled();
             });
         }
+    }
+
+    @Data
+    static class TestMessage extends AbstractMessage {
+
+        private String payload;
+
     }
 
 }

@@ -16,9 +16,10 @@
 package org.jzenith.kafka.consumer;
 
 import io.reactivex.Single;
+import org.jzenith.kafka.model.AbstractMessage;
 
 @FunctionalInterface
-public interface TopicHandler<T> {
+public interface TopicHandler<T extends AbstractMessage> {
 
     Single<HandlerResult> handleMessage(Single<T> message);
 
