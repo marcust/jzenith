@@ -31,11 +31,9 @@ public class MigrationVerticle extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         vertx.executeBlocking(future -> {
             // Create the Flyway instance
-            final Flyway flyway = new Flyway();
-
-
-            // Point it to the database
-            flyway.setDataSource(dataSource);
+            final Flyway flyway = Flyway.configure()
+                    .dataSource(dataSource)
+                    .load();
 
             // Start the migration
             future.complete(flyway.migrate());
