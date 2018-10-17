@@ -53,7 +53,7 @@ public abstract class AbstractKafkaConsumerPluginTest {
         public Single<HandlerResult> handleMessage(Single<String> messages) {
             return messages.map(message -> {
                 System.out.println(message);
-                return HandlerResult.success();
+                return HandlerResult.messageHandled();
             });
         }
     }

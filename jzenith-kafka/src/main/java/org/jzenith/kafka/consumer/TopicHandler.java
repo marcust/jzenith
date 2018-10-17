@@ -17,6 +17,7 @@ package org.jzenith.kafka.consumer;
 
 import io.reactivex.Single;
 
+@FunctionalInterface
 public interface TopicHandler<T> {
 
     Single<HandlerResult> handleMessage(Single<T> message);

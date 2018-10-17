@@ -46,7 +46,6 @@ public class KafkaConsumerPlugin extends AbstractPlugin {
     private final Multimap<String, TopicHandler<Object>> topicHandlers = HashMultimap.create();
 
     private KafkaConsumerPlugin() {
-
     }
 
     @Override
@@ -97,7 +96,7 @@ public class KafkaConsumerPlugin extends AbstractPlugin {
             return new AsyncResultSingle<>(handler -> consumer.getDelegate().commit(result.getCommitData(), handler));
         } else {
             log.error("Error handling {}, will stop consuming", result.getOriginalPayload());
-            return consumer.rxUnsubscribe().andThen(Single.just(ImmutableMap.of()));
+            return consumer.rxClose().andThen(Single.just(ImmutableMap.of()));
         }
     }
 

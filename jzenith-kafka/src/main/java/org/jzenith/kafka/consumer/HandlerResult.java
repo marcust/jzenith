@@ -19,10 +19,6 @@ public abstract class HandlerResult {
 
     public static HandlerResult fail(final Throwable t) {
         return new HandlerResult() {
-            @Override
-            public boolean isSuccessful() {
-                return false;
-            }
 
             @Override
             public boolean hasThrowable() {
@@ -36,12 +32,8 @@ public abstract class HandlerResult {
         };
     }
 
-    public static HandlerResult success() {
+    public static HandlerResult messageHandled() {
         return new HandlerResult() {
-            @Override
-            public boolean isSuccessful() {
-                return true;
-            }
 
             @Override
             public boolean hasThrowable() {
@@ -54,8 +46,6 @@ public abstract class HandlerResult {
             }
         };
     }
-
-    public abstract boolean isSuccessful();
 
     public abstract boolean hasThrowable();
 
