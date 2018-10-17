@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.function.Supplier;
 
 @Slf4j
+@SuppressFBWarnings("CRLF_INJECTION_LOGS")
 public class ConfigurationProvider<T> implements Provider<T> {
 
     private final Class<T> configurationClass;
