@@ -15,6 +15,7 @@
  */
 package org.jzenith.kafka.consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -35,6 +36,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jzenith.core.AbstractPlugin;
 import org.jzenith.core.util.CompletableFutureObserver;
+import org.jzenith.kafka.model.AbstractMessage;
 
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class KafkaConsumerPlugin extends AbstractPlugin {
 
-    private final Multimap<String, TopicHandler<Object>> topicHandlers = HashMultimap.create();
+    private final Multimap<String, TopicHandler<AbstractMessage>> topicHandlers = HashMultimap.create();
 
     private KafkaConsumerPlugin() {
     }
@@ -59,7 +61,7 @@ public class KafkaConsumerPlugin extends AbstractPlugin {
 
     @SuppressWarnings("unchecked")
     public KafkaConsumerPlugin andTopicHandler(@NonNull final String topic, @NonNull final TopicHandler<?> handler) {
-        topicHandlers.put(topic, (TopicHandler<Object>) handler);
+        topicHandlers.put(topic, (TopicHandler<AbstractMessage>) handler);
 
         return this;
     }
@@ -73,7 +75,7 @@ public class KafkaConsumerPlugin extends AbstractPlugin {
         consumer.rxSubscribe(topicHandlers.keySet())
                 .subscribe(observer.observer());
 
-        final TopicHandlerDispatcher mapper = new TopicHandlerDispatcher(topicHandlers);
+        final TopicHandlerDispatcher mapper = new TopicHandlerDispatcher(injector.getInstance(ObjectMapper.class), topicHandlers);
 
         return observer
                 .thenApply(aVoid -> consumerChain(vertx, mapper, consumer))

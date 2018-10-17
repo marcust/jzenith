@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.kafka.consumer;
+package org.jzenith.kafka.model;
 
-import org.junit.jupiter.api.Test;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.time.Instant;
+import java.util.UUID;
 
-public class HandlerResultTest {
+@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class MessageMeta {
 
-    @Test
-    public void testSuccess() {
-        final HandlerResult messageHandled = HandlerResult.messageHandled();
-        assertThat(messageHandled.hasThrowable()).isFalse();
-    }
+    private UUID messageId;
+    private Instant createdTimestamp;
 
-    @Test
-    public void testSuccessThowsException() {
-        final HandlerResult messageHandled = HandlerResult.messageHandled();
-        assertThrows(IllegalStateException.class, () -> messageHandled.getThrowable());
+    public static MessageMeta create() {
+        return new MessageMeta(UUID.randomUUID(), Instant.now());
     }
 
 }

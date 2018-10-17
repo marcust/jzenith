@@ -21,6 +21,7 @@ import io.vertx.kafka.client.common.TopicPartition;
 import io.vertx.kafka.client.consumer.OffsetAndMetadata;
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumerRecord;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +38,7 @@ public class DispatcherResult {
     }
 
     public static DispatcherResult create(KafkaConsumerRecord<String, String> record, List<HandlerResult> handlerResultList) {
-        final Map<TopicPartition, OffsetAndMetadata> commitData = ImmutableMap.of(
-                new TopicPartition(record.topic(), record.partition()),
-                new OffsetAndMetadata(record.offset(), null));
+        final Map<TopicPartition, OffsetAndMetadata> commitData = toCommitData(record);
 
         final List<Throwable> throwables = handlerResultList.stream()
                 .filter(HandlerResult::hasThrowable)
@@ -49,6 +48,17 @@ public class DispatcherResult {
         return new DispatcherResult(commitData,
                 record.value(),
                 throwables);
+    }
+
+    private static ImmutableMap<TopicPartition, OffsetAndMetadata> toCommitData(KafkaConsumerRecord<String, String> record) {
+        return ImmutableMap.of(
+                new TopicPartition(record.topic(), record.partition()),
+                new OffsetAndMetadata(record.offset(), null));
+    }
+
+    public static DispatcherResult skip(KafkaConsumerRecord<String, String> record) {
+        final Map<TopicPartition, OffsetAndMetadata> commitData = toCommitData(record);
+        return new DispatcherResult(commitData, record.value(), Collections.emptyList());
     }
 
     public Map<TopicPartition, OffsetAndMetadata> getCommitData() {

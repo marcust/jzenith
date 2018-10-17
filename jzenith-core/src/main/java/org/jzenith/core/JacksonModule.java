@@ -13,39 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jzenith.rest;
+package org.jzenith.core;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import com.google.inject.AbstractModule;
 
-import javax.ws.rs.ext.ContextResolver;
+public class JacksonModule extends AbstractModule {
 
-public class JacksonConfig implements ContextResolver<ObjectMapper> {
+    @Override
+    protected void configure() {
+        final ObjectMapper mapper = createObjectMapper();
 
-    private final ObjectMapper objectMapper;
+        bind(ObjectMapper.class).toInstance(mapper);
+    }
 
-    public JacksonConfig() {
+    public static ObjectMapper createObjectMapper() {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new ParameterNamesModule())
                 .registerModule(new Jdk8Module())
                 .registerModule(new JavaTimeModule());
 
         mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         mapper.disableDefaultTyping();
 
         mapper.getFactory().enable(JsonFactory.Feature.USE_THREAD_LOCAL_FOR_BUFFER_RECYCLING);
         mapper.getFactory().disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
-
-        objectMapper = mapper;
+        return mapper;
     }
 
-    @Override
-    public ObjectMapper getContext(Class<?> type) {
-        return objectMapper;
-    }
 }
