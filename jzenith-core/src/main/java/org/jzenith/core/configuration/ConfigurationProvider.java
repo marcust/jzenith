@@ -124,7 +124,7 @@ public class ConfigurationProvider<T> implements Provider<T> {
 
         private Object logValue(Object value, String propertyName, String lookupName, String from) {
             if (value != null) {
-                log.info("Using value '" + value + "' for property " + propertyName + " obtained from " + from + " (" + lookupName + ")");
+                log.info("Using value '{}' for property {} obtained from {} ({})", value, propertyName, from, lookupName);
             }
             return value;
         }
