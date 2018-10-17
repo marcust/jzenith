@@ -38,7 +38,7 @@ public class TopicHandlerDispatcher {
 
         final List<Single<HandlerResult>> results = topicHandlers.get(record.topic())
                 .parallelStream()
-                .map(handler -> handler.handleMessage(Single.just(value))
+                .map(handler -> Single.just(value).flatMap(v -> handler.handleMessage(Single.just(v)))
                         .onErrorReturn(HandlerResult::fail))
                 .collect(ImmutableList.toImmutableList());
 

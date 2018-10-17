@@ -39,6 +39,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.jzenith.core.JZenith;
+import org.jzenith.core.JZenithException;
 import org.jzenith.core.util.TestUtil;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
@@ -50,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 
 @Slf4j
@@ -74,13 +76,10 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
         final VertxTestContext testContext = new VertxTestContext();
 
         final String topicName = "test_message_consumed";
-        final JZenith jZenith = makeApplication(topicName, new TopicHandler<String>() {
-            @Override
-            public Single<HandlerResult> handleMessage(Single<String> message) {
-                log.info("got message single");
-                testContext.completeNow();
-                return Single.just(HandlerResult.success());
-            }
+        final JZenith jZenith = makeApplication(topicName, message -> {
+            log.info("got message single");
+            testContext.completeNow();
+            return Single.just(HandlerResult.messageHandled());
         });
         jZenith.run();
 
@@ -96,8 +95,6 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
             producer.flush();
 
             future.get(1, TimeUnit.MINUTES);
-
-            log.info("Produce completed");
         }
 
         testContext.awaitCompletion(1, TimeUnit.MINUTES);
@@ -105,36 +102,72 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
         final OffsetMetadataAndError offsetMetadataAndError = pullCurrentOffset(topicName, jZenith);
 
         assertThat(offsetMetadataAndError.offset()).isEqualTo(0);
+    }
 
+    @Test
+    public void testMessageErrored()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        final VertxTestContext testContext = new VertxTestContext();
 
+        final String topicName = "test_message_errored";
+        final JZenith jZenith = makeApplication(topicName, message -> {
+            testContext.completeNow();
+            throw new JZenithException("test failed message");
+        });
+        jZenith.run();
+
+        // Define the record we want to produce
+        final ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, 0, "key", "value");
+
+        // Create a new producer
+        try (final KafkaProducer<String, String> producer =
+                     getKafkaTestUtils().getKafkaProducer(StringSerializer.class, StringSerializer.class)) {
+
+            // Produce it & wait for it to complete.
+            final Future<RecordMetadata> future = producer.send(producerRecord);
+            producer.flush();
+
+            future.get(1, TimeUnit.MINUTES);
+        }
+
+        testContext.awaitCompletion(1, TimeUnit.MINUTES);
+        try {
+            pullCurrentOffset(topicName, jZenith);
+            fail("Should have timed out as no offset is committed");
+        } catch (RuntimeException e) {
+            // expected
+        }
     }
 
     private OffsetMetadataAndError pullCurrentOffset(String topicName, JZenith jZenith) {
+        final Injector injectorForTesting = jZenith.createInjectorForTesting();
+        final String groupName = injectorForTesting.getInstance(KafkaConsumerConfiguration.class).getGroupName();
+        final String zkConnectString = sharedKafkaTestResource.getZookeeperConnectString();
+        final ZkUtils utils = new ZkUtils(new ZkClient(zkConnectString, Integer.MAX_VALUE, 10000, new ZkSerializer() {
+            @Override
+            public byte[] serialize(Object data) throws ZkMarshallingError {
+                return data.toString().getBytes(StandardCharsets.UTF_8);
+            }
+
+            @Override
+            public Object deserialize(byte[] bytes) throws ZkMarshallingError {
+                return new String(bytes, StandardCharsets.UTF_8);
+            }
+        }), new ZkConnection(zkConnectString), false);
+
+        final TopicAndPartition topicAndPartition = new TopicAndPartition(topicName, 0);
+        final Seq<TopicAndPartition> topicAndPartitionSeq = JavaConverters.collectionAsScalaIterable(ImmutableList.of(topicAndPartition)).toSeq();
+
         return await()
                 .atMost(10, TimeUnit.SECONDS)
                 .until(() -> {
-                            final Injector injectorForTesting = jZenith.createInjectorForTesting();
-                            final String groupName = injectorForTesting.getInstance(KafkaConsumerConfiguration.class).getGroupName();
-                            final String zkConnectString = sharedKafkaTestResource.getZookeeperConnectString();
-                            final ZkUtils utils = new ZkUtils(new ZkClient(zkConnectString, Integer.MAX_VALUE, 10000, new ZkSerializer() {
-                                @Override
-                                public byte[] serialize(Object data) throws ZkMarshallingError {
-                                    return data.toString().getBytes(StandardCharsets.UTF_8);
-                                }
-
-                                @Override
-                                public Object deserialize(byte[] bytes) throws ZkMarshallingError {
-                                    return new String(bytes, StandardCharsets.UTF_8);
-                                }
-                            }), new ZkConnection(zkConnectString), false);
                             final BlockingChannel blockingChannel = ClientUtils.channelToOffsetManager(groupName, utils, 100, 100);
-
-                            final TopicAndPartition topicAndPartition = new TopicAndPartition(topicName, 0);
-                            final Seq<TopicAndPartition> topicAndPartitionSeq = JavaConverters.collectionAsScalaIterable(ImmutableList.of(topicAndPartition)).toSeq();
 
                             blockingChannel.send(new OffsetFetchRequest(groupName, topicAndPartitionSeq, OffsetFetchRequest.CurrentVersion(), 0, OffsetFetchRequest.DefaultClientId()));
 
                             final OffsetFetchResponse offsetFetchResponse = OffsetFetchResponse.readFrom(blockingChannel.receive().payload());
+
+                            blockingChannel.disconnect();
 
                             final OffsetMetadataAndError offsetMetadataAndError = offsetFetchResponse.requestInfo().get(topicAndPartition).get();
 
