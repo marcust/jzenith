@@ -15,6 +15,7 @@
  */
 package org.jzenith.kafka.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
@@ -28,8 +29,6 @@ import kafka.common.OffsetMetadataAndError;
 import kafka.common.TopicAndPartition;
 import kafka.network.BlockingChannel;
 import kafka.utils.ZkUtils;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
@@ -56,7 +55,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 
-@Slf4j
 @ExtendWith(VertxExtension.class)
 public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
 
@@ -74,12 +72,11 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
 
     @Test
     public void testMessageConsumed()
-            throws InterruptedException, ExecutionException, TimeoutException {
+            throws InterruptedException, ExecutionException, TimeoutException, JsonProcessingException {
         final VertxTestContext testContext = new VertxTestContext();
 
         final String topicName = "test_message_consumed";
         final JZenith jZenith = makeApplication(topicName, message -> {
-            log.info("got message single");
             testContext.completeNow();
             return Single.just(HandlerResult.messageHandled());
         });
@@ -92,10 +89,11 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
         final OffsetMetadataAndError offsetMetadataAndError = pullCurrentOffset(topicName, jZenith);
 
         assertThat(offsetMetadataAndError.offset()).isEqualTo(0);
+
+        jZenith.stop();
     }
 
-    @SneakyThrows
-    private void produceRecord(JZenith jZenith, String topicName) throws InterruptedException, ExecutionException, TimeoutException {
+    private void produceRecord(JZenith jZenith, String topicName) throws InterruptedException, ExecutionException, TimeoutException, JsonProcessingException {
         final ObjectMapper objectMapper = jZenith.createInjectorForTesting().getInstance(ObjectMapper.class);
         final TestMessage message = new TestMessage();
         message.setPayload("Hello world");
@@ -116,7 +114,7 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
 
     @Test
     public void testMessageErrored()
-            throws InterruptedException, ExecutionException, TimeoutException {
+            throws InterruptedException, ExecutionException, TimeoutException, JsonProcessingException {
         final VertxTestContext testContext = new VertxTestContext();
 
         final String topicName = "test_message_errored";
@@ -136,6 +134,7 @@ public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
         } catch (RuntimeException e) {
             // expected
         }
+        jZenith.stop();
     }
 
     private OffsetMetadataAndError pullCurrentOffset(String topicName, JZenith jZenith) {

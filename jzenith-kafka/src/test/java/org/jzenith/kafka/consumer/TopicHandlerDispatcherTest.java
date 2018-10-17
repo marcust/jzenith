@@ -17,7 +17,6 @@ package org.jzenith.kafka.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMultimap;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumerRecord;
 import org.junit.jupiter.api.Test;
 import org.jzenith.core.JacksonModule;
@@ -25,6 +24,7 @@ import org.jzenith.kafka.model.AbstractMessage;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TopicHandlerDispatcherTest {
@@ -84,7 +84,7 @@ public class TopicHandlerDispatcherTest {
 
     @SuppressWarnings("unchecked")
     private KafkaConsumerRecord<String, String> mockRecordWithValue(String value) {
-        final KafkaConsumerRecord<String, String> mock = Mockito.mock(KafkaConsumerRecord.class);
+        final KafkaConsumerRecord<String, String> mock = mock(KafkaConsumerRecord.class);
         when(mock.value()).thenReturn(value);
         return mock;
     }
