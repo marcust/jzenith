@@ -32,5 +32,4 @@ public class CompletableFutureHandler<T> extends CompletableFuture<T> {
         };
     }
 
-
 }
