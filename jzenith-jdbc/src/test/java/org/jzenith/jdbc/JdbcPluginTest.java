@@ -17,6 +17,7 @@ package org.jzenith.jdbc;
 
 import org.junit.jupiter.api.Test;
 import org.jzenith.core.JZenith;
+import org.jzenith.core.util.TestUtil;
 import org.testcontainers.shaded.org.apache.commons.lang.ObjectUtils;
 
 import javax.sql.DataSource;
@@ -42,6 +43,13 @@ public class JdbcPluginTest extends AbstractJdbcPluginTest {
     @Test
     public void testNullParameters2() {
         assertThrows(NullPointerException.class, () -> JdbcPlugin.create(mock(DataSource.class), null));
+    }
+
+    @Test
+    public void testPublicMethods() {
+        TestUtil.testApiMethodsHaveNonNullParameters(
+                JdbcPlugin.create(mock(DataSource.class), JdbcDatabaseType.POSTGRES)
+        );
     }
 
 }
