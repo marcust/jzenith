@@ -17,13 +17,18 @@ package org.jzenith.kafka.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMultimap;
+import io.reactivex.Single;
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumerRecord;
 import org.junit.jupiter.api.Test;
+import org.jzenith.core.JZenithException;
 import org.jzenith.core.JacksonModule;
 import org.jzenith.kafka.model.AbstractMessage;
 import org.mockito.Mockito;
 
+import java.util.logging.Handler;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,16 +87,27 @@ public class TopicHandlerDispatcherTest {
         assertThat(dispatcherResult.getOriginalPayload()).isEqualTo(payload);
     }
 
+    @Test
+    public void testBrokenType() {
+        final TopicHandlerDispatcher topicHandlerDispatcher = makeTopicHandlerDispatcher();
+
+        final String payload = "{\"type\":\"" + Long.class.getName() + "\"}";
+        final KafkaConsumerRecord<String, String> mockRecord = mockRecordWithValue(payload);
+
+        assertThrows(JZenithException.class, () -> topicHandlerDispatcher.handle(mockRecord).blockingGet());
+    }
+
     @SuppressWarnings("unchecked")
     private KafkaConsumerRecord<String, String> mockRecordWithValue(String value) {
         final KafkaConsumerRecord<String, String> mock = mock(KafkaConsumerRecord.class);
         when(mock.value()).thenReturn(value);
+        when(mock.topic()).thenReturn("test");
         return mock;
     }
 
     private TopicHandlerDispatcher makeTopicHandlerDispatcher() {
         final ObjectMapper objectMapper = JacksonModule.createObjectMapper();
-        return new TopicHandlerDispatcher(objectMapper, ImmutableMultimap.of());
+        return new TopicHandlerDispatcher(objectMapper, ImmutableMultimap.of("test", (single) -> Single.just(HandlerResult.messageHandled())));
     }
 
 }
