@@ -61,7 +61,7 @@ public class JdbcPlugin extends AbstractPlugin {
     }
 
     @Override
-    protected CompletableFuture<String> start(Injector injector) {
+    protected CompletableFuture<String> start(@NonNull Injector injector) {
         if (log.isDebugEnabled()) {
             log.debug("jZenith JDBC is starting");
         }
@@ -73,6 +73,5 @@ public class JdbcPlugin extends AbstractPlugin {
 
         return completableFutureHandler;
     }
-
 
 }
