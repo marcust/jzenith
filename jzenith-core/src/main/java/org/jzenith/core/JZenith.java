@@ -61,6 +61,7 @@ import org.jzenith.core.guice.CloseableListener;
 import org.jzenith.core.guice.LifeCycleObjectRepository;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.metrics.JvmOptionMetrics;
+import org.jzenith.core.model.InitResult;
 import org.jzenith.core.tracing.OpenTracingInterceptor;
 import org.jzenith.core.util.CompletableFutureHandler;
 
@@ -128,24 +129,23 @@ public class JZenith {
             GlobalTracer.register(tracer);
         }
 
-        vertx = initVertx();
-        if (!vertx.isNativeTransportEnabled()) {
-            log.warn("Native transport could not be enabled");
-        }
+        final InitResult initResult = initVertx();
         setupMeterRegistry();
 
-        final Injector injector = createInjector(vertx);
-        setVerticleFactoryInjector(injector);
+        final Injector injector = createInjector(initResult);
+        setVerticleFactoryInjector(initResult.getVertx(), injector);
 
-        startPlugins(injector);
+        startPlugins(initResult.getVertx(), injector);
 
         log.debug("jZenith startup complete after {}ms (JVM has been up for {}ms)",
                 stopwatch.elapsed(TimeUnit.MILLISECONDS), ManagementFactory.getRuntimeMXBean().getUptime());
 
+        this.vertx = initResult.getVertx();
+
         return this;
     }
 
-    private void startPlugins(Injector injector) {
+    private void startPlugins(Vertx vertx, Injector injector) {
         final CompletableFuture[] deploymentResults = plugins.stream()
                 .map(plugin -> plugin.start(injector))
                 .toArray(CompletableFuture[]::new);
@@ -160,14 +160,14 @@ public class JZenith {
         }
     }
 
-    private void setVerticleFactoryInjector(Injector injector) {
+    private void setVerticleFactoryInjector(Vertx vertx, Injector injector) {
         StreamEx.of(vertx.verticleFactories())
                 .select(GuiceVerticleFactory.class)
                 .findFirst()
                 .ifPresent(guiceVerticleFactory -> guiceVerticleFactory.setInjector(injector));
     }
 
-    private Vertx initVertx() {
+    private InitResult initVertx() {
         final VertxPrometheusOptions prometheusOptions = new VertxPrometheusOptions()
                 .setEnabled(true);
         final MicrometerMetricsOptions metricsOptions = new MicrometerMetricsOptions()
@@ -175,27 +175,31 @@ public class JZenith {
                 .setDisabledMetricsCategories(ImmutableSet.of(MetricsDomain.HTTP_SERVER))
                 .setPrometheusOptions(prometheusOptions);
 
-        final Vertx createdVertx = Vertx.vertx(
+        final Vertx vertx = Vertx.vertx(
                 new VertxOptions().setMetricsOptions(
                         metricsOptions
                 ).setPreferNativeTransport(true)
         );
 
-        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(createdVertx, metricsOptions).getMeterRegistry();
+        if (!vertx.isNativeTransportEnabled()) {
+            log.warn("Native transport could not be enabled");
+        }
+
+        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(vertx, metricsOptions).getMeterRegistry();
         checkState(meterRegistry != null, "Meter registry should have been initialized");
 
-        RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
-        RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(createdVertx));
-        RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
+        RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(vertx));
+        RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(vertx));
+        RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(vertx));
 
-        return createdVertx;
+        return new InitResult(vertx, meterRegistry);
     }
 
     public Injector createInjectorForTesting() {
         return createInjector(initVertx());
     }
 
-    private Injector createInjector(Vertx vertx) {
+    private Injector createInjector(@NonNull InitResult initResult) {
         final ImmutableMap.Builder<String, Object> extraConfigurationBuilder = ImmutableMap.builder();
         extraConfigurationBuilder.putAll(this.extraConfiguration);
         plugins.forEach(plugin -> extraConfigurationBuilder.putAll(plugin.getExtraConfiguration()));
@@ -205,11 +209,11 @@ public class JZenith {
                     @Override
                     protected void configure() {
                         install(new JacksonModule());
-                        bind(MeterRegistry.class).toInstance(BackendRegistries.getDefaultNow());
+                        bind(MeterRegistry.class).toInstance(initResult.getMeterRegistry());
                         bind(CoreConfiguration.class).toInstance(configuration);
                         bind(ExtraConfiguration.class).toInstance(extraConfigurationBuilder.build()::get);
-                        bind(Vertx.class).toInstance(vertx);
-                        bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(vertx));
+                        bind(Vertx.class).toInstance(initResult.getVertx());
+                        bind(io.vertx.reactivex.core.Vertx.class).toInstance(io.vertx.reactivex.core.Vertx.newInstance(initResult.getVertx()));
                         bindListener(Matchers.any(), new CloseableListener(repository));
 
                         if (tracer != null) {
