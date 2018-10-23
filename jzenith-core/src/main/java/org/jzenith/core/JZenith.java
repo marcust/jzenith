@@ -66,6 +66,7 @@ import org.jzenith.core.tracing.OpenTracingInterceptor;
 import org.jzenith.core.util.CompletableFutureHandler;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -137,8 +138,11 @@ public class JZenith {
 
         startPlugins(initResult.getVertx(), injector);
 
-        log.debug("jZenith startup complete after {}ms (JVM has been up for {}ms)",
-                stopwatch.elapsed(TimeUnit.MILLISECONDS), ManagementFactory.getRuntimeMXBean().getUptime());
+        final RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+        log.debug("jZenith startup complete after {}ms ({} has been up for {}ms)",
+                stopwatch.elapsed(TimeUnit.MILLISECONDS),
+                runtimeMXBean.getVmName(),
+                runtimeMXBean.getUptime());
 
         this.vertx = initResult.getVertx();
 
