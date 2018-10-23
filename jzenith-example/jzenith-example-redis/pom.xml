@@ -146,7 +146,9 @@
                                     <inline>
                                         <files>
                                             <file>
-                                                <source>${project.build.directory}/jzenith-example-redis-${project.version}-fat.jar</source>
+                                                <source>
+                                                    ${project.build.directory}/jzenith-example-redis-${project.version}-fat.jar
+                                                </source>
                                             </file>
                                         </files>
                                     </inline>
@@ -173,7 +175,9 @@
                                     <inline>
                                         <files>
                                             <file>
-                                                <source>${project.build.directory}/jzenith-example-redis-${project.version}-fat.jar</source>
+                                                <source>
+                                                    ${project.build.directory}/jzenith-example-redis-${project.version}-fat.jar
+                                                </source>
                                             </file>
                                         </files>
                                     </inline>
