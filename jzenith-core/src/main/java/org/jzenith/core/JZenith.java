@@ -154,7 +154,7 @@ public class JZenith {
 
         final Vertx vertx = Vertx.vertx(
                 new VertxOptions()
-                .setPreferNativeTransport(true)
+                .setPreferNativeTransport(false)
         );
 
 
