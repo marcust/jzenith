@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>example-pom</artifactId>
         <groupId>org.jzenith</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
     </parent>
 
     <groupId>org.jzenith</groupId>
     <artifactId>jzenith-example-mongodb</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <name>Example - Mongodb</name>
 
     <properties>
@@ -21,12 +20,12 @@
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-example-common</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-mongodb</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
 
         <!-- Compile Time tools -->
@@ -43,7 +42,7 @@
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-example-common</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
@@ -104,12 +103,10 @@
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                     <shadedClassifierName>fat</shadedClassifierName>
                     <transformers>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>org.jzenith.example.MongodbPluginExampleApp</mainClass>
                         </transformer>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
                         </transformer>
                     </transformers>
                 </configuration>
