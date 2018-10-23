@@ -1,3 +1,5 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jzenith/jzenith-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jzenith/jzenith-core)
+[![Javadocs](https://javadoc.io/badge/org.jzenith/jzenith-core.svg?color=brightgreen)](https://javadoc.io/doc/org.jzenith/jzenith-core)
 [![Build Status](https://travis-ci.com/marcust/jzenith.svg?branch=master)](https://travis-ci.com/marcust/jzenith)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=org.jzenith%3Aroot-pom&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.jzenith%3Aroot-pom)
 [![Coverage Status](https://coveralls.io/repos/github/marcust/jzenith/badge.svg?branch=master)](https://coveralls.io/github/marcust/jzenith?branch=master)
