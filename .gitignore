@@ -122,7 +122,6 @@ hs_err_pid*
 *.pif
 *.scr
 *.shs
-*.sh
 *.vb
 *.vbe
 *.vbs
