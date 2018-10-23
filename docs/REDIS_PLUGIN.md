@@ -4,7 +4,7 @@
 <dependency>
   <groupId>org.jzenith</groupId>
   <artifactId>jzenith-redis</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
 </dependency>
 ```
 

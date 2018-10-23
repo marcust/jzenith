@@ -11,7 +11,7 @@ In order to build do a regular
 
 This gives you a fat jar file in `target/` that can be run with
 
-`java -jar jzenith-example-0.1-SNAPSHOT-fat.jar`
+`java -jar jzenith-example-0.1-fat.jar`
 
 You can start a dockerized PostgreSQL with 
 
