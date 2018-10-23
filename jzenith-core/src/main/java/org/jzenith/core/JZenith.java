@@ -40,8 +40,6 @@ import io.vertx.micrometer.VertxPrometheusOptions;
 import io.vertx.reactivex.RxHelper;
 import lombok.NonNull;
 import one.util.streamex.StreamEx;
-import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
-import org.apache.logging.log4j.core.util.Constants;
 import org.jzenith.core.configuration.ExtraConfiguration;
 import org.jzenith.core.guice.CloseableListener;
 import org.jzenith.core.guice.LifeCycleObjectRepository;
@@ -57,12 +55,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.common.base.Preconditions.checkState;
-
 public class JZenith {
 
     static {
-        System.setProperty(Constants.LOG4J_CONTEXT_SELECTOR, AsyncLoggerContextSelector.class.getName());
         System.setProperty(LoggerFactory.LOGGER_DELEGATE_FACTORY_CLASS_NAME, SLF4JLogDelegateFactory.class.getName());
     }
 
