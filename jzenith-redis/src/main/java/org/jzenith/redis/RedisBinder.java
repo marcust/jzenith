@@ -41,7 +41,7 @@ class RedisBinder extends AbstractModule {
         final Multibinder<HealthCheck> healthCheckMultibinder = Multibinder.newSetBinder(binder(), HealthCheck.class);
         healthCheckMultibinder.addBinding().to(RedisHealthCheck.class);
 
-        bind(FSTConfiguration.class).toInstance(FSTConfiguration.createUnsafeBinaryConfiguration());
+        bind(FSTConfiguration.class).toInstance(FSTConfiguration.createJsonConfiguration());
     }
 
     private static class RedicClientProvider implements Provider<RedisClient> {
