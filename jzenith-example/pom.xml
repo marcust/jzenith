@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.jzenith</groupId>
         <artifactId>root-pom</artifactId>
-        <version>0.1</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.jzenith</groupId>
     <artifactId>example-pom</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-rest</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.opentracing.contrib</groupId>

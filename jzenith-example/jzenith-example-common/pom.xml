@@ -4,12 +4,12 @@
     <parent>
         <artifactId>example-pom</artifactId>
         <groupId>org.jzenith</groupId>
-        <version>0.1</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.jzenith</groupId>
     <artifactId>jzenith-example-common</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
 
     <name>Examples Common</name>
 
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-rest</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
 
 

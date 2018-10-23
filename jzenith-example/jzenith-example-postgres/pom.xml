@@ -4,12 +4,12 @@
     <parent>
         <artifactId>example-pom</artifactId>
         <groupId>org.jzenith</groupId>
-        <version>0.1</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.jzenith</groupId>
     <artifactId>jzenith-example-postgres</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <name>Example - PostgreSQL</name>
 
     <properties>
@@ -20,12 +20,12 @@
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-example-common</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-jdbc</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
 
         <!-- Database drivers -->
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.jzenith</groupId>
             <artifactId>jzenith-example-common</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
