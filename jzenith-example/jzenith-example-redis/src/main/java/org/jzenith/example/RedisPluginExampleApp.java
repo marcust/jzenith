@@ -34,6 +34,11 @@ public class RedisPluginExampleApp {
 
     private static JZenith application;
 
+    static {
+        // Init injector for GraalVM to see
+        configureApplication().createInjectorForTesting();
+    }
+
     public static void main(String... args) {
         application = configureApplication(args).run();
     }
