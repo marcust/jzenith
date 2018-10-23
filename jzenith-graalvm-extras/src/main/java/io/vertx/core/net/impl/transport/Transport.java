@@ -38,7 +38,7 @@ import java.util.function.BiConsumer;
 
 /**
  * The transport used by a {@link io.vertx.core.Vertx} instance.
- * <p/>
+ *
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -53,6 +53,8 @@ public class Transport {
 
     /**
      * The native transport, it may be {@code null} or failed.
+     *
+     * @return null, because of dummy implementation
      */
     public static Transport nativeTransport() {
         // Patched: I remove the native transport discovery.
@@ -101,9 +103,6 @@ public class Transport {
         return null;
     }
 
-    /**
-     * @return a new event loop group
-     */
     public EventLoopGroup eventLoopGroup(int nThreads, ThreadFactory threadFactory, int ioRatio) {
         NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup(nThreads, threadFactory);
         eventLoopGroup.setIoRatio(ioRatio);
@@ -117,9 +116,6 @@ public class Transport {
         return new NioDatagramChannel();
     }
 
-    /**
-     * @return a new datagram channel
-     */
     public DatagramChannel datagramChannel(InternetProtocolFamily family) {
         switch (family) {
             case IPv4:
