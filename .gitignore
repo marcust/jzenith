@@ -136,3 +136,8 @@ hs_err_pid*
 target/
 *~
 *.orig
+.classpath
+.project
+.settings
+.factorypath
+.vscode/
