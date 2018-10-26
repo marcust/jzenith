@@ -10,6 +10,10 @@
 [![stability status](https://www.meterian.com/badge/gh/marcust/jzenith/stability)](https://www.meterian.com/report/gh/marcust/jzenith)
 [![DepShield Badge](https://depshield.sonatype.org/badges/marcust/jzenith/depshield.svg)](https://depshield.github.io)
 
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/marcust/jzenith.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/marcust/jzenith/alerts/)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/marcust/jzenith.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/marcust/jzenith/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/java/g/marcust/jzenith.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/marcust/jzenith/context:javas)
+
 **Disclaimer**: *This is basically me tinkering with tech and keeping
 myself busy while I'm looking for a new challenge to take on. I don't
 know if it will ever be released, I don't know if it will ever reach
