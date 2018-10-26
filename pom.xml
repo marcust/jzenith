@@ -225,7 +225,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.10.0</version>
+                    <version>3.11.0</version>
                     <configuration>
                         <failOnViolation>true
                         </failOnViolation> <!-- this is actually true by default, but can be disabled -->
