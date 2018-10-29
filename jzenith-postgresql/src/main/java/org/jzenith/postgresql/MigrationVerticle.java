@@ -39,6 +39,7 @@ public class MigrationVerticle extends AbstractVerticle {
 
             // Create the Flyway instance
             final Flyway flyway = Flyway.configure()
+                    .mixed(true)
                     .dataSource(dataSource)
                     .load();
 

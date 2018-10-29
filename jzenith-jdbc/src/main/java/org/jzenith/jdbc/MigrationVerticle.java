@@ -32,6 +32,7 @@ public class MigrationVerticle extends AbstractVerticle {
         vertx.executeBlocking(future -> {
             // Create the Flyway instance
             final Flyway flyway = Flyway.configure()
+                    .mixed(true)
                     .dataSource(dataSource)
                     .load();
 
