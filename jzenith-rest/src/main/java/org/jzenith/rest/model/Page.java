@@ -15,8 +15,14 @@
  */
 package org.jzenith.rest.model;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.List;
 import java.util.function.Function;
@@ -34,10 +40,17 @@ public class Page<T> {
     @NonNull
     private List<T> elements;
 
-    public <U> Page<U> map(Function<T, U> mapper) {
-        return new Page<>(offset,limit,totalElements,
-                    elements.stream()
-                            .map(mapper)
-                            .collect(ImmutableList.toImmutableList()));
+    public <U> Page<U> map(@NonNull Function<T, U> mapper) {
+        return new Page<>(offset, limit, totalElements,
+                elements.stream()
+                        .map(mapper)
+                        .collect(ImmutableList.toImmutableList()));
+    }
+
+    public <U> Page<U> withElements(@NonNull final List<U> elements) {
+        Preconditions.checkState(this.elements.size() == elements.size(),
+                "Lists must have the same size");
+
+        return new Page<>(offset, limit, totalElements, elements);
     }
 }
