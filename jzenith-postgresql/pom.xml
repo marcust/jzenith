@@ -39,7 +39,7 @@
         <dependency>
             <groupId>io.reactiverse</groupId>
             <artifactId>reactive-pg-client</artifactId>
-            <version>0.10.8</version>
+            <version>0.10.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>io.vertx</groupId>
