@@ -189,7 +189,7 @@ public class JZenith {
             log.warn("Native transport could not be enabled");
         }
 
-        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(vertx, metricsOptions).getMeterRegistry();
+        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(metricsOptions).getMeterRegistry();
         checkState(meterRegistry != null, "Meter registry should have been initialized");
 
         RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(vertx));
