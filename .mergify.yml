@@ -7,4 +7,4 @@ pull_request_rules:
     actions:
       merge:
         method: rebase
-      delete-head-branch: {}
+      delete_head_branch: {}
