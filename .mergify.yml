@@ -1,0 +1,10 @@
+pull_request_rules:
+  - name: automatic merge on CI success for dependencies
+    conditions:
+      - status-success=continuous-integration/travis-ci/pr
+      - base=master
+      - label=dependencies
+    actions:
+      merge:
+        method: rebase
+      delete-head-branch: {}
