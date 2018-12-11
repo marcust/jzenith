@@ -116,7 +116,7 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
                 .offset(1)
                 .limit(2);
 
-        final Observable<Row> row = client.stream(query, 1, 2);
+        final Observable<Row> row = client.stream(query, 2);
 
         final List<Row> rows = row.toList().blockingGet();
 
@@ -129,7 +129,7 @@ public class PostgresqlClientTest extends AbstractPostgresqlPluginTest {
                 .offset(0)
                 .limit(2);
 
-        final Observable<Row> row = client.stream(query, 0, 2);
+        final Observable<Row> row = client.stream(query, 2);
 
         final List<Row> rows = row.toList().blockingGet();
 

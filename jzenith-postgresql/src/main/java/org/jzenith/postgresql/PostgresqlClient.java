@@ -87,7 +87,7 @@ public class PostgresqlClient {
                 });
     }
 
-    public Observable<Row> stream(@NonNull Query query, @NonNull Integer offset, @NonNull Integer limit) {
+    public Observable<Row> stream(@NonNull Query query, @NonNull Integer limit) {
         return Observable.just(query)
                 .map(this::parseNativeQuery)
                 .flatMap(nativeQuery -> pgPool.rxGetConnection()
