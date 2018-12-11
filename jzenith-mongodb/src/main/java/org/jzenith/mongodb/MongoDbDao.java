@@ -55,24 +55,26 @@ public class MongoDbDao<T> {
     protected Completable insert(@NonNull final T entity) {
         return client
                 .rxInsert(collection, JsonObject.mapFrom(entity).put(ID_FIELD, idFunction.apply(entity)))
-                .toCompletable();
+                .ignoreElement();
     }
 
     protected Completable update(@NonNull final T entity) {
         return client
-                .rxUpdateWithOptions(collection,
+                .rxUpdateCollectionWithOptions(collection,
                         new JsonObject().put(ID_FIELD, idFunction.apply(entity)),
                         new JsonObject().put("$set", JsonObject.mapFrom(entity)),
                         new UpdateOptions()
                                 .setUpsert(false)
                                 .setMulti(false)
-                                .setWriteOption(WriteOption.ACKNOWLEDGED));
+                                .setWriteOption(WriteOption.ACKNOWLEDGED))
+                .ignoreElement();
     }
 
     protected Completable delete(@NonNull final String key) {
         return client
-                .rxRemoveOne(collection,
-                        new JsonObject().put(ID_FIELD, key));
+                .rxRemoveDocument(collection,
+                        new JsonObject().put(ID_FIELD, key))
+                .ignoreElement();
     }
 
     protected Single<Long> count() {

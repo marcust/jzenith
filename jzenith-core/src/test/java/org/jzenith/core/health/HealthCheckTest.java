@@ -114,7 +114,7 @@ public class HealthCheckTest {
         final HealthCheckResult result = subscriber.get();
 
         assertThat(result.isDown()).isTrue();
-        assertThat(result.getMessage()).isEqualTo("TimeoutException");
+        assertThat(result.getMessage()).isEqualTo("The source did not signal an event for 5000 milliseconds and has been terminated.");
         assertThat(result.getState()).isEqualTo(HealthState.DOWN);
     }
 
