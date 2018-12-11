@@ -179,24 +179,24 @@ public class JZenith {
                 .setDisabledMetricsCategories(ImmutableSet.of(MetricsDomain.HTTP_SERVER))
                 .setPrometheusOptions(prometheusOptions);
 
-        final Vertx vertx = Vertx.vertx(
+        final Vertx createdVertx = Vertx.vertx(
                 new VertxOptions().setMetricsOptions(
                         metricsOptions
                 ).setPreferNativeTransport(true)
         );
 
-        if (!vertx.isNativeTransportEnabled()) {
+        if (!createdVertx.isNativeTransportEnabled()) {
             log.warn("Native transport could not be enabled");
         }
 
-        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(vertx, metricsOptions).getMeterRegistry();
+        final MeterRegistry meterRegistry = BackendRegistries.setupBackend(createdVertx, metricsOptions).getMeterRegistry();
         checkState(meterRegistry != null, "Meter registry should have been initialized");
 
-        RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(vertx));
-        RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(vertx));
-        RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(vertx));
+        RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
+        RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(createdVertx));
+        RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
 
-        return new InitResult(vertx, meterRegistry);
+        return new InitResult(createdVertx, meterRegistry);
     }
 
     public Injector createInjectorForTesting() {
@@ -236,8 +236,7 @@ public class JZenith {
                 .addAll(modules)
                 .build();
 
-        final Injector injector = Guice.createInjector(allModules);
-        return injector;
+        return Guice.createInjector(allModules);
     }
 
     private void setupMeterRegistry() {

@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,10 +32,10 @@ public class EnvironmentVariableExpander {
 
     private static final EnvironmentVariableExpander INSTANCE = new EnvironmentVariableExpander();
 
-    private final Function<String, String> variableAccessor;
+    private final UnaryOperator<String> variableAccessor;
 
     @VisibleForTesting
-    EnvironmentVariableExpander(final Function<String, String> variableResolver) {
+    EnvironmentVariableExpander(final UnaryOperator<String> variableResolver) {
         this.variableAccessor = variableResolver;
     }
 

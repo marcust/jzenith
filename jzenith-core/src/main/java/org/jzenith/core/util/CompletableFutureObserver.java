@@ -26,7 +26,7 @@ public class CompletableFutureObserver extends CompletableFuture<Void> {
         return new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
-
+                // nothing to do here
             }
 
             @Override

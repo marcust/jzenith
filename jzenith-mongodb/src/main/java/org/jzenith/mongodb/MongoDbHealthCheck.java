@@ -28,7 +28,7 @@ public class MongoDbHealthCheck extends HealthCheck {
     private final MongoClient client;
 
     public static final String COMMAND_NAME = "ping";
-    private final static JsonObject PING_COMMAND = new JsonObject().put(COMMAND_NAME, 1);
+    private static final JsonObject PING_COMMAND = new JsonObject().put(COMMAND_NAME, 1);
 
     @Inject
     public MongoDbHealthCheck(MongoClient client) {
