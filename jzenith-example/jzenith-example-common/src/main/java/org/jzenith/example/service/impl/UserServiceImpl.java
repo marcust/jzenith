@@ -68,6 +68,6 @@ public class UserServiceImpl implements UserService {
                 .flatMap(user -> userDao.deleteById(id))
                 .filter(Deleted::isDeleted)
                 .switchIfEmpty(Single.error(new NoSuchUserThrowable(id)))
-                .toCompletable();
+                .ignoreElement();
     }
 }

@@ -30,7 +30,7 @@ import io.vertx.kafka.client.common.TopicPartition;
 import io.vertx.kafka.client.consumer.OffsetAndMetadata;
 import io.vertx.reactivex.ContextScheduler;
 import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.core.impl.AsyncResultSingle;
+import io.vertx.reactivex.impl.AsyncResultSingle;
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
