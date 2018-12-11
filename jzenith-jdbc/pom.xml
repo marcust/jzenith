@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.github.davidmoten</groupId>
             <artifactId>rxjava2-jdbc</artifactId>
-            <version>0.1-RC42</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
