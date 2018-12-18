@@ -146,6 +146,10 @@ public class JZenith {
 
         this.vertx = initResult.getVertx();
 
+        RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(this.vertx));
+        RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(this.vertx));
+        RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(this.vertx));
+
         return this;
     }
 
@@ -192,9 +196,6 @@ public class JZenith {
         final MeterRegistry meterRegistry = BackendRegistries.setupBackend(metricsOptions).getMeterRegistry();
         checkState(meterRegistry != null, "Meter registry should have been initialized");
 
-        RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
-        RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(createdVertx));
-        RxJavaPlugins.setNewThreadSchedulerHandler(s -> RxHelper.scheduler(createdVertx));
 
         return new InitResult(createdVertx, meterRegistry);
     }
@@ -286,6 +287,7 @@ public class JZenith {
             }
         }
 
+        RxJavaPlugins.reset();
         repository.closeAll();
     }
 }
