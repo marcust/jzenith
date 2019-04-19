@@ -28,8 +28,18 @@ public class RequestScopedScopeManager implements ScopeManager {
     }
 
     @Override
+    public Scope activate(Span span) {
+        return activate(span, false);
+    }
+
+    @Override
     public Scope active() {
         return getScope();
+    }
+
+    @Override
+    public Span activeSpan() {
+        return getScope().span();
     }
 
     public RequestScopedScope getScope() {
