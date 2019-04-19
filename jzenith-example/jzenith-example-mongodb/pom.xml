@@ -129,6 +129,9 @@
                             <alias>mongo</alias>
                             <name>mongo:4</name>
                             <run>
+			      <network>
+				<mode>bridge</mode>
+			      </network>
                                 <wait>
                                     <time>20000</time>
                                     <tcp>
