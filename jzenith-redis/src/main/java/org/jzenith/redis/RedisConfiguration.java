@@ -25,8 +25,4 @@ public interface RedisConfiguration {
     @ConfigDefault("localhost")
     String getHost();
 
-    @ConfigDefault("UTF-8")
-    String getEncoding();
-
-
 }

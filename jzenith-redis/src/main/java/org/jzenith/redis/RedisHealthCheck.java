@@ -16,7 +16,10 @@
 package org.jzenith.redis;
 
 import io.reactivex.Single;
-import io.vertx.reactivex.redis.RedisClient;
+import io.vertx.reactivex.redis.client.Command;
+import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.Request;
+import io.vertx.reactivex.redis.client.Response;
 import org.jzenith.core.health.HealthCheck;
 import org.jzenith.core.health.HealthCheckResult;
 
@@ -24,16 +27,18 @@ import javax.inject.Inject;
 
 public class RedisHealthCheck extends HealthCheck {
 
-    private final RedisClient client;
+    private final Redis client;
 
     @Inject
-    public RedisHealthCheck(RedisClient client) {
+    public RedisHealthCheck(Redis client) {
         this.client = client;
     }
 
     @Override
     public Single<HealthCheckResult> executeInternal() {
-        return client.rxPing()
+        return client.rxSend(Request.cmd(Command.PING))
+                .map(Response::toString)
+                .toSingle()
                 .map(response -> createResult("PONG".equalsIgnoreCase(response)));
     }
 

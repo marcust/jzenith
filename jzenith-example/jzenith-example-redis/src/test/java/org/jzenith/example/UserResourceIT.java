@@ -17,7 +17,9 @@ package org.jzenith.example;
 
 import com.google.common.collect.ImmutableSet;
 import io.vertx.reactivex.core.buffer.Buffer;
-import io.vertx.reactivex.redis.RedisClient;
+import io.vertx.reactivex.redis.client.Command;
+import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.Request;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,7 +45,7 @@ public class UserResourceIT extends AbstractUserResourceIT {
     private FSTConfiguration serializer;
 
     @Inject
-    private RedisClient client;
+    private Redis client;
 
     @BeforeAll
     public static void startup() throws Exception {
@@ -63,13 +65,13 @@ public class UserResourceIT extends AbstractUserResourceIT {
     public void initalizeData() throws Exception {
         super.setup();
 
-        TEST_DATA.forEach(user -> client.rxSetBinary(user.getClass().getName() + ":" + user.getId(),
-                Buffer.newInstance(io.vertx.core.buffer.Buffer.buffer(serializer.asByteArray(user)))).subscribe());
+        TEST_DATA.forEach(user -> client.rxSend(Request.cmd(Command.SET).arg(user.getClass().getName() + ":" + user.getId()).arg(
+                Buffer.newInstance(io.vertx.core.buffer.Buffer.buffer(serializer.asByteArray(user))))).subscribe());
     }
 
     @AfterEach
     public void clear() {
-        client.rxFlushall().subscribe();
+        client.rxSend(Request.cmd(Command.FLUSHALL)).subscribe();
     }
 
 }
