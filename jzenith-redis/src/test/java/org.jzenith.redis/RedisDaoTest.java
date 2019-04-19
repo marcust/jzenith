@@ -20,6 +20,10 @@ import com.google.inject.Inject;
 import io.netty.buffer.ByteBuf;
 import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.redis.RedisClient;
+import io.vertx.reactivex.redis.client.Command;
+import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.Request;
+import io.vertx.reactivex.redis.client.Response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.jupiter.api.AfterEach;
@@ -49,7 +53,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     static class EntityDao extends RedisDao<Entity> {
 
         @Inject
-        protected EntityDao(FSTConfiguration configuration, RedisClient client) {
+        protected EntityDao(FSTConfiguration configuration, Redis client) {
             super(configuration, client, Entity.class);
         }
     }
@@ -65,7 +69,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     private EntityDao dao;
 
     @Inject
-    private RedisClient client;
+    private Redis client;
 
     @Inject
     private FSTConfiguration serializer;
@@ -88,7 +92,8 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     public void testStore() {
         dao.set("key", new Entity("value")).blockingGet();
 
-        final Entity entity = client.rxGetBinary(Entity.class.getName() + ":key")
+        final Entity entity = client.rxSend(Request.cmd(Command.GET).arg(Entity.class.getName() + ":key"))
+                .map(Response::toBuffer)
                 .map(buffer -> (Entity) serializer.asObject(buffer.getDelegate().getBytes()))
                 .blockingGet();
 
@@ -107,11 +112,11 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     @Test
     public void testList() {
         testStore();
+        dao.set("key2", new Entity("value2")).blockingGet();
 
         final List<Entity> entities = dao.list().toList().blockingGet();
 
-        assertThat(entities).hasSize(1);
-        assertThat(entities.get(0).getAValue()).isEqualTo("value");
+        assertThat(entities).hasSize(2);
     }
 
     @Test

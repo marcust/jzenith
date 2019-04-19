@@ -18,9 +18,10 @@ package org.jzenith.redis;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.multibindings.Multibinder;
+import io.vertx.core.net.SocketAddress;
 import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.redis.RedisClient;
-import io.vertx.redis.RedisOptions;
+import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.redis.client.RedisOptions;
 import org.jzenith.core.configuration.ConfigurationProvider;
 import org.jzenith.core.health.HealthCheck;
 import org.nustaq.serialization.FSTConfiguration;
@@ -36,7 +37,7 @@ class RedisBinder extends AbstractModule {
     @Override
     protected void configure() {
         bind(RedisConfiguration.class).toProvider(new ConfigurationProvider<>(RedisConfiguration.class)).asEagerSingleton();
-        bind(RedisClient.class).toProvider(new RedicClientProvider()).asEagerSingleton();
+        bind(Redis.class).toProvider(new RedisProvider()).asEagerSingleton();
 
         final Multibinder<HealthCheck> healthCheckMultibinder = Multibinder.newSetBinder(binder(), HealthCheck.class);
         healthCheckMultibinder.addBinding().to(RedisHealthCheck.class);
@@ -44,7 +45,7 @@ class RedisBinder extends AbstractModule {
         bind(FSTConfiguration.class).toInstance(FSTConfiguration.createUnsafeBinaryConfiguration());
     }
 
-    private static class RedicClientProvider implements Provider<RedisClient> {
+    private static class RedisProvider implements Provider<Redis> {
 
         @Inject
         private Vertx vertx;
@@ -54,13 +55,12 @@ class RedisBinder extends AbstractModule {
 
 
         @Override
-        public RedisClient get() {
+        public Redis get() {
+            final SocketAddress endpoint = SocketAddress.inetSocketAddress(configuration.getPort(), configuration.getHost());
             final RedisOptions options = new RedisOptions()
-                    .setHost(configuration.getHost())
-                    .setPort(configuration.getPort())
-                    .setEncoding(configuration.getEncoding());
+                    .setEndpoint(endpoint);
 
-            return RedisClient.create(vertx, options);
+            return Redis.createClient(vertx, options).rxConnect().blockingGet();
         }
     }
 }

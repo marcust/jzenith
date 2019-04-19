@@ -16,26 +16,32 @@
 package org.jzenith.redis;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.vertx.reactivex.core.buffer.Buffer;
-import io.vertx.reactivex.redis.RedisClient;
+import io.vertx.reactivex.redis.client.Command;
+import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.Request;
+import io.vertx.reactivex.redis.client.Response;
+import io.vertx.redis.client.impl.types.MultiType;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
 import org.nustaq.serialization.FSTConfiguration;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public abstract class RedisDao<T> {
 
     private final FSTConfiguration configuration;
 
-    private final RedisClient client;
+    private final Redis client;
     private final Class<T> type;
 
-    protected RedisDao(FSTConfiguration configuration, RedisClient client, Class<T> type) {
+    protected RedisDao(FSTConfiguration configuration, Redis client, Class<T> type) {
         this.configuration = configuration;
         this.client = client;
         this.type = type;
@@ -44,23 +50,36 @@ public abstract class RedisDao<T> {
     protected Completable set(@NonNull final String key, @NonNull T value) {
         final Buffer buffer = serialize(value);
 
-        return client.rxSetBinary(prefixKey(key), buffer);
+        final Request request = Request.cmd(Command.SET)
+                .arg(prefixKey(key))
+                .arg(buffer);
+        return client.rxSend(request).ignoreElement();
     }
 
     protected Maybe<T> get(@NonNull final String key) {
-        return client.rxGetBinary(prefixKey(key))
+
+        final Request request = Request.cmd(Command.GET)
+                .arg(prefixKey(key));
+        return client.rxSend(request)
+                .map(Response::toBuffer)
                 .map(this::deserialize)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
 
     protected Single<Long> delete(@NonNull final String key) {
-        return client.rxDel(prefixKey(key));
+        final Request request = Request.cmd(Command.DEL)
+                .arg(prefixKey(key));
+
+        return client.rxSend(request)
+                .map(Response::toLong)
+                .toSingle();
     }
 
     public Observable<T> list() {
         return keys()
-                .concatMap(key -> client.rxGetBinary(key).toObservable())
+                .concatMap(key -> client.rxSend(Request.cmd(Command.GET).arg(key)).toObservable())
+                .map(Response::toBuffer)
                 .map(this::deserialize)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
@@ -71,11 +90,17 @@ public abstract class RedisDao<T> {
     }
 
     private Observable<String> keys() {
-        return client.rxKeys(type.getName() + ":*")
+        final Request request = Request.cmd(Command.KEYS)
+                .arg(type.getName() + ":*");
+
+        return client.rxSend(request)
+                .map(Response::getDelegate)
+                .map(MultiType.class::cast)
+                .map(MultiType::iterator)
+                .map(ImmutableList::copyOf)
                 .toObservable()
-                .flatMapIterable(jsonArray -> jsonArray)
-                .filter(String.class::isInstance)
-                .map(String.class::cast);
+                .flatMapIterable(list -> list)
+                .map(response -> response.toString(StandardCharsets.UTF_8));
     }
 
     private String prefixKey(String key) {
