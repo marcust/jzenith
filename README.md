@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cd44230cdd244459a07f088279cfc140)](https://app.codacy.com/app/marcust_2/jzenith?utm_source=github.com&utm_medium=referral&utm_content=marcust/jzenith&utm_campaign=Badge_Grade_Dashboard)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jzenith/jzenith-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jzenith/jzenith-core)
 [![Javadocs](https://javadoc.io/badge/org.jzenith/jzenith-core.svg?color=brightgreen)](https://javadoc.io/doc/org.jzenith/jzenith-core)
 [![Build Status](https://travis-ci.com/marcust/jzenith.svg?branch=master)](https://travis-ci.com/marcust/jzenith)
