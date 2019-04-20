@@ -15,9 +15,6 @@
  */
 package org.jzenith.example;
 
-import io.opentracing.contrib.reporter.TracerR;
-import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
-import io.opentracing.noop.NoopTracerFactory;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.mapper.MapperModule;
 import org.jzenith.example.persistence.PersistenceLayerModule;
@@ -27,8 +24,7 @@ import org.jzenith.example.service.ServiceLayerModule;
 import org.jzenith.example.service.exception.NoSuchUserThrowable;
 import org.jzenith.redis.RedisPlugin;
 import org.jzenith.rest.RestPlugin;
-import org.jzenith.rest.tracing.RequestScopedScopeManager;
-import org.slf4j.LoggerFactory;
+import org.jzenith.rest.tracing.LoggingTracer;
 
 public class RedisPluginExampleApp {
 
@@ -40,7 +36,7 @@ public class RedisPluginExampleApp {
 
     public static JZenith configureApplication(String... args) {
         return JZenith.application(args)
-                .withTracer(new TracerR(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("opentracing"), true), new RequestScopedScopeManager()))
+                .withTracer(new LoggingTracer())
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserThrowable.class, 404),

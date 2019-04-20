@@ -127,7 +127,7 @@ public class JZenith {
             log.debug("jZenith starting up");
         }
         if (tracer != null && !GlobalTracer.isRegistered()) {
-            GlobalTracer.register(tracer);
+            GlobalTracer.registerIfAbsent(tracer);
         }
 
         final InitResult initResult = initVertx();

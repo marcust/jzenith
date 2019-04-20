@@ -16,9 +16,6 @@
 package org.jzenith.example;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.opentracing.contrib.reporter.TracerR;
-import io.opentracing.contrib.reporter.slf4j.Slf4jReporter;
-import io.opentracing.noop.NoopTracerFactory;
 import org.jzenith.core.JZenith;
 import org.jzenith.example.mapper.MapperModule;
 import org.jzenith.example.persistence.PersistenceLayerModule;
@@ -29,9 +26,8 @@ import org.jzenith.example.service.exception.NoSuchUserThrowable;
 import org.jzenith.jdbc.JdbcDatabaseType;
 import org.jzenith.jdbc.JdbcPlugin;
 import org.jzenith.rest.RestPlugin;
-import org.jzenith.rest.tracing.RequestScopedScopeManager;
+import org.jzenith.rest.tracing.LoggingTracer;
 import org.postgresql.ds.PGSimpleDataSource;
-import org.slf4j.LoggerFactory;
 
 public class PostgresJdbcExampleApp {
 
@@ -45,7 +41,7 @@ public class PostgresJdbcExampleApp {
         final PGSimpleDataSource dataSource = createDataSource();
 
         return JZenith.application(args)
-                .withTracer(new TracerR(NoopTracerFactory.create(), new Slf4jReporter(LoggerFactory.getLogger("opentracing"), true), new RequestScopedScopeManager()))
+                .withTracer(new LoggingTracer())
                 .withPlugins(
                         RestPlugin.withResources(HelloWorldResource.class, UserResource.class)
                                   .withMapping(NoSuchUserThrowable.class, 404),

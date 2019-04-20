@@ -23,23 +23,25 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public class RequestScopedScopeManager implements ScopeManager {
 
     @Override
+    @Deprecated
     public Scope activate(Span span, boolean finishSpanOnClose) {
         return new RequestScopedScope(this, finishSpanOnClose, span, getScope());
     }
 
     @Override
     public Scope activate(Span span) {
-        return activate(span, false);
+        return new RequestScopedScope(this, false, span, getScope());
     }
 
     @Override
+    @Deprecated
     public Scope active() {
         return getScope();
     }
 
     @Override
     public Span activeSpan() {
-        return getScope().span();
+        return getScope().activeSpan();
     }
 
     public RequestScopedScope getScope() {
