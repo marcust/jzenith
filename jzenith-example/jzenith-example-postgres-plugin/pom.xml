@@ -129,6 +129,7 @@
                             <alias>postgres</alias>
                             <name>postgres:10</name>
                             <run>
+                                <skip>${docker.maven.plugin.skip}</skip>
                                 <wait>
                                     <log>database system is ready to accept connections</log>
                                     <time>20000</time>

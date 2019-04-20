@@ -132,6 +132,7 @@
 			      <network>
 				<mode>bridge</mode>
 			      </network>
+                                <skip>${docker.maven.plugin.skip}</skip>
                                 <wait>
                                     <time>20000</time>
                                     <tcp>
