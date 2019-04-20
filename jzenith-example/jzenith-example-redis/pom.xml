@@ -189,6 +189,7 @@
                             <alias>redis</alias>
                             <name>redis:4</name>
                             <run>
+                                <skip>${docker.maven.plugin.skip}</skip>
                                 <wait>
                                     <log>Ready to accept connections</log>
                                     <time>20000</time>

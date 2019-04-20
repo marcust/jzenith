@@ -135,6 +135,7 @@
                             <alias>database</alias>
                             <name>mysql:8</name>
                             <run>
+                                <skip>${docker.maven.plugin.skip}</skip>
                                 <wait>
                                     <log>Using a password on the command line interface can be insecure</log>
                                     <time>20000</time>
