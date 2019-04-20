@@ -37,31 +37,6 @@
             <artifactId>jzenith-rest</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>io.opentracing.contrib</groupId>
-            <artifactId>span-reporter-slf4j</artifactId>
-            <version>0.1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>bintray-jcenter</id>
-            <url>http://jcenter.bintray.com/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
 
 </project>

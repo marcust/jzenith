@@ -120,7 +120,7 @@ public class OpenTracingInterceptor implements MethodInterceptor {
     }
 
     private void activateSpan(@NonNull final AtomicReference<Scope> currentScope, @NonNull final Span span) {
-        currentScope.set(tracer.scopeManager().activate(span, true));
+        currentScope.set(tracer.scopeManager().activate(span));
     }
 
     @VisibleForTesting

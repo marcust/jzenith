@@ -53,7 +53,12 @@ public class RequestScopedScope implements Scope {
     }
 
     @Override
+    @Deprecated
     public Span span() {
+        return wrapped;
+    }
+
+    Span activeSpan() {
         return wrapped;
     }
 }

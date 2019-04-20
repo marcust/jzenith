@@ -56,6 +56,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 
 @ExtendWith(VertxExtension.class)
+@SuppressWarnings("deprecation")
 public class KafkaConsumerPluginTest extends AbstractKafkaConsumerPluginTest {
 
     @Test
