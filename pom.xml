@@ -43,7 +43,7 @@
         <groovy.version>2.4.12</groovy.version>
         <pmd.version>6.16.0</pmd.version>
         <testcontainers.version>1.12.0</testcontainers.version>
-        <bytebuddy.version>1.9.15</bytebuddy.version>
+        <bytebuddy.version>1.9.16</bytebuddy.version>
         <docker.maven.plugin.version>0.30.0</docker.maven.plugin.version>
         <docker.maven.plugin.skip>false</docker.maven.plugin.skip>
         <jackson.version>2.10.0.pr1</jackson.version>
