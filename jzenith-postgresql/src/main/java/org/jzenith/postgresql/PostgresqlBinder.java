@@ -43,7 +43,7 @@ class PostgresqlBinder extends AbstractModule {
         bind(PostgresqlClient.class).in(Singleton.class);
 
         bind(PostgresqlConfiguration.class).toProvider(new ConfigurationProvider<>(PostgresqlConfiguration.class));
-        final DSLContext context = DSL.using(SQLDialect.POSTGRES_10);
+        final DSLContext context = DSL.using(SQLDialect.POSTGRES);
 
         // Initialize Jooq on startup, because that takes a while
         context.select().from("1").getSQL();

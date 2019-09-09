@@ -22,8 +22,8 @@ import org.jooq.SQLDialect;
 @Getter
 public enum JdbcDatabaseType {
 
-    POSTGRES(SQLDialect.POSTGRES_10, DatabaseType.POSTGRES),
-    MYSQL(SQLDialect.MYSQL_8_0, DatabaseType.POSTGRES)
+    POSTGRES(SQLDialect.POSTGRES, DatabaseType.POSTGRES),
+    MYSQL(SQLDialect.MYSQL, DatabaseType.POSTGRES)
     ;
 
     private final SQLDialect dialect;
