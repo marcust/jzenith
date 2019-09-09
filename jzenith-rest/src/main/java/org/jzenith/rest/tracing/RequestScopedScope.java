@@ -52,12 +52,6 @@ public class RequestScopedScope implements Scope {
         scopeManager.setScope(toRestore);
     }
 
-    @Override
-    @Deprecated
-    public Span span() {
-        return wrapped;
-    }
-
     Span activeSpan() {
         return wrapped;
     }
