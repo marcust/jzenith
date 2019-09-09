@@ -17,6 +17,7 @@ package org.jzenith.postgresql;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -28,7 +29,12 @@ public class MigrationVerticle extends AbstractVerticle {
     private PostgresqlConfiguration configuration;
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start(final Future<Void> startFuture) throws Exception {
+        start((Promise<Void>) startFuture);
+    }
+
+    @Override
+    public void start(Promise<Void> startPromise) throws Exception {
         vertx.executeBlocking(future -> {
             final PGSimpleDataSource dataSource = new PGSimpleDataSource();
             dataSource.setPortNumber(configuration.getPort());
@@ -47,9 +53,9 @@ public class MigrationVerticle extends AbstractVerticle {
             future.complete(flyway.migrate());
         }, result -> {
             if (result.failed()) {
-                startFuture.fail(result.cause());
+                startPromise.fail(result.cause());
             } else {
-                startFuture.complete(null);
+                startPromise.complete(null);
             }
         });
 

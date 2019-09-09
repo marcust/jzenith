@@ -39,7 +39,8 @@ public class MongoDbHealthCheck extends HealthCheck {
     public Single<HealthCheckResult> executeInternal() {
         return client.rxRunCommand(COMMAND_NAME, PING_COMMAND)
                 .map(response -> response.getDouble("ok"))
-                .map(value -> createResult(value > 0.0D));
+                .map(value -> createResult(value > 0.0D))
+                .toSingle();
     }
 
 }

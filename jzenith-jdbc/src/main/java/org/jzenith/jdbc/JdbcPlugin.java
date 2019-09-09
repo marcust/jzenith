@@ -71,7 +71,10 @@ public class JdbcPlugin extends AbstractPlugin {
         final CompletableFutureHandler<String> completableFutureHandler = new CompletableFutureHandler<>();
         vertx.deployVerticle("java-guice:" + MigrationVerticle.class.getName(), forGuiceVerticleLoader(), completableFutureHandler.handler());
 
-        return completableFutureHandler;
+        return completableFutureHandler.thenApply(aVoid -> {
+            log.debug("jZenith JDBC Plugin started");
+            return "Done";
+        });
     }
 
 }

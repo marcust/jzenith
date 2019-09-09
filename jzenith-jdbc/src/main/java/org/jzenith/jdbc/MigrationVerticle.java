@@ -17,6 +17,7 @@ package org.jzenith.jdbc;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import org.flywaydb.core.Flyway;
 
 import javax.inject.Inject;
@@ -27,9 +28,15 @@ public class MigrationVerticle extends AbstractVerticle {
     @Inject
     private DataSource dataSource;
 
+
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
-        vertx.executeBlocking(future -> {
+    public void start(final Future<Void> startFuture) throws Exception {
+        start((Promise<Void>) startFuture);
+    }
+
+    @Override
+    public void start(Promise<Void> startPromise) {
+        vertx.executeBlocking(promise -> {
             // Create the Flyway instance
             final Flyway flyway = Flyway.configure()
                     .mixed(true)
@@ -37,12 +44,12 @@ public class MigrationVerticle extends AbstractVerticle {
                     .load();
 
             // Start the migration
-            future.complete(flyway.migrate());
+            promise.complete(flyway.migrate());
         }, result -> {
             if (result.failed()) {
-                startFuture.fail(result.cause());
+                startPromise.fail(result.cause());
             } else {
-                startFuture.complete(null);
+                startPromise.complete(null);
             }
         });
 

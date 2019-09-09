@@ -29,7 +29,7 @@ import io.opentracing.rxjava2.TracingRxJava2Utils;
 import io.opentracing.util.GlobalTracer;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import lombok.NonNull;
@@ -86,7 +86,7 @@ public class RestPlugin extends AbstractPlugin {
     @Override
     protected CompletableFuture<String> start(Injector injector) {
         if (log.isDebugEnabled()) {
-            log.debug("jZenith Rest is starting and registering the following resources:\n{}", Joiner.on('\n').join(resources));
+            log.debug("jZenith REST is starting and registering the following resources:\n{}", Joiner.on('\n').join(resources));
         }
         initRxJavaTracing();
 
@@ -105,14 +105,14 @@ public class RestPlugin extends AbstractPlugin {
 
         vertx.deployVerticle(() -> new AbstractVerticle() {
                     @Override
-                    public void start(Future<Void> startFuture) {
+                    public void start(Promise<Void> startPromise) {
                         vertx.createHttpServer(options)
                                 .requestHandler(handler)
                                 .listen(restConfiguration.getPort(), restConfiguration.getHost(), ar -> {
                                     if (ar.succeeded()) {
-                                        startFuture.complete(null);
+                                        startPromise.complete(null);
                                     } else {
-                                        startFuture.fail(ar.cause());
+                                        startPromise.fail(ar.cause());
                                     }
                                 });
                     }
@@ -120,7 +120,7 @@ public class RestPlugin extends AbstractPlugin {
                 completableFutureHandler.handler());
 
         return completableFutureHandler.thenApply(aVoid -> {
-            log.debug("jZenith Rest Plugin started (listening to {}:{})",
+            log.debug("jZenith REST Plugin started (listening to {}:{})",
                     restConfiguration.getHost(), restConfiguration.getPort());
             return "Done";
         });

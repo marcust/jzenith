@@ -16,7 +16,6 @@
 package org.jzenith.core;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -42,10 +41,6 @@ public class JacksonModule extends AbstractModule {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        mapper.disableDefaultTyping();
-
-        mapper.getFactory().enable(JsonFactory.Feature.USE_THREAD_LOCAL_FOR_BUFFER_RECYCLING);
-        mapper.getFactory().disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
         return mapper;
     }
 
