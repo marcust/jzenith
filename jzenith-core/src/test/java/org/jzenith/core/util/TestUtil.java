@@ -71,7 +71,7 @@ public class TestUtil {
                     assertThat(e.getCause().getMessage())
                             .as("Method %s %s throws a NPE without message", method.getName(), Arrays.asList(method.getParameterTypes()).toString())
                             .isNotNull();
-                    assertThat(e.getCause().getMessage()).contains("marked @NonNull");
+                    assertThat(e.getCause().getMessage()).contains("marked non-null but is null");
                 }
             }
         }

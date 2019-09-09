@@ -98,7 +98,7 @@ public class RowTest {
             row.get(mock, null);
             fail("Method should have thrown a Lombok NPE");
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).contains("marked @NonNull");
+            assertThat(e.getMessage()).contains("marked non-null but is null");
         }
     }
 
@@ -110,7 +110,7 @@ public class RowTest {
             row.getColumn("foo", null);
             fail("Method should have thrown a Lombok NPE");
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).contains("marked @NonNull");
+            assertThat(e.getMessage()).contains("marked non-null but is null");
         }
     }
 
