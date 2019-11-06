@@ -137,7 +137,7 @@
                             <run>
                                 <skip>${docker.maven.plugin.skip}</skip>
                                 <wait>
-                                    <log>Using a password on the command line interface can be insecure</log>
+                                    <log>Giving user test access to schema test</log>
                                     <time>20000</time>
                                 </wait>
                                 <ports>
