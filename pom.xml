@@ -42,7 +42,7 @@
         <mockito.version>3.1.0</mockito.version>
         <groovy.version>2.4.12</groovy.version>
         <pmd.version>6.17.0</pmd.version>
-        <testcontainers.version>1.12.2</testcontainers.version>
+        <testcontainers.version>1.12.3</testcontainers.version>
         <bytebuddy.version>1.10.2</bytebuddy.version>
         <docker.maven.plugin.version>0.31.0</docker.maven.plugin.version>
         <docker.maven.plugin.skip>false</docker.maven.plugin.skip>
