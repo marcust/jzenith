@@ -237,7 +237,7 @@
     <repositories>
         <repository>
             <id>bintray-jcenter</id>
-            <url>http://jcenter.bintray.com/</url>
+            <url>https://jcenter.bintray.com/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
