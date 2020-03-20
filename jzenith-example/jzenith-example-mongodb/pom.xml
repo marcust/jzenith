@@ -134,9 +134,10 @@
 			      </network>
                                 <skip>${docker.maven.plugin.skip}</skip>
                                 <wait>
-                                    <time>20000</time>
+                                    <time>30000</time>
                                     <tcp>
-                                        <ports>27017</ports>
+				        <mode>mapped</mode>
+				        <ports>27017</ports>
                                     </tcp>
                                 </wait>
                                 <ports>
