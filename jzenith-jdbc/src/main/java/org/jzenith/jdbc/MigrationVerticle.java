@@ -40,6 +40,7 @@ public class MigrationVerticle extends AbstractVerticle {
             // Create the Flyway instance
             final Flyway flyway = Flyway.configure()
                     .mixed(true)
+                    .connectRetries(3)
                     .dataSource(dataSource)
                     .load();
 
