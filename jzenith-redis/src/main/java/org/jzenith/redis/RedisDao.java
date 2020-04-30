@@ -23,7 +23,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.redis.client.Command;
-import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.RedisConnection;
 import io.vertx.reactivex.redis.client.Request;
 import io.vertx.reactivex.redis.client.Response;
 import io.vertx.redis.client.impl.types.MultiType;
@@ -38,10 +38,10 @@ public abstract class RedisDao<T> {
 
     private final FSTConfiguration configuration;
 
-    private final Redis client;
+    private final RedisConnection client;
     private final Class<T> type;
 
-    protected RedisDao(FSTConfiguration configuration, Redis client, Class<T> type) {
+    protected RedisDao(FSTConfiguration configuration, RedisConnection client, Class<T> type) {
         this.configuration = configuration;
         this.client = client;
         this.type = type;

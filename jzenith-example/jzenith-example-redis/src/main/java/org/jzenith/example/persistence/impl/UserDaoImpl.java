@@ -17,7 +17,7 @@ package org.jzenith.example.persistence.impl;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
-import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.RedisConnection;
 import lombok.NonNull;
 import org.jzenith.example.persistence.UserDao;
 import org.jzenith.example.persistence.model.Deleted;
@@ -34,7 +34,7 @@ import java.util.UUID;
 public class UserDaoImpl extends RedisDao<User> implements UserDao {
 
     @Inject
-    public UserDaoImpl(FSTConfiguration configuration, Redis client) {
+    public UserDaoImpl(FSTConfiguration configuration, RedisConnection client) {
         super(configuration, client, User.class);
     }
 

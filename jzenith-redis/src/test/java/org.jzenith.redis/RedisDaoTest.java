@@ -19,9 +19,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import io.netty.buffer.ByteBuf;
 import io.vertx.reactivex.core.buffer.Buffer;
-import io.vertx.reactivex.redis.RedisClient;
 import io.vertx.reactivex.redis.client.Command;
-import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.RedisConnection;
 import io.vertx.reactivex.redis.client.Request;
 import io.vertx.reactivex.redis.client.Response;
 import lombok.AllArgsConstructor;
@@ -53,7 +52,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     static class EntityDao extends RedisDao<Entity> {
 
         @Inject
-        protected EntityDao(FSTConfiguration configuration, Redis client) {
+        protected EntityDao(FSTConfiguration configuration, RedisConnection client) {
             super(configuration, client, Entity.class);
         }
     }
@@ -69,7 +68,7 @@ public class RedisDaoTest extends AbstractRedisPluginTest {
     private EntityDao dao;
 
     @Inject
-    private Redis client;
+    private RedisConnection client;
 
     @Inject
     private FSTConfiguration serializer;

@@ -17,7 +17,7 @@ package org.jzenith.redis;
 
 import io.reactivex.Single;
 import io.vertx.reactivex.redis.client.Command;
-import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.RedisConnection;
 import io.vertx.reactivex.redis.client.Request;
 import io.vertx.reactivex.redis.client.Response;
 import org.jzenith.core.health.HealthCheck;
@@ -27,10 +27,10 @@ import javax.inject.Inject;
 
 public class RedisHealthCheck extends HealthCheck {
 
-    private final Redis client;
+    private final RedisConnection client;
 
     @Inject
-    public RedisHealthCheck(Redis client) {
+    public RedisHealthCheck(RedisConnection client) {
         this.client = client;
     }
 

@@ -18,9 +18,9 @@ package org.jzenith.redis;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.multibindings.Multibinder;
-import io.vertx.core.net.SocketAddress;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.RedisConnection;
 import io.vertx.redis.client.RedisOptions;
 import org.jzenith.core.configuration.ConfigurationProvider;
 import org.jzenith.core.health.HealthCheck;
@@ -37,7 +37,7 @@ class RedisBinder extends AbstractModule {
     @Override
     protected void configure() {
         bind(RedisConfiguration.class).toProvider(new ConfigurationProvider<>(RedisConfiguration.class)).asEagerSingleton();
-        bind(Redis.class).toProvider(new RedisProvider()).asEagerSingleton();
+        bind(RedisConnection.class).toProvider(new RedisProvider()).asEagerSingleton();
 
         final Multibinder<HealthCheck> healthCheckMultibinder = Multibinder.newSetBinder(binder(), HealthCheck.class);
         healthCheckMultibinder.addBinding().to(RedisHealthCheck.class);
@@ -45,7 +45,7 @@ class RedisBinder extends AbstractModule {
         bind(FSTConfiguration.class).toInstance(FSTConfiguration.createUnsafeBinaryConfiguration());
     }
 
-    private static class RedisProvider implements Provider<Redis> {
+    private static class RedisProvider implements Provider<RedisConnection> {
 
         @Inject
         private Vertx vertx;
@@ -55,10 +55,9 @@ class RedisBinder extends AbstractModule {
 
 
         @Override
-        public Redis get() {
-            final SocketAddress endpoint = SocketAddress.inetSocketAddress(configuration.getPort(), configuration.getHost());
+        public RedisConnection get() {
             final RedisOptions options = new RedisOptions()
-                    .setEndpoint(endpoint);
+                    .setConnectionString("redis://" + configuration.getHost() + ":" + configuration.getPort());
 
             return Redis.createClient(vertx, options).rxConnect().blockingGet();
         }
