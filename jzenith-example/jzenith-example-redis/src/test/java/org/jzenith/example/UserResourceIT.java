@@ -18,7 +18,7 @@ package org.jzenith.example;
 import com.google.common.collect.ImmutableSet;
 import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.redis.client.Command;
-import io.vertx.reactivex.redis.client.Redis;
+import io.vertx.reactivex.redis.client.RedisConnection;
 import io.vertx.reactivex.redis.client.Request;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -45,7 +45,7 @@ public class UserResourceIT extends AbstractUserResourceIT {
     private FSTConfiguration serializer;
 
     @Inject
-    private Redis client;
+    private RedisConnection client;
 
     @BeforeAll
     public static void startup() throws Exception {
