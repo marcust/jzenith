@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>6.4.1</version>
+            <version>6.4.2</version>
         </dependency>
 
         <!-- Database drivers -->
