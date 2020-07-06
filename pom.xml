@@ -48,7 +48,7 @@
         <docker.maven.plugin.skip>false</docker.maven.plugin.skip>
         <jackson.version>2.11.1</jackson.version>
         <junit.version>5.6.2</junit.version>
-        <rest-assured.version>4.3.0</rest-assured.version>
+        <rest-assured.version>4.3.1</rest-assured.version>
         <opentracing.version>0.33.0</opentracing.version>
         <jacoco.dataFile>${project.build.directory}/jacoco-it.exec</jacoco.dataFile>
     </properties>
