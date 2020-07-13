@@ -39,7 +39,7 @@
         <vertx.version>3.9.1</vertx.version>
         <prometheus.version>0.5.0</prometheus.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <mockito.version>3.3.3</mockito.version>
+        <mockito.version>3.4.0</mockito.version>
         <groovy.version>2.4.12</groovy.version>
         <pmd.version>6.25.0</pmd.version>
         <testcontainers.version>1.14.3</testcontainers.version>
