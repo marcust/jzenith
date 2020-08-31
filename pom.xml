@@ -41,7 +41,7 @@
         <slf4j.version>1.7.30</slf4j.version>
         <mockito.version>3.5.7</mockito.version>
         <groovy.version>2.4.12</groovy.version>
-        <pmd.version>6.25.0</pmd.version>
+        <pmd.version>6.26.0</pmd.version>
         <testcontainers.version>1.14.3</testcontainers.version>
         <bytebuddy.version>1.10.14</bytebuddy.version>
         <docker.maven.plugin.version>0.33.0</docker.maven.plugin.version>
