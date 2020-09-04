@@ -16,7 +16,6 @@
 package org.jzenith.postgresql;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
