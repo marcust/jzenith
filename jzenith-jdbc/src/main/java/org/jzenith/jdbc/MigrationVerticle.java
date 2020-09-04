@@ -28,12 +28,6 @@ public class MigrationVerticle extends AbstractVerticle {
     @Inject
     private DataSource dataSource;
 
-
-    @Override
-    public void start(final Future<Void> startFuture) throws Exception {
-        start((Promise<Void>) startFuture);
-    }
-
     @Override
     public void start(Promise<Void> startPromise) {
         vertx.executeBlocking(promise -> {

@@ -84,7 +84,7 @@ public class MetricsInterceptor implements ContainerRequestFilter, ContainerResp
                 .description("Request duration seconds")
                 .minimumExpectedValue(TIMER_MINIMUM_EXPECTED_DURATION)
                 .maximumExpectedValue(TIMER_MAXIMUM_EXPECTED_DURATION)
-                .sla(SLA_BUCKETS);
+                .serviceLevelObjectives(SLA_BUCKETS);
     }
 
     @Override

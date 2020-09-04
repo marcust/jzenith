@@ -29,16 +29,11 @@ public class MigrationVerticle extends AbstractVerticle {
     private PostgresqlConfiguration configuration;
 
     @Override
-    public void start(final Future<Void> startFuture) throws Exception {
-        start((Promise<Void>) startFuture);
-    }
-
-    @Override
     public void start(Promise<Void> startPromise) throws Exception {
         vertx.executeBlocking(future -> {
             final PGSimpleDataSource dataSource = new PGSimpleDataSource();
-            dataSource.setPortNumber(configuration.getPort());
-            dataSource.setServerName(configuration.getHost());
+            dataSource.setPortNumbers(new int[] {configuration.getPort()});
+            dataSource.setServerNames(new String[]{configuration.getHost()});
             dataSource.setDatabaseName(configuration.getDatabase());
             dataSource.setUser(configuration.getUsername());
             dataSource.setPassword(configuration.getPassword());

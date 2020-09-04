@@ -53,8 +53,8 @@ public class PostgresJdbcExampleApp {
     @SuppressFBWarnings("HARD_CODE_PASSWORD")
     private static PGSimpleDataSource createDataSource() {
         final PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setPortNumber(5433);
-        dataSource.setServerName("localhost");
+        dataSource.setPortNumbers(new int[]{5433});
+        dataSource.setServerNames(new String[]{"localhost"});
         dataSource.setDatabaseName("test");
         dataSource.setUser("test");
         dataSource.setPassword("test");
