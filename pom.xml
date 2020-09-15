@@ -44,7 +44,7 @@
         <pmd.version>6.27.0</pmd.version>
         <testcontainers.version>1.14.3</testcontainers.version>
         <bytebuddy.version>1.10.14</bytebuddy.version>
-        <docker.maven.plugin.version>0.33.0</docker.maven.plugin.version>
+        <docker.maven.plugin.version>0.34.0</docker.maven.plugin.version>
         <docker.maven.plugin.skip>false</docker.maven.plugin.skip>
         <jackson.version>2.11.2</jackson.version>
         <junit.version>5.6.2</junit.version>
