@@ -16,7 +16,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <resteasy.version>3.6.3.Final</resteasy.version>
+        <resteasy.version>4.5.8.SP1</resteasy.version>
         <swagger.version>2.1.4</swagger.version>
     </properties>
 
